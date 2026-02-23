@@ -186,10 +186,9 @@ def main() -> None:
     ).hexdigest()
     combined_source_hash = sha256((source_text + module_source_hash).encode("utf-8")).hexdigest()
 
-    lock = {
+    stable_lock = {
         "version": data["version"],
         "required_modules": sorted(required_modules),
-        "generated_at_utc": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "source_sha256": source_hash,
         "module_source_sha256": module_source_hash,
         "combined_source_sha256": combined_source_hash,
@@ -197,7 +196,27 @@ def main() -> None:
         "files": sorted(rendered_by_file),
     }
 
-    (ROOT / "contract.lock.json").write_text(
+    lock_path = ROOT / "contract.lock.json"
+    generated_at_utc = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    if lock_path.exists():
+        try:
+            existing_lock = json.loads(lock_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            existing_lock = None
+
+        if isinstance(existing_lock, dict):
+            previous_stable = {k: existing_lock.get(k) for k in stable_lock}
+            if previous_stable == stable_lock:
+                previous_generated_at = existing_lock.get("generated_at_utc")
+                if isinstance(previous_generated_at, str) and previous_generated_at:
+                    generated_at_utc = previous_generated_at
+
+    lock = {
+        **stable_lock,
+        "generated_at_utc": generated_at_utc,
+    }
+
+    lock_path.write_text(
       json.dumps(lock, indent=2, ensure_ascii=True) + "\n",
       encoding="utf-8",
     )
