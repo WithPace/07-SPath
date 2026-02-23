@@ -40,12 +40,20 @@ anon_headers=(
   -H "Content-Type: application/json"
 )
 
+curl_common=(
+  -sS
+  --http1.1
+  --retry 3
+  --retry-delay 1
+  --retry-all-errors
+)
+
 run_id=$(date +%s)
 email="codex.smoke.${run_id}@example.com"
 password="CodexSmoke#${run_id}"
 request_id=$(uid)
 
-create_user_resp=$(curl -sS -X POST "${SUPABASE_URL}/auth/v1/admin/users" \
+create_user_resp=$(curl "${curl_common[@]}" -X POST "${SUPABASE_URL}/auth/v1/admin/users" \
   "${service_headers[@]}" \
   -d "{\"email\":\"${email}\",\"password\":\"${password}\",\"email_confirm\":true}")
 
@@ -56,7 +64,7 @@ if [ -z "$user_id" ]; then
   exit 1
 fi
 
-login_resp=$(curl -sS -X POST "${SUPABASE_URL}/auth/v1/token?grant_type=password" \
+login_resp=$(curl "${curl_common[@]}" -X POST "${SUPABASE_URL}/auth/v1/token?grant_type=password" \
   "${anon_headers[@]}" \
   -d "{\"email\":\"${email}\",\"password\":\"${password}\"}")
 
@@ -69,12 +77,12 @@ fi
 
 user_payload=$(jq -cn --arg id "$user_id" --arg now "$(ts)" '[{id:$id, phone:null, name:"Smoke User", avatar_url:null, roles:["parent"], vip_level:"free", created_at:$now, updated_at:$now}]')
 
-curl -sS -X POST "${SUPABASE_URL}/rest/v1/users" \
+curl "${curl_common[@]}" -X POST "${SUPABASE_URL}/rest/v1/users" \
   "${service_headers[@]}" \
   -H "Prefer: return=representation,resolution=merge-duplicates" \
   -d "$user_payload" >/dev/null
 
-child_resp=$(curl -sS -X POST "${SUPABASE_URL}/rest/v1/children" \
+child_resp=$(curl "${curl_common[@]}" -X POST "${SUPABASE_URL}/rest/v1/children" \
   "${service_headers[@]}" \
   -H "Prefer: return=representation" \
   -d "[{\"nickname\":\"测试宝宝\",\"real_name\":\"Smoke Child\",\"created_by\":\"${user_id}\",\"creator_relation\":\"妈妈\"}]")
@@ -86,12 +94,12 @@ if [ -z "$child_id" ]; then
   exit 1
 fi
 
-curl -sS -X POST "${SUPABASE_URL}/rest/v1/care_teams" \
+curl "${curl_common[@]}" -X POST "${SUPABASE_URL}/rest/v1/care_teams" \
   "${service_headers[@]}" \
   -H "Prefer: return=minimal" \
   -d "[{\"user_id\":\"${user_id}\",\"child_id\":\"${child_id}\",\"role\":\"parent\",\"permissions\":{},\"status\":\"active\"}]" >/dev/null
 
-orchestrator_resp=$(curl -sS -N -X POST "${SUPABASE_URL}/functions/v1/orchestrator" \
+orchestrator_resp=$(curl "${curl_common[@]}" -N --max-time 180 -X POST "${SUPABASE_URL}/functions/v1/orchestrator" \
   -H "apikey: ${SUPABASE_ANON_KEY}" \
   -H "Authorization: Bearer ${access_token}" \
   -H "Content-Type: application/json" \
@@ -109,7 +117,7 @@ if ! echo "$orchestrator_resp" | grep -q "event: done"; then
   exit 1
 fi
 
-messages_resp=$(curl -sS "${SUPABASE_URL}/rest/v1/chat_messages?select=role,content,conversation_id,created_at&child_id=eq.${child_id}&user_id=eq.${user_id}&order=created_at.desc&limit=20" \
+messages_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/chat_messages?select=role,content,conversation_id,created_at&child_id=eq.${child_id}&user_id=eq.${user_id}&order=created_at.desc&limit=20" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
 
@@ -122,7 +130,7 @@ if [ "$user_count" -lt 1 ] || [ "$assistant_count" -lt 1 ]; then
   exit 1
 fi
 
-op_resp=$(curl -sS "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status&request_id=eq.${request_id}&action_name=eq.chat_casual_reply" \
+op_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status&request_id=eq.${request_id}&action_name=eq.chat_casual_reply" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
 
@@ -133,7 +141,7 @@ if [ "$op_count" -lt 1 ]; then
   exit 1
 fi
 
-event_resp=$(curl -sS "${SUPABASE_URL}/rest/v1/snapshot_refresh_events?select=id,request_id,status&request_id=eq.${request_id}" \
+event_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/snapshot_refresh_events?select=id,request_id,status&request_id=eq.${request_id}" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
 
@@ -144,7 +152,7 @@ if [ "$event_count" -lt 1 ]; then
   exit 1
 fi
 
-conv_resp=$(curl -sS "${SUPABASE_URL}/rest/v1/conversations?select=id,message_count,last_message_at,user_id,child_id&user_id=eq.${user_id}&child_id=eq.${child_id}&order=created_at.desc&limit=1" \
+conv_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/conversations?select=id,message_count,last_message_at,user_id,child_id&user_id=eq.${user_id}&child_id=eq.${child_id}&order=created_at.desc&limit=1" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
 
