@@ -501,4 +501,180 @@ create unique index idx_coupon_code on public.coupons (code);
 create index idx_push_status_time on public.push_tasks (status, scheduled_at) where status in ('draft', 'scheduled');
 create index idx_campaign_status_time on public.campaigns (status, start_at) where status = 'active';
 
+
+-- security helpers
+create or replace function public.has_child_access(_child_id uuid)
+returns boolean
+language sql
+stable
+security definer
+as $$
+  select exists (
+    select 1 from public.children c
+    where c.id = _child_id and c.created_by = auth.uid()
+  )
+  or exists (
+    select 1 from public.care_teams ct
+    where ct.child_id = _child_id and ct.user_id = auth.uid() and ct.status = 'active'
+  );
+$$;
+
+create or replace function public.is_admin_user()
+returns boolean
+language sql
+stable
+security definer
+as $$
+  select exists (
+    select 1 from public.admin_users au
+    where au.id = auth.uid() and au.status = 'active'
+  );
+$$;
+
+-- enable RLS for core business and admin tables
+alter table public.users enable row level security;
+alter table public.children enable row level security;
+alter table public.children_medical enable row level security;
+alter table public.children_memory enable row level security;
+alter table public.children_profiles enable row level security;
+alter table public.care_teams enable row level security;
+alter table public.child_snapshots enable row level security;
+alter table public.assessments enable row level security;
+alter table public.training_plans enable row level security;
+alter table public.training_sessions enable row level security;
+alter table public.teaching_schedules enable row level security;
+alter table public.behavior_records enable row level security;
+alter table public.life_records enable row level security;
+alter table public.reports enable row level security;
+alter table public.notifications enable row level security;
+alter table public.conversations enable row level security;
+alter table public.chat_messages enable row level security;
+
+alter table public.admin_users enable row level security;
+alter table public.admin_audit_logs enable row level security;
+alter table public.admin_prompts enable row level security;
+alter table public.announcements enable row level security;
+alter table public.feedbacks enable row level security;
+alter table public.admin_events enable row level security;
+alter table public.coupons enable row level security;
+alter table public.push_tasks enable row level security;
+alter table public.campaigns enable row level security;
+
+-- users policies
+create policy users_select_self on public.users
+for select using (id = auth.uid());
+
+create policy users_insert_self on public.users
+for insert with check (id = auth.uid());
+
+create policy users_update_self on public.users
+for update using (id = auth.uid()) with check (id = auth.uid());
+
+-- children policies
+create policy children_owner_rw on public.children
+for all using (created_by = auth.uid()) with check (created_by = auth.uid());
+
+create policy children_team_read on public.children
+for select using (public.has_child_access(id));
+
+-- generic child-id table policies
+create policy children_medical_access on public.children_medical
+for all using (public.has_child_access(child_id)) with check (public.has_child_access(child_id));
+
+create policy children_memory_access on public.children_memory
+for all using (public.has_child_access(child_id)) with check (public.has_child_access(child_id));
+
+create policy children_profiles_access on public.children_profiles
+for all using (public.has_child_access(child_id)) with check (public.has_child_access(child_id));
+
+create policy child_snapshots_access on public.child_snapshots
+for all using (public.has_child_access(child_id)) with check (public.has_child_access(child_id));
+
+create policy assessments_access on public.assessments
+for all using (public.has_child_access(child_id)) with check (public.has_child_access(child_id));
+
+create policy training_plans_access on public.training_plans
+for all using (public.has_child_access(child_id)) with check (public.has_child_access(child_id));
+
+create policy training_sessions_access on public.training_sessions
+for all using (public.has_child_access(child_id)) with check (public.has_child_access(child_id));
+
+create policy behavior_records_access on public.behavior_records
+for all using (public.has_child_access(child_id)) with check (public.has_child_access(child_id));
+
+create policy life_records_access on public.life_records
+for all using (public.has_child_access(child_id)) with check (public.has_child_access(child_id));
+
+create policy reports_access on public.reports
+for all using (public.has_child_access(child_id)) with check (public.has_child_access(child_id));
+
+create policy notifications_select_access on public.notifications
+for select using (to_user_id = auth.uid() or from_user_id = auth.uid());
+
+create policy notifications_insert_access on public.notifications
+for insert with check (from_user_id = auth.uid());
+
+create policy notifications_update_access on public.notifications
+for update using (to_user_id = auth.uid() or from_user_id = auth.uid())
+with check (to_user_id = auth.uid() or from_user_id = auth.uid());
+
+create policy care_teams_owner_read on public.care_teams
+for select using (
+  user_id = auth.uid()
+  or exists (
+    select 1 from public.children c where c.id = care_teams.child_id and c.created_by = auth.uid()
+  )
+);
+
+create policy care_teams_owner_update on public.care_teams
+for update using (
+  exists (
+    select 1 from public.children c where c.id = care_teams.child_id and c.created_by = auth.uid()
+  )
+)
+with check (
+  exists (
+    select 1 from public.children c where c.id = care_teams.child_id and c.created_by = auth.uid()
+  )
+);
+
+create policy conversations_owner_access on public.conversations
+for all using (user_id = auth.uid() and public.has_child_access(child_id))
+with check (user_id = auth.uid() and public.has_child_access(child_id));
+
+create policy chat_messages_owner_access on public.chat_messages
+for all using (user_id = auth.uid() and public.has_child_access(child_id))
+with check (user_id = auth.uid() and public.has_child_access(child_id));
+
+-- admin policies
+create policy admin_users_self_or_admin on public.admin_users
+for select using (id = auth.uid() or public.is_admin_user());
+
+create policy admin_users_admin_write on public.admin_users
+for all using (public.is_admin_user()) with check (public.is_admin_user());
+
+create policy admin_audit_admin_access on public.admin_audit_logs
+for all using (public.is_admin_user()) with check (public.is_admin_user());
+
+create policy admin_prompts_admin_access on public.admin_prompts
+for all using (public.is_admin_user()) with check (public.is_admin_user());
+
+create policy announcements_admin_access on public.announcements
+for all using (public.is_admin_user()) with check (public.is_admin_user());
+
+create policy feedbacks_admin_access on public.feedbacks
+for all using (public.is_admin_user()) with check (public.is_admin_user());
+
+create policy admin_events_admin_access on public.admin_events
+for all using (public.is_admin_user()) with check (public.is_admin_user());
+
+create policy coupons_admin_access on public.coupons
+for all using (public.is_admin_user()) with check (public.is_admin_user());
+
+create policy push_tasks_admin_access on public.push_tasks
+for all using (public.is_admin_user()) with check (public.is_admin_user());
+
+create policy campaigns_admin_access on public.campaigns
+for all using (public.is_admin_user()) with check (public.is_admin_user());
+
 commit;
