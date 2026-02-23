@@ -19,5 +19,8 @@ jobs:
       - name: Verify contract artifacts
         run: bash governance/agent-contract/scripts/verify-contract.sh
 
+      - name: Verify db and chain workflow gate
+        run: bash tests/ci/test_workflow_presence.sh
+
       - name: Enforce no drift
         run: git diff --exit-code
