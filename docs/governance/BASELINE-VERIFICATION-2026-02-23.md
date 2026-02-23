@@ -7,6 +7,7 @@
 - Required clauses verification
 - Runtime target sync
 - CI workflow presence
+- Rebuild execution-chain baseline linkage
 
 ## Command Evidence
 
@@ -20,6 +21,9 @@
 8. `bash tests/governance/test_e2e_governance.sh` -> PASS
 9. `bash tests/governance/test_module_contracts_seed.sh` -> PASS
 10. `bash tests/governance/test_build_includes_modules.sh` -> PASS
+11. `bash tests/functions/test_shared_modules.sh` -> PASS
+12. `bash tests/functions/test_chain_files.sh` -> PASS
+13. `bash tests/e2e/test_orchestrator_chat_casual_live.sh` -> PASS
 
 ## Outputs
 
@@ -27,7 +31,9 @@
 - `CLAUDE.md` generated and synced
 - `.cursor/rules/starpath-contract.mdc` generated and synced
 - `governance/agent-contract/contract.lock.json` generated
+- Live chain writes validated in `chat_messages`, `operation_logs`, `snapshot_refresh_events`
 
 ## Open Gaps
 
 - Three module contracts are defined (`orchestrator`, `assessment`, `training`); remaining future modules are tracked in `docs/governance/GAP-REGISTER.md`.
+- Dedicated CI gate for DB rebuild + execution-chain smoke is tracked as the next action.
