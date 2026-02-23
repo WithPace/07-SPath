@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星途AI — 欢迎</title>
+  <style>
+    :root {
+      --primary: #7C4DFF;
+      --primary-light: #B388FF;
+      --bg: #F5F3FF;
+      --glass-white: rgba(255,255,255,0.88);
+      --glass-card: rgba(255,255,255,0.85);
+      --text: #1A1A2E;
+      --text-secondary: #6B7280;
+      --radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 背景装饰光晕 */
+    .bg-glow {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-glow-1 {
+      width: 500px;
+      height: 500px;
+      top: -120px;
+      right: -100px;
+      background: radial-gradient(circle, rgba(124,77,255,0.12) 0%, transparent 70%);
+    }
+    .bg-glow-2 {
+      width: 400px;
+      height: 400px;
+      bottom: -80px;
+      left: -80px;
+      background: radial-gradient(circle, rgba(224,64,251,0.10) 0%, transparent 70%);
+    }
+    .bg-glow-3 {
+      width: 300px;
+      height: 300px;
+      top: 40%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(179,136,255,0.08) 0%, transparent 70%);
+    }
+
+    /* 手机框 */
+    .phone-frame {
+      position: relative;
+      width: 420px;
+      height: 900px;
+      border-radius: 40px;
+      background: linear-gradient(170deg, #FAFAFE 0%, #F0ECFF 50%, #F5F3FF 100%);
+      box-shadow: 0 25px 80px rgba(124,77,255,0.15), 0 0 0 1px rgba(124,77,255,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    /* 手机框内背景光晕 */
+    .inner-glow {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .inner-glow-1 {
+      width: 300px;
+      height: 300px;
+      top: -60px;
+      right: -60px;
+      background: radial-gradient(circle, rgba(124,77,255,0.10) 0%, transparent 70%);
+    }
+    .inner-glow-2 {
+      width: 250px;
+      height: 250px;
+      bottom: 60px;
+      left: -50px;
+      background: radial-gradient(circle, rgba(224,64,251,0.08) 0%, transparent 70%);
+    }
+
+    /* 中心区域 */
+    .center-area {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    /* 星球底座 */
+    .planet {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #E8DEF8 0%, #B39DDB 100%);
+      box-shadow:
+        inset 0 -8px 24px rgba(103,58,183,0.15),
+        inset 0 8px 20px rgba(255,255,255,0.5),
+        0 12px 40px rgba(124,77,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 星球高光 */
+    .planet::before {
+      content: '';
+      position: absolute;
+      width: 80px;
+      height: 40px;
+      top: 30px;
+      left: 40px;
+      background: rgba(255,255,255,0.35);
+      border-radius: 50%;
+      filter: blur(8px);
+    }
+
+    /* 星球环 */
+    .planet-ring {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 3px solid rgba(179,136,255,0.35);
+      transform: rotateX(75deg);
+      animation: ringRotate 8s linear infinite;
+    }
+    .planet-ring::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--primary-light);
+      border-radius: 50%;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 8px rgba(179,136,255,0.6);
+    }
+
+    @keyframes ringRotate {
+      from { transform: rotateX(75deg) rotateZ(0deg); }
+      to { transform: rotateX(75deg) rotateZ(360deg); }
+    }
+
+    /* 大星星角色 */
+    .star-main {
+      font-size: 80px;
+      line-height: 1;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 4px 12px rgba(124,77,255,0.2));
+      z-index: 2;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* 小星星环绕 */
+    .orbit-stars {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: orbitSpin 12s linear infinite;
+    }
+
+    .mini-star {
+      position: absolute;
+      font-size: 20px;
+      animation: twinkle 2s ease-in-out infinite;
+    }
+    .mini-star:nth-child(1) {
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      animation-delay: 0s;
+    }
+    .mini-star:nth-child(2) {
+      bottom: 20px;
+      right: 10px;
+      font-size: 16px;
+      animation-delay: 0.7s;
+    }
+    .mini-star:nth-child(3) {
+      bottom: 40px;
+      left: 5px;
+      font-size: 14px;
+      animation-delay: 1.3s;
+    }
+
+    @keyframes orbitSpin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* 小云朵装饰 */
+    .cloud {
+      position: absolute;
+      font-size: 28px;
+      opacity: 0.5;
+      animation: cloudDrift 6s ease-in-out infinite;
+    }
+    .cloud-1 {
+      top: 80px;
+      left: 20px;
+      font-size: 24px;
+      animation-delay: 0s;
+    }
+    .cloud-2 {
+      top: 120px;
+      right: 25px;
+      font-size: 20px;
+      animation-delay: 2s;
+      opacity: 0.35;
+    }
+
+    @keyframes cloudDrift {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(8px); }
+    }
+
+    /* 品牌区域 */
+    .brand {
+      text-align: center;
+      margin-top: 36px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .brand-name {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #7C4DFF, #E040FB);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .brand-slogan {
+      font-size: 15px;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .brand-desc {
+      font-size: 12px;
+      color: #9CA3AF;
+      letter-spacing: 0.5px;
+    }
+
+    /* 底部按钮区域 */
+    .actions {
+      position: absolute;
+      bottom: 60px;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 0 36px;
+      z-index: 2;
+    }
+
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 54px;
+      border-radius: 27px;
+      background: linear-gradient(135deg, #7C4DFF, #E040FB);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(124,77,255,0.25);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 32px rgba(124,77,255,0.35);
+    }
+    .btn-primary:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    /* 光泽扫过动画 */
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      animation: sheen 3s ease-in-out infinite;
+    }
+
+    @keyframes sheen {
+      0% { left: -100%; }
+      40%, 100% { left: 150%; }
+    }
+
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 54px;
+      border-radius: 27px;
+      background: var(--glass-white);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      color: var(--primary);
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      border: 1.5px solid rgba(124,77,255,0.25);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, background 0.3s ease;
+    }
+    .btn-secondary:hover {
+      transform: translateY(-2px) scale(1.02);
+      border-color: rgba(124,77,255,0.45);
+      background: rgba(255,255,255,0.95);
+    }
+    .btn-secondary:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    /* 版本号 */
+    .version {
+      position: absolute;
+      bottom: 24px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 11px;
+      color: #C4B5FD;
+      letter-spacing: 0.5px;
+      z-index: 2;
+    }
+
+    /* 入场动画 */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    .fade-up-d1 { animation-delay: 0.1s; }
+    .fade-up-d2 { animation-delay: 0.3s; }
+    .fade-up-d3 { animation-delay: 0.5s; }
+    .fade-up-d4 { animation-delay: 0.7s; }
+    .fade-up-d5 { animation-delay: 0.9s; }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 响应式：小屏全屏无圆角 */
+    @media (max-width: 460px) {
+      body {
+        align-items: stretch;
+      }
+      .phone-frame {
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 背景装饰光晕 -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
+
+  <!-- 手机框 -->
+  <div class="phone-frame">
+    <!-- 内部光晕 -->
+    <div class="inner-glow inner-glow-1"></div>
+    <div class="inner-glow inner-glow-2"></div>
+
+    <!-- 云朵装饰 -->
+    <div class="cloud cloud-1 fade-up fade-up-d1">☁️</div>
+    <div class="cloud cloud-2 fade-up fade-up-d1">☁️</div>
+
+    <!-- 中心区域 -->
+    <div class="center-area fade-up fade-up-d2">
+      <!-- 小星星环绕 -->
+      <div class="orbit-stars">
+        <span class="mini-star">✨</span>
+        <span class="mini-star">⭐</span>
+        <span class="mini-star">✨</span>
+      </div>
+
+      <!-- 星球底座 -->
+      <div class="planet">
+        <!-- 星球环 -->
+        <div class="planet-ring"></div>
+        <!-- 大星星角色 -->
+        <span class="star-main">⭐</span>
+      </div>
+    </div>
+
+    <!-- 品牌区域 -->
+    <div class="brand">
+      <div class="brand-name fade-up fade-up-d3">星途AI</div>
+      <div class="brand-slogan fade-up fade-up-d4">每个星星都有自己的轨迹</div>
+      <div class="brand-desc fade-up fade-up-d4">AI 驱动的自闭症儿童康复助手</div>
+    </div>
+
+    <!-- 底部按钮 -->
+    <div class="actions">
+      <a href="01-login.html" class="btn-primary fade-up fade-up-d5">手机号登录 / 注册</a>
+      <a href="02-chat.html" class="btn-secondary fade-up fade-up-d5">先看看再说</a>
+    </div>
+
+    <!-- 版本号 -->
+    <div class="version">v1.0.0 beta</div>
+  </div>
+</body>
+</html>

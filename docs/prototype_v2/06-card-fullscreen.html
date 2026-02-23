@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星途AI — 卡片全屏态</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #7C4DFF;
+  --primary-light: #B388FF;
+  --bg: #F5F3FF;
+  --glass-white: rgba(255,255,255,0.88);
+  --glass-card: rgba(255,255,255,0.85);
+  --text: #1A1A2E;
+  --text-secondary: #6B7280;
+  --radius: 16px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+.phone-frame {
+  width: 420px; height: 900px;
+  background: var(--bg);
+  border-radius: 40px;
+  box-shadow: 0 25px 80px rgba(124,77,255,0.15), 0 0 0 1px rgba(124,77,255,0.08);
+  position: relative;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+
+/* 对话背景 */
+.chat-bg {
+  flex: 1; padding: 60px 16px 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.chat-row { display: flex; gap: 10px; max-width: 88%; }
+.chat-row.ai { align-self: flex-start; }
+.chat-row.user { align-self: flex-end; flex-direction: row-reverse; }
+.chat-avatar {
+  width: 36px; height: 36px; border-radius: 12px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.chat-avatar.user-av {
+  background: linear-gradient(135deg, #FFD54F, #FF8A65);
+  font-size: 16px;
+}
+.chat-bubble {
+  padding: 12px 16px; font-size: 15px; line-height: 1.65; word-break: break-word;
+}
+.ai .chat-bubble {
+  background: var(--glass-white);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(124,77,255,0.08);
+  border-radius: 4px 16px 16px 16px;
+  box-shadow: 0 2px 12px rgba(124,77,255,0.06);
+}
+.user .chat-bubble {
+  background: #EDE7F6;
+  border-radius: 16px 16px 4px 16px;
+}
+
+/* 缩略卡片 */
+.mini-card {
+  background: var(--glass-card);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid rgba(124,77,255,0.1);
+  box-shadow: 0 4px 20px rgba(124,77,255,0.06);
+  margin-left: 46px; max-width: calc(88% - 46px);
+  cursor: pointer; transition: transform 0.2s;
+}
+.mini-card:active { transform: scale(0.98); }
+.mini-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.mini-card-icon {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.mini-card-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.mini-card-subtitle { font-size: 12px; color: var(--text-secondary); }
+.mini-card-stats { display: flex; gap: 12px; margin-bottom: 10px; }
+.mini-stat { flex: 1; text-align: center; }
+.mini-stat-val {
+  font-size: 18px; font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.mini-stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.mini-card-footer {
+  text-align: center; padding-top: 10px;
+  border-top: 1px solid rgba(124,77,255,0.08);
+  font-size: 13px; color: var(--primary); font-weight: 500;
+}
+
+/* 遮罩 */
+.overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s; z-index: 10;
+}
+.overlay.active { opacity: 1; pointer-events: auto; }
+
+/* 底部 Sheet */
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 85%;
+  background: var(--glass-white);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px 20px 0 0;
+  border-top: 1px solid rgba(124,77,255,0.08);
+  z-index: 20;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  display: flex; flex-direction: column;
+}
+.sheet.active { transform: translateY(0); }
+.drag-bar {
+  width: 36px; height: 4px;
+  background: rgba(124,77,255,0.15); border-radius: 2px;
+  margin: 8px auto 0; flex-shrink: 0;
+}
+
+/* Sheet 导航 */
+.sheet-nav {
+  display: flex; align-items: center; padding: 12px 16px 8px; flex-shrink: 0;
+}
+.sheet-nav .back-btn {
+  width: 32px; height: 32px; border: none;
+  background: rgba(124,77,255,0.06); border-radius: 10px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--text); transition: background 0.2s;
+}
+.sheet-nav .back-btn:active { background: rgba(124,77,255,0.12); }
+.sheet-nav .title {
+  flex: 1; text-align: center;
+  font-size: 16px; font-weight: 600; color: var(--text);
+}
+.sheet-nav .share-btn {
+  width: 32px; height: 32px; border: none;
+  background: rgba(124,77,255,0.06); border-radius: 10px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--text-secondary); transition: background 0.2s;
+}
+.sheet-nav .share-btn:active { background: rgba(124,77,255,0.12); }
+
+/* Tab 栏 */
+.tab-bar {
+  display: flex; padding: 0 16px;
+  border-bottom: 1px solid rgba(124,77,255,0.08); flex-shrink: 0;
+}
+.tab-item {
+  flex: 1; text-align: center; padding: 10px 0 12px;
+  font-size: 13px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; position: relative; transition: color 0.2s;
+}
+.tab-item.active { color: var(--primary); font-weight: 600; }
+.tab-item.active::after {
+  content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+  width: 24px; height: 3px; background: var(--primary); border-radius: 2px;
+}
+
+/* 时间选择器 */
+.time-picker { display: flex; gap: 8px; padding: 12px 0; flex-shrink: 0; }
+.time-pill {
+  padding: 6px 16px; border-radius: 20px;
+  font-size: 12px; font-weight: 500;
+  border: 1px solid rgba(124,77,255,0.15);
+  background: var(--glass-card); color: var(--text-secondary);
+  cursor: pointer; transition: all 0.2s;
+}
+.time-pill.active {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+}
+.time-pill:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+
+/* Sheet 内容区 */
+.sheet-content {
+  flex: 1; overflow-y: auto; padding: 0 16px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+.sheet-content::-webkit-scrollbar { width: 0; }
+.card-panel { display: none; }
+.card-panel.active { display: block; }
+
+/* 关键指标 */
+.metrics-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.metric-card {
+  flex: 1;
+  background: var(--glass-card);
+  backdrop-filter: blur(20px);
+  border-radius: 12px; padding: 14px 12px;
+  text-align: center;
+  border: 1px solid rgba(124,77,255,0.08);
+  box-shadow: 0 4px 20px rgba(124,77,255,0.06);
+}
+.metric-value {
+  font-size: 22px; font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.metric-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+.metric-change { font-size: 11px; margin-top: 2px; }
+.metric-change.up { color: #4CAF50; }
+.metric-change.down { color: #FF5252; }
+
+/* 图表容器 */
+.chart-container {
+  background: var(--glass-card);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius); padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(124,77,255,0.08);
+  box-shadow: 0 4px 20px rgba(124,77,255,0.06);
+}
+.chart-container svg { width: 100%; height: auto; }
+
+/* AI 洞察条 */
+.ai-insight {
+  background: rgba(124,77,255,0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(124,77,255,0.1);
+  border-radius: 12px; padding: 12px 14px;
+  margin-bottom: 16px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.ai-insight-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.ai-insight-text { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+/* 图例 */
+.chart-legend {
+  display: flex; gap: 16px; justify-content: center; margin-bottom: 8px;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* 雷达图分数列表 */
+.score-list { margin-bottom: 16px; }
+.score-item {
+  display: flex; align-items: center; padding: 10px 0;
+  border-bottom: 1px solid rgba(124,77,255,0.06);
+}
+.score-item:last-child { border-bottom: none; }
+.score-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
+.score-name { flex: 1; font-size: 13px; color: var(--text); }
+.score-level {
+  font-size: 12px; font-weight: 600; color: var(--primary);
+  margin-right: 8px; padding: 2px 8px;
+  background: rgba(124,77,255,0.08); border-radius: 6px;
+}
+.score-val { font-size: 15px; font-weight: 600; color: var(--text); margin-right: 8px; }
+.score-change { font-size: 11px; padding: 2px 6px; border-radius: 8px; }
+.score-change.up { background: rgba(76,175,80,0.1); color: #4CAF50; }
+.score-change.down { background: rgba(255,82,82,0.1); color: #FF5252; }
+
+/* 评估报告 */
+.assess-card {
+  background: var(--glass-card);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius); padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(124,77,255,0.08);
+  box-shadow: 0 4px 20px rgba(124,77,255,0.06);
+}
+.assess-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.assess-score {
+  font-size: 36px; font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.assess-meta { font-size: 12px; color: var(--text-secondary); line-height: 1.8; }
+.risk-badge {
+  display: inline-block; padding: 4px 12px;
+  border-radius: 8px; font-size: 12px; font-weight: 600;
+}
+.risk-low { background: rgba(76,175,80,0.1); color: #4CAF50; }
+.risk-mid { background: rgba(255,152,0,0.1); color: #FF9800; }
+.risk-high { background: rgba(255,82,82,0.1); color: #FF5252; }
+.question-list { margin-top: 12px; }
+.question-item {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(124,77,255,0.06);
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.question-item:last-child { border-bottom: none; }
+.q-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(124,77,255,0.06);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--text-secondary); flex-shrink: 0;
+}
+.q-num.fail { background: rgba(255,82,82,0.1); color: #FF5252; }
+.q-text { font-size: 13px; color: var(--text); line-height: 1.5; flex: 1; }
+.q-answer { font-size: 12px; font-weight: 500; flex-shrink: 0; }
+.q-answer.pass { color: #4CAF50; }
+.q-answer.fail { color: #FF5252; }
+
+/* 底部操作栏 */
+.action-bar {
+  display: flex; gap: 10px; padding: 12px 16px 28px;
+  border-top: 1px solid rgba(124,77,255,0.08);
+  flex-shrink: 0; background: var(--glass-white);
+}
+.action-btn {
+  flex: 1; padding: 12px; border-radius: 12px;
+  font-size: 13px; font-weight: 600;
+  border: none; cursor: pointer; transition: all 0.2s;
+}
+.action-btn.secondary {
+  background: rgba(124,77,255,0.06); color: var(--text);
+}
+.action-btn.secondary:active { background: rgba(124,77,255,0.12); }
+.action-btn.primary {
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  color: #fff; box-shadow: 0 4px 16px rgba(124,77,255,0.3);
+}
+.action-btn.primary:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(124,77,255,0.2); }
+
+/* 响应式 */
+@media (max-width: 460px) {
+  body { padding: 0; }
+  .phone-frame { width: 100%; height: 100vh; border-radius: 0; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- 对话背景 -->
+  <div class="chat-bg">
+    <div class="chat-row ai">
+      <div class="chat-avatar">
+        <img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">
+      </div>
+      <div class="chat-bubble">乐乐妈妈您好！乐乐这周的训练数据已经汇总好了，整体表现不错哦 ✨</div>
+    </div>
+    <div class="mini-card" onclick="openSheet()">
+      <div class="mini-card-header">
+        <div class="mini-card-icon">📊</div>
+        <div>
+          <div class="mini-card-title">训练趋势 · 近7天</div>
+          <div class="mini-card-subtitle">2.13 — 2.19 · 共14次训练</div>
+        </div>
+      </div>
+      <div class="mini-card-stats">
+        <div class="mini-stat"><div class="mini-stat-val">85%</div><div class="mini-stat-label">完成率</div></div>
+        <div class="mini-stat"><div class="mini-stat-val">72%</div><div class="mini-stat-label">达标率</div></div>
+        <div class="mini-stat"><div class="mini-stat-val">14</div><div class="mini-stat-label">训练次数</div></div>
+      </div>
+      <div class="mini-card-footer">点击查看详情 →</div>
+    </div>
+    <div class="chat-row user">
+      <div class="chat-avatar user-av">👩</div>
+      <div class="chat-bubble">好的，我看看详细数据</div>
+    </div>
+  </div>
+
+  <!-- 遮罩 -->
+  <div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+  <!-- 底部 Sheet -->
+  <div class="sheet" id="sheet">
+    <div class="drag-bar"></div>
+    <div class="sheet-nav">
+      <button class="back-btn" onclick="closeSheet()">←</button>
+      <span class="title" id="sheetTitle">训练趋势</span>
+      <button class="share-btn">↗</button>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item active" data-tab="trend" onclick="switchTab('trend')">训练趋势</div>
+      <div class="tab-item" data-tab="radar" onclick="switchTab('radar')">能力画像</div>
+      <div class="tab-item" data-tab="assess" onclick="switchTab('assess')">评估报告</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="sheet-content" id="sheetContent">
+
+      <!-- Tab 1: 训练趋势 -->
+      <div class="card-panel active" id="panel-trend">
+        <div class="time-picker">
+          <span class="time-pill active" onclick="pickTime(this)">近7天</span>
+          <span class="time-pill" onclick="pickTime(this)">近30天</span>
+          <span class="time-pill" onclick="pickTime(this)">近3月</span>
+        </div>
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-value">85%</div>
+            <div class="metric-label">完成率</div>
+            <div class="metric-change up">↑12%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">72%</div>
+            <div class="metric-label">达标率</div>
+            <div class="metric-change up">↑8%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">14</div>
+            <div class="metric-label">训练次数</div>
+            <div class="metric-change up">↑3次</div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <svg viewBox="0 0 340 160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#7C4DFF" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#7C4DFF" stop-opacity="0.02"/>
+              </linearGradient>
+              <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#7C4DFF"/>
+                <stop offset="100%" stop-color="#E040FB"/>
+              </linearGradient>
+            </defs>
+            <line x1="45" y1="20" x2="320" y2="20" stroke="#E8E0FF" stroke-width="0.5"/>
+            <line x1="45" y1="55" x2="320" y2="55" stroke="#E8E0FF" stroke-width="0.5"/>
+            <line x1="45" y1="90" x2="320" y2="90" stroke="#E8E0FF" stroke-width="0.5"/>
+            <line x1="45" y1="125" x2="320" y2="125" stroke="#E8E0FF" stroke-width="0.5"/>
+            <text x="38" y="24" text-anchor="end" font-size="10" fill="#9CA3AF">100%</text>
+            <text x="38" y="59" text-anchor="end" font-size="10" fill="#9CA3AF">75%</text>
+            <text x="38" y="94" text-anchor="end" font-size="10" fill="#9CA3AF">50%</text>
+            <text x="38" y="129" text-anchor="end" font-size="10" fill="#9CA3AF">25%</text>
+            <path d="M63,100 L108,88 L153,82 L198,70 L243,55 L288,38 L288,125 L63,125 Z" fill="url(#areaGrad)"/>
+            <polyline points="63,100 108,88 153,82 198,70 243,55 288,38" fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="63" cy="100" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="108" cy="88" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="153" cy="82" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="198" cy="70" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="243" cy="55" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="288" cy="38" r="5" fill="#7C4DFF" stroke="#fff" stroke-width="2.5"/>
+            <rect x="268" y="20" width="40" height="18" rx="9" fill="#7C4DFF"/>
+            <text x="288" y="32" text-anchor="middle" font-size="10" fill="#fff" font-weight="600">85%</text>
+            <text x="63" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">周一</text>
+            <text x="108" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">周二</text>
+            <text x="153" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">周三</text>
+            <text x="198" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">周四</text>
+            <text x="243" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">周五</text>
+            <text x="288" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">今天</text>
+          </svg>
+        </div>
+        <div class="ai-insight">
+          <span class="ai-insight-icon">🌟</span>
+          <span class="ai-insight-text">乐乐本周共同注意力提升最为显著（+12%），建议继续保持积木指向游戏的训练频率，同时可适当增加社交回应的练习时长。</span>
+        </div>
+      </div>
+
+      <!-- Tab 2: 能力画像 -->
+      <div class="card-panel" id="panel-radar">
+        <div class="chart-container" style="padding-bottom:8px;">
+          <div class="chart-legend" style="margin-top:4px;">
+            <div class="legend-item"><div class="legend-dot" style="background:#7C4DFF;"></div>本月</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#E040FB; opacity:0.4;"></div>上月</div>
+          </div>
+          <svg viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="radarFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#7C4DFF" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#7C4DFF" stop-opacity="0.05"/>
+              </linearGradient>
+            </defs>
+            <!-- 网格 5层 -->
+            <polygon points="150,30 254,80 254,180 150,230 46,180 46,80" fill="none" stroke="rgba(124,77,255,0.06)" stroke-width="1"/>
+            <polygon points="150,50 234,90 234,170 150,210 66,170 66,90" fill="none" stroke="rgba(124,77,255,0.06)" stroke-width="1"/>
+            <polygon points="150,70 214,100 214,160 150,190 86,160 86,100" fill="none" stroke="rgba(124,77,255,0.06)" stroke-width="1"/>
+            <polygon points="150,90 194,110 194,150 150,170 106,150 106,110" fill="none" stroke="rgba(124,77,255,0.06)" stroke-width="1"/>
+            <polygon points="150,110 174,120 174,140 150,150 126,140 126,120" fill="none" stroke="rgba(124,77,255,0.06)" stroke-width="1"/>
+            <!-- 轴线 -->
+            <line x1="150" y1="30" x2="150" y2="230" stroke="rgba(124,77,255,0.06)" stroke-width="1"/>
+            <line x1="46" y1="80" x2="254" y2="180" stroke="rgba(124,77,255,0.06)" stroke-width="1"/>
+            <line x1="46" y1="180" x2="254" y2="80" stroke="rgba(124,77,255,0.06)" stroke-width="1"/>
+            <!-- 上月数据（浅色） -->
+            <polygon points="150,62 218,96 222,168 150,202 82,164 78,100" fill="rgba(224,64,251,0.06)" stroke="rgba(224,64,251,0.3)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <!-- 本月数据 -->
+            <polygon points="150,50 234,92 230,172 150,210 74,168 70,94" fill="url(#radarFill)" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="150" cy="50" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="234" cy="92" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="230" cy="172" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="150" cy="210" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="74" cy="168" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="70" cy="94" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <!-- 维度标签 -->
+            <text x="150" y="20" text-anchor="middle" font-size="11" fill="#1A1A2E" font-weight="500">语言沟通</text>
+            <text x="264" y="88" text-anchor="start" font-size="11" fill="#1A1A2E" font-weight="500">社交互动</text>
+            <text x="264" y="178" text-anchor="start" font-size="11" fill="#1A1A2E" font-weight="500">认知学习</text>
+            <text x="150" y="248" text-anchor="middle" font-size="11" fill="#1A1A2E" font-weight="500">感觉运动</text>
+            <text x="36" y="178" text-anchor="end" font-size="11" fill="#1A1A2E" font-weight="500">情绪行为</text>
+            <text x="36" y="88" text-anchor="end" font-size="11" fill="#1A1A2E" font-weight="500">生活适应</text>
+          </svg>
+        </div>
+        <div class="score-list">
+          <div class="score-item">
+            <div class="score-dot" style="background:#7C4DFF;"></div>
+            <span class="score-name">语言沟通</span>
+            <span class="score-level">Lv 3</span>
+            <span class="score-val">78</span>
+            <span class="score-change up">↑5</span>
+          </div>
+          <div class="score-item">
+            <div class="score-dot" style="background:#E040FB;"></div>
+            <span class="score-name">社交互动</span>
+            <span class="score-level">Lv 3</span>
+            <span class="score-val">72</span>
+            <span class="score-change up">↑8</span>
+          </div>
+          <div class="score-item">
+            <div class="score-dot" style="background:#2196F3;"></div>
+            <span class="score-name">认知学习</span>
+            <span class="score-level">Lv 2</span>
+            <span class="score-val">65</span>
+            <span class="score-change up">↑3</span>
+          </div>
+          <div class="score-item">
+            <div class="score-dot" style="background:#00B894;"></div>
+            <span class="score-name">感觉运动</span>
+            <span class="score-level">Lv 2</span>
+            <span class="score-val">58</span>
+            <span class="score-change up">↑2</span>
+          </div>
+          <div class="score-item">
+            <div class="score-dot" style="background:#FF6B6B;"></div>
+            <span class="score-name">情绪行为</span>
+            <span class="score-level">Lv 2</span>
+            <span class="score-val">55</span>
+            <span class="score-change down">↓3</span>
+          </div>
+          <div class="score-item">
+            <div class="score-dot" style="background:#FFD54F;"></div>
+            <span class="score-name">生活适应</span>
+            <span class="score-level">Lv 3</span>
+            <span class="score-val">70</span>
+            <span class="score-change up">↑4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: 评估报告 -->
+      <div class="card-panel" id="panel-assess">
+        <div class="assess-card" style="margin-top:12px;">
+          <div class="assess-header">
+            <div class="assess-score">3<span style="font-size:16px;-webkit-text-fill-color:var(--text-secondary);">/20</span></div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">M-CHAT-R/F 筛查结果</div>
+              <span class="risk-badge risk-low">低风险</span>
+            </div>
+          </div>
+          <div class="assess-meta">
+            评估日期：2026年2月15日<br>
+            评估人：乐乐妈妈（家长自评）<br>
+            筛查工具：M-CHAT-R/F 修订版
+          </div>
+          <div class="question-list">
+            <div class="question-item">
+              <div class="q-num">1</div>
+              <div class="q-text">如果您指向房间另一端的东西，孩子会看吗？</div>
+              <div class="q-answer pass">通过</div>
+            </div>
+            <div class="question-item">
+              <div class="q-num">2</div>
+              <div class="q-text">您是否曾怀疑孩子有听力问题？</div>
+              <div class="q-answer pass">通过</div>
+            </div>
+            <div class="question-item">
+              <div class="q-num fail">3</div>
+              <div class="q-text">孩子会玩假装游戏吗？（例如假装喝杯子里的水）</div>
+              <div class="q-answer fail">未通过</div>
+            </div>
+            <div class="question-item">
+              <div class="q-num">4</div>
+              <div class="q-text">孩子喜欢爬东西吗？（如爬楼梯）</div>
+              <div class="q-answer pass">通过</div>
+            </div>
+            <div class="question-item">
+              <div class="q-num fail">5</div>
+              <div class="q-text">孩子会在眼前做不寻常的手指运动吗？</div>
+              <div class="q-answer fail">未通过</div>
+            </div>
+            <div class="question-item">
+              <div class="q-num fail">6</div>
+              <div class="q-text">孩子会用食指指东西来要求什么吗？</div>
+              <div class="q-answer fail">未通过</div>
+            </div>
+            <div class="question-item">
+              <div class="q-num">7</div>
+              <div class="q-text">孩子会用食指指东西来表示对某物的兴趣吗？</div>
+              <div class="q-answer pass">通过</div>
+            </div>
+          </div>
+        </div>
+        <div class="ai-insight">
+          <span class="ai-insight-icon">💡</span>
+          <span class="ai-insight-text">乐乐的 M-CHAT 筛查总分为3分（低风险），主要在假装游戏和手指指向方面需要关注。建议在日常训练中增加假装游戏环节，持续观察并在3个月后复评。</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 底部操作栏 -->
+    <div class="action-bar">
+      <button class="action-btn secondary">📤 分享给医生</button>
+      <button class="action-btn primary">🌟 AI 解读</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openSheet() {
+  document.getElementById('overlay').classList.add('active');
+  document.getElementById('sheet').classList.add('active');
+}
+function closeSheet() {
+  document.getElementById('overlay').classList.remove('active');
+  document.getElementById('sheet').classList.remove('active');
+}
+function switchTab(tabName) {
+  var titles = { trend: '训练趋势', radar: '能力画像', assess: '评估报告' };
+  document.querySelectorAll('.tab-item').forEach(function(t) {
+    t.classList.toggle('active', t.getAttribute('data-tab') === tabName);
+  });
+  document.querySelectorAll('.card-panel').forEach(function(p) {
+    p.classList.toggle('active', p.id === 'panel-' + tabName);
+  });
+  document.getElementById('sheetTitle').textContent = titles[tabName] || tabName;
+}
+function pickTime(el) {
+  el.parentElement.querySelectorAll('.time-pill').forEach(function(p) {
+    p.classList.remove('active');
+  });
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "required_modules": [
+    "assessment",
+    "orchestrator",
+    "training"
+  ],
+  "generated_at_utc": "2026-02-23T14:43:24+00:00",
+  "source_sha256": "1a6148022f2e82d106f9397d350f40655f218935381c7282a9f9b92e8116b4dd",
+  "module_source_sha256": "a3914b628e90056016c08bb7e303a095307584e06e9af9f211aaae9a77ed55a4",
+  "combined_source_sha256": "e0581c93f5e7b6a73432151662badef9a8bc7820fb668f5354d1583c63e64d49",
+  "generated_sha256": "988507ea87932dd4c658559a584476e63fd9bc28a372f373085d053522577aeb",
+  "files": [
+    "AGENTS.generated.md",
+    "CLAUDE.generated.md",
+    "cursor.generated.mdc"
+  ]
+}

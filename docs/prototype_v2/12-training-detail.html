@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星途AI — 详细训练记录</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #7C4DFF;
+  --primary-light: #B388FF;
+  --bg: #F5F3FF;
+  --glass-white: rgba(255,255,255,0.88);
+  --glass-card: rgba(255,255,255,0.85);
+  --text: #1A1A2E;
+  --text-secondary: #6B7280;
+  --radius: 16px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: var(--bg); color: var(--text);
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh; padding: 20px;
+}
+.phone-frame {
+  width: 420px; height: 900px; background: var(--bg);
+  border-radius: 40px;
+  box-shadow: 0 25px 80px rgba(124,77,255,0.15), 0 0 0 1px rgba(124,77,255,0.08);
+  display: flex; flex-direction: column; overflow: hidden; position: relative;
+}
+.nav-bar {
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px 20px 12px;
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(124,77,255,0.08);
+  flex-shrink: 0; z-index: 10; position: relative;
+}
+.nav-back {
+  position: absolute; left: 20px;
+  width: 40px; height: 40px; border-radius: 12px; border: none;
+  background: var(--glass-white); backdrop-filter: blur(10px);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s;
+}
+.nav-back:active { transform: scale(0.92); }
+.nav-back svg { width: 20px; height: 20px; stroke: var(--text); stroke-width: 2; fill: none; }
+.nav-title {
+  font-size: 17px; font-weight: 600;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-action {
+  position: absolute; right: 20px; border: none; background: none;
+  font-size: 14px; font-weight: 600; color: var(--primary);
+  cursor: pointer; padding: 4px 8px; font-family: inherit;
+}
+.nav-action:active { opacity: 0.6; }
+
+/* 周切换 + 日期导航 */
+.week-nav {
+  flex-shrink: 0; background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(124,77,255,0.06);
+  z-index: 5;
+}
+.week-switcher {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  padding: 10px 16px 6px;
+}
+.week-arrow {
+  width: 32px; height: 32px; border-radius: 10px; border: none;
+  background: var(--glass-white); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.week-arrow:active { transform: scale(0.9); }
+.week-arrow:disabled { opacity: 0.3; cursor: default; }
+.week-arrow:disabled:active { transform: none; }
+.week-arrow svg { width: 16px; height: 16px; stroke: var(--text); stroke-width: 2; fill: none; }
+.week-label { font-size: 14px; font-weight: 600; color: var(--text); min-width: 160px; text-align: center; }
+.week-label span { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+
+/* 周概览 */
+.week-stats {
+  display: flex; gap: 6px; padding: 8px 16px;
+}
+.week-stat {
+  flex: 1; text-align: center; padding: 8px 2px;
+  background: var(--glass-white); border-radius: 10px;
+  border: 1px solid rgba(124,77,255,0.06);
+}
+.week-stat-val {
+  font-size: 17px; font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.week-stat-label { font-size: 9px; color: var(--text-secondary); margin-top: 1px; }
+
+/* 日期锚点导航 */
+.day-anchors {
+  display: flex; gap: 4px; padding: 8px 16px 10px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.day-anchors::-webkit-scrollbar { display: none; }
+.day-anchor {
+  flex-shrink: 0; padding: 6px 0; width: 48px; border: none; border-radius: 10px;
+  background: transparent; cursor: pointer; text-align: center;
+  font-family: inherit; transition: all 0.2s;
+}
+.day-anchor .da-week { font-size: 10px; color: var(--text-secondary); }
+.day-anchor .da-date { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-top: 1px; }
+.day-anchor .da-dot { width: 5px; height: 5px; border-radius: 50%; margin: 3px auto 0; }
+.day-anchor .da-dot.green { background: #4CAF50; }
+.day-anchor .da-dot.yellow { background: #FF9800; }
+.day-anchor .da-dot.gray { background: #D1D5DB; }
+.day-anchor.active { background: linear-gradient(135deg, var(--primary), #E040FB); }
+.day-anchor.active .da-week { color: rgba(255,255,255,0.7); }
+.day-anchor.active .da-date { color: #fff; }
+.day-anchor.active .da-dot { background: rgba(255,255,255,0.6); }
+
+/* 滚动内容 */
+.scroll-area {
+  flex: 1; overflow-y: auto; padding: 16px;
+  scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+}
+.scroll-area::-webkit-scrollbar { width: 0; }
+
+/* 日期分隔 */
+.day-section { margin-bottom: 24px; }
+.day-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+  position: sticky; top: -1px; z-index: 2;
+  background: var(--bg); padding: 8px 0 8px;
+}
+.day-header-icon {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  display: flex; align-items: center; justify-content: center; font-size: 15px;
+}
+.day-header-info { flex: 1; }
+.day-header-date { font-size: 15px; font-weight: 600; color: var(--text); }
+.day-header-summary { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+.day-header-score {
+  padding: 4px 12px; border-radius: 10px; font-size: 13px; font-weight: 700;
+  background: rgba(76,175,80,0.1); color: #4CAF50;
+}
+.day-header-score.mid { background: rgba(255,152,0,0.1); color: #FF9800; }
+.day-header-score.rest { background: rgba(209,213,219,0.2); color: #9CA3AF; }
+
+/* 训练项卡片 */
+.session-card {
+  background: var(--glass-white);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(124,77,255,0.08);
+  border-radius: var(--radius); margin-bottom: 12px; overflow: hidden;
+  box-shadow: 0 2px 12px rgba(124,77,255,0.04);
+}
+.session-top { display: flex; align-items: center; gap: 10px; padding: 14px 16px; }
+.session-emoji { font-size: 24px; flex-shrink: 0; }
+.session-info { flex: 1; min-width: 0; }
+.session-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.session-time { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+.session-badge { padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.session-badge.high { background: rgba(76,175,80,0.1); color: #4CAF50; }
+.session-badge.mid { background: rgba(255,152,0,0.1); color: #FF9800; }
+.session-detail { padding: 0 16px 14px; }
+.detail-row { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 13px; line-height: 1.5; }
+.detail-row + .detail-row { border-top: 1px solid rgba(124,77,255,0.04); }
+.detail-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); min-width: 48px; flex-shrink: 0; padding-top: 1px; }
+.detail-content { color: var(--text); flex: 1; }
+.detail-content strong { color: var(--primary); }
+.goal-wrap { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.goal-bar { flex: 1; height: 6px; background: rgba(124,77,255,0.08); border-radius: 3px; overflow: hidden; }
+.goal-fill { height: 100%; border-radius: 3px; }
+.goal-fill.purple { background: linear-gradient(90deg, var(--primary), #E040FB); }
+.goal-fill.blue { background: linear-gradient(90deg, #2196F3, #42A5F5); }
+.goal-fill.green { background: linear-gradient(90deg, #4CAF50, #66BB6A); }
+.goal-pct { font-size: 12px; font-weight: 600; color: var(--primary); min-width: 32px; text-align: right; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.tag { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+.tag.green { background: rgba(76,175,80,0.08); color: #4CAF50; }
+.tag.orange { background: rgba(255,152,0,0.08); color: #FF9800; }
+.tag.blue { background: rgba(33,150,243,0.08); color: #2196F3; }
+.tag.purple { background: rgba(124,77,255,0.08); color: var(--primary); }
+
+/* AI 小结 */
+.ai-summary {
+  background: linear-gradient(135deg, rgba(124,77,255,0.06), rgba(224,64,251,0.04));
+  border: 1px solid rgba(124,77,255,0.1);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px;
+}
+.ai-summary-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.ai-summary-avatar {
+  width: 24px; height: 24px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.ai-summary-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.ai-summary-label { font-size: 12px; font-weight: 600; color: var(--primary); }
+.ai-summary-text { font-size: 13px; line-height: 1.7; color: var(--text); }
+.ai-summary-text strong { color: var(--primary); }
+
+/* 底部 */
+.bottom-bar {
+  flex-shrink: 0; padding: 12px 16px 28px;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(124,77,255,0.06);
+  display: flex; gap: 10px;
+}
+.bottom-btn {
+  flex: 1; padding: 12px; border-radius: 14px; border: none;
+  font-size: 14px; font-weight: 600; cursor: pointer; text-align: center;
+  font-family: inherit; transition: all 0.2s;
+}
+.bottom-btn.primary {
+  background: linear-gradient(135deg, var(--primary), #E040FB); color: #fff;
+  box-shadow: 0 4px 16px rgba(124,77,255,0.3);
+}
+.bottom-btn.primary:active { transform: scale(0.96); }
+.bottom-btn.secondary {
+  background: rgba(124,77,255,0.08); color: var(--primary);
+  border: 1px solid rgba(124,77,255,0.15);
+}
+.bottom-btn.secondary:active { transform: scale(0.96); }
+.toast {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.85);
+  background: rgba(0,0,0,0.75); color: #fff;
+  padding: 10px 24px; border-radius: 10px; font-size: 14px;
+  z-index: 100; opacity: 0; pointer-events: none;
+  transition: all 0.25s ease; white-space: nowrap; backdrop-filter: blur(10px);
+}
+.toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+@media (max-width: 460px) {
+  body { padding: 0; }
+  .phone-frame { width: 100%; height: 100vh; border-radius: 0; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="nav-bar">
+    <button class="nav-back" onclick="history.back()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="nav-title">详细训练记录</div>
+    <button class="nav-action" onclick="showToast('已导出 PDF')">导出</button>
+  </div>
+
+  <div class="week-nav">
+    <div class="week-switcher">
+      <button class="week-arrow" id="prevWeek" onclick="changeWeek(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="week-label" id="weekLabel">2.14 — 2.20 <span>本周</span></div>
+      <button class="week-arrow" id="nextWeek" onclick="changeWeek(1)" disabled><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    <div class="week-stats" id="weekStats">
+      <div class="week-stat"><div class="week-stat-val" id="wsDays">6</div><div class="week-stat-label">训练天数</div></div>
+      <div class="week-stat"><div class="week-stat-val" id="wsItems">18</div><div class="week-stat-label">完成项目</div></div>
+      <div class="week-stat"><div class="week-stat-val" id="wsScore">4.2</div><div class="week-stat-label">平均评分</div></div>
+      <div class="week-stat"><div class="week-stat-val" id="wsRate">86%</div><div class="week-stat-label">完成率</div></div>
+    </div>
+    <div class="day-anchors" id="dayAnchors"></div>
+  </div>
+
+  <div class="scroll-area" id="scrollArea"></div>
+
+  <div class="bottom-bar">
+    <button class="bottom-btn secondary" onclick="showToast('已分享给李老师')">分享给老师</button>
+    <button class="bottom-btn primary" onclick="showToast('已导出 PDF')">导出 PDF</button>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+var toastTimer=null;
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},1500);}
+
+// 三周数据
+var weeksData = [
+  // 上上周 2.1-2.6 (idx=0)
+  {
+    label:'1.31 — 2.6', tag:'上上周',
+    stats:{days:5,items:14,score:'3.8',rate:'71%'},
+    days:[
+      {week:'周一',date:'31',dot:'green',dateStr:'周一 · 1月31日',summary:'2项训练 · 用时30分钟',score:'3.5',scoreCls:'mid',
+        sessions:[
+          {emoji:'👁️',name:'眼神对视训练',time:'09:30 — 09:45 · 15分钟',badge:'3.5',badgeCls:'mid',
+            rows:[{l:'目标',c:'叫名字后3秒内看向对方'},{l:'完成',c:'成功 <strong>5/10</strong> 次',bar:50,barCls:'purple'},{l:'备注',c:'刚开始训练，需要较多提示',tags:['orange|需要提示']}]},
+          {emoji:'🗣️',name:'仿说训练',time:'10:00 — 10:15 · 15分钟',badge:'3.5',badgeCls:'mid',
+            rows:[{l:'目标',c:'仿说单音节词'},{l:'完成',c:'成功 <strong>6/10</strong> 次',bar:60,barCls:'blue'},{l:'备注',c:'"妈""爸"能说，"果""水"有困难',tags:['green|单音节起步','orange|部分困难']}]}
+        ],
+        aiSummary:'训练第一周，乐乐还在适应中。<strong>眼神对视</strong>需要较多提示，建议用他最喜欢的小汽车作为强化物。<strong>仿说</strong>单音节词有基础，继续巩固。'
+      },
+      {week:'周二',date:'1',dot:'green',dateStr:'周二 · 2月1日',summary:'3项训练 · 用时40分钟',score:'3.8',scoreCls:'',
+        sessions:[],
+        aiSummary:'指令跟随首次训练，"坐下""过来"两个指令能完成，"把球给我"需要手势辅助。社交问候开始练习挥手，对妈妈能做到。精细动作握笔姿势需要纠正。'
+      },
+      {week:'周三',date:'2',dot:'yellow',dateStr:'周三 · 2月2日',summary:'2项训练 · 用时25分钟',score:'3.5',scoreCls:'mid',
+        sessions:[],
+        aiSummary:'今天状态不太好，只完成了2项训练。情绪识别"开心"能认出来，"难过""生气"还分不清。共同注意跟随指向成功率约50%。'
+      },
+      {week:'周四',date:'3',dot:'green',dateStr:'周四 · 2月3日',summary:'3项训练 · 用时45分钟',score:'4.0',scoreCls:'',
+        sessions:[],
+        aiSummary:'状态恢复！眼神对视进步到6/10次，反应时间缩短到2.8秒。仿说"妈妈"双音节首次成功，虽然不太清晰但是很大的突破。指令跟随稳定在60%。'
+      },
+      {week:'周五',date:'4',dot:'green',dateStr:'周五 · 2月4日',summary:'3项训练 · 用时45分钟',score:'4.2',scoreCls:'',
+        sessions:[],
+        aiSummary:'本周最佳表现日。<strong>眼神对视</strong>达到7/10次，<strong>仿说</strong>"爸爸"也成功了。轮流游戏能等待2轮。整体趋势向好。'
+      },
+      {week:'周六',date:'5',dot:'gray',dateStr:'周六 · 2月5日',summary:'休息日',score:'—',scoreCls:'rest',sessions:[],
+        aiSummary:'休息日。带乐乐去了公园，在自然环境中练习了指物命名，对"花""鸟"有反应。'
+      },
+      {week:'周日',date:'6',dot:'green',dateStr:'周日 · 2月6日',summary:'2项训练 · 用时30分钟',score:'3.8',scoreCls:'',
+        sessions:[],
+        aiSummary:'周末收尾训练。精细动作撕纸练习完成不错，生活自理开始练习独立用勺子吃饭，成功率约40%。'
+      }
+    ]
+  },
+  // 上周 2.7-2.13 (idx=1)
+  {
+    label:'2.7 — 2.13', tag:'上周',
+    stats:{days:6,items:16,score:'4.0',rate:'80%'},
+    days:[
+      {week:'周一',date:'7',dot:'green',dateStr:'周一 · 2月7日',summary:'3项训练 · 用时45分钟',score:'4.0',scoreCls:'',
+        sessions:[
+          {emoji:'👁️',name:'眼神对视训练',time:'09:30 — 09:45 · 15分钟',badge:'4.2',badgeCls:'high',
+            rows:[{l:'目标',c:'叫名字后3秒内看向对方，连续5次'},{l:'完成',c:'成功 <strong>7/10</strong> 次，反应时间 2.5 秒',bar:70,barCls:'purple'},{l:'备注',c:'比上周进步明显，小汽车强化物效果好',tags:['green|持续进步','blue|强化物有效']}]},
+          {emoji:'🗣️',name:'指令跟随训练',time:'10:00 — 10:15 · 15分钟',badge:'4.0',badgeCls:'high',
+            rows:[{l:'目标',c:'一步指令5秒内执行'},{l:'完成',c:'成功 <strong>7/10</strong> 次',bar:70,barCls:'green'},{l:'备注',c:'"坐下""过来""拍手"独立完成，"放回去"仍需辅助',tags:['green|3个指令掌握','orange|放回去待练']}]},
+          {emoji:'🔊',name:'仿说训练',time:'10:30 — 10:45 · 15分钟',badge:'3.8',badgeCls:'mid',
+            rows:[{l:'目标',c:'仿说双音节词'},{l:'完成',c:'成功 <strong>6/10</strong> 次，清晰度约 65%',bar:60,barCls:'blue'},{l:'备注',c:'"妈妈""爸爸"清晰，"苹果"说成"po-po"',tags:['green|基础词掌握','orange|清晰度待提升']}]}
+        ],
+        aiSummary:'新一周开局不错！<strong>眼神对视</strong>从上周5/10提升到7/10，进步明显。<strong>指令跟随</strong>稳步提升。<strong>仿说</strong>双音节词在努力中，清晰度是下一个突破点。'
+      },
+      {week:'周二',date:'8',dot:'green',dateStr:'周二 · 2月8日',summary:'3项训练 · 用时50分钟',score:'4.2',scoreCls:'',sessions:[],
+        aiSummary:'社交问候有突破，乐乐对奶奶<strong>主动挥手说"奶"</strong>，虽然不完整但是主动性很好。轮流游戏能等待3轮了。精细动作直线剪纸首次成功。'
+      },
+      {week:'周三',date:'9',dot:'green',dateStr:'周三 · 2月9日',summary:'2项训练 · 用时30分钟',score:'3.8',scoreCls:'',sessions:[],
+        aiSummary:'情绪识别有进步，"开心"100%正确，"难过"正确率提升到60%。共同注意跟随指向达到7/10次，主动指向2/5次。'
+      },
+      {week:'周四',date:'10',dot:'green',dateStr:'周四 · 2月10日',summary:'3项训练 · 用时45分钟',score:'4.3',scoreCls:'',sessions:[],
+        aiSummary:'仿说训练重大突破！<strong>"苹果"首次清晰仿说成功</strong>。指令跟随达到80%，眼神对视稳定在7/10。今天整体状态很好。'
+      },
+      {week:'周五',date:'11',dot:'green',dateStr:'周五 · 2月11日',summary:'3项训练 · 用时45分钟',score:'4.0',scoreCls:'',sessions:[],
+        aiSummary:'社交问候在小区里对邻居挥手成功2次。轮流游戏等待能力提升到4轮。生活自理独立用勺子吃饭成功率提升到60%。'
+      },
+      {week:'周六',date:'12',dot:'gray',dateStr:'周六 · 2月12日',summary:'休息日',score:'—',scoreCls:'rest',sessions:[],
+        aiSummary:'休息日。在家玩积木时自发说了"要"来表达需求，这是功能性语言的萌芽，非常好的信号！'
+      },
+      {week:'周日',date:'13',dot:'green',dateStr:'周日 · 2月13日',summary:'2项训练 · 用时35分钟',score:'4.0',scoreCls:'',sessions:[],
+        aiSummary:'精细动作曲线剪纸有进步，偏差缩小到8mm。生活自理独立穿鞋首次成功（需要提示方向）。本周整体进步显著，<strong>综合评分从3.8提升到4.0</strong>。'
+      }
+    ]
+  },
+  // 本周 2.14-2.20 (idx=2)
+  {
+    label:'2.14 — 2.20', tag:'本周',
+    stats:{days:6,items:18,score:'4.2',rate:'86%'},
+    days:[
+      {week:'周一',date:'14',dot:'green',dateStr:'周一 · 2月14日',summary:'3项训练 · 用时45分钟',score:'4.5',scoreCls:'',
+        sessions:[
+          {emoji:'👁️',name:'眼神对视训练',time:'09:30 — 09:45 · 15分钟',badge:'4.5',badgeCls:'high',
+            rows:[{l:'目标',c:'叫名字后3秒内看向对方，连续5次'},{l:'完成',c:'成功 <strong>8/10</strong> 次，平均反应时间 2.1 秒',bar:80,barCls:'purple'},{l:'方法',c:'DTT回合制，使用小汽车作为强化物，叫名→等待→对视→给予强化'},{l:'备注',c:'前5次表现很好，后面有些疲劳走神。用小汽车比零食效果更好',tags:['green|进步明显','blue|强化物有效']}]},
+          {emoji:'🗣️',name:'指令跟随训练',time:'10:00 — 10:15 · 15分钟',badge:'4.8',badgeCls:'high',
+            rows:[{l:'目标',c:'听到一步指令后5秒内执行，正确率≥80%'},{l:'完成',c:'成功 <strong>9/10</strong> 次',bar:90,barCls:'green'},{l:'指令',c:'"把球给我" ✓ · "坐下" ✓ · "拍拍手" ✓ · "过来" ✓ · "放回去" ✗（第8次）'},{l:'备注',c:'"放回去"需要手势辅助，其他指令独立完成',tags:['green|超额完成','purple|可升级二步指令']}]},
+          {emoji:'🔊',name:'仿说训练',time:'10:30 — 10:45 · 15分钟',badge:'4.2',badgeCls:'high',
+            rows:[{l:'目标',c:'仿说双音节词，清晰度≥70%'},{l:'完成',c:'成功 <strong>7/10</strong> 次，清晰度约 75%',bar:70,barCls:'blue'},{l:'词汇',c:'"妈妈" ✓ · "爸爸" ✓ · "苹果" ✓ · "香蕉" ✗ · "谢谢" ✓ · "拜拜" ✓'},{l:'备注',c:'三音节词"香蕉"有困难，会说成"na-na"。双音节词基本掌握',tags:['orange|三音节待加强','green|双音节已掌握']}]}
+        ],
+        aiSummary:'今天乐乐状态不错！<strong>指令跟随</strong>表现最好（4.8分），已经可以考虑升级到二步指令了。<strong>眼神对视</strong>后半段有疲劳，建议下次缩短到10分钟或中间加休息。<strong>仿说</strong>双音节词基本掌握，下一步可以尝试更多三音节词。'
+      },
+      {week:'周二',date:'15',dot:'green',dateStr:'周二 · 2月15日',summary:'3项训练 · 用时50分钟',score:'4.3',scoreCls:'',
+        sessions:[
+          {emoji:'👋',name:'社交问候训练',time:'09:30 — 09:50 · 20分钟',badge:'4.5',badgeCls:'high',
+            rows:[{l:'目标',c:'见到熟人主动说"你好"或挥手，成功率≥60%'},{l:'完成',c:'成功 <strong>7/10</strong> 次，其中主动问候4次、提示后问候3次',bar:70,barCls:'purple'},{l:'备注',c:'对奶奶和姐姐能主动问候，对陌生人还需要提示',tags:['green|熟人主动性好','orange|陌生人需提示']}]},
+          {emoji:'🎲',name:'轮流游戏训练',time:'10:00 — 10:15 · 15分钟',badge:'3.8',badgeCls:'mid',
+            rows:[{l:'目标',c:'在游戏中等待轮到自己，不抢夺，连续3轮'},{l:'完成',c:'成功等待 <strong>5/8</strong> 轮，有3次提前伸手拿',bar:63,barCls:'blue'},{l:'备注',c:'用积木搭塔游戏，前几轮能等待，后面兴奋了就忍不住',tags:['orange|等待能力待提升']}]},
+          {emoji:'✂️',name:'精细动作训练',time:'10:30 — 10:45 · 15分钟',badge:'4.5',badgeCls:'high',
+            rows:[{l:'目标',c:'用剪刀沿直线剪纸，偏差≤5mm'},{l:'完成',c:'成功 <strong>4/5</strong> 次',bar:80,barCls:'green'},{l:'备注',c:'握剪刀姿势正确，直线剪得很好，曲线还需练习',tags:['green|直线已掌握','purple|下次练曲线']}]}
+        ],
+        aiSummary:'周二整体表现稳定。<strong>社交问候</strong>对熟人已经很主动了，下一步可以在小区里练习对邻居问候。<strong>轮流游戏</strong>后半段自控力下降，建议缩短到5轮一组。<strong>精细动作</strong>进步很快，可以开始尝试曲线剪纸了。'
+      },
+      {week:'周三',date:'16',dot:'yellow',dateStr:'周三 · 2月16日',summary:'2项训练 · 用时30分钟',score:'3.8',scoreCls:'mid',
+        sessions:[
+          {emoji:'😊',name:'情绪识别训练',time:'09:30 — 09:45 · 15分钟',badge:'3.5',badgeCls:'mid',
+            rows:[{l:'目标',c:'看图片识别"开心""难过""生气"三种表情'},{l:'完成',c:'成功 <strong>6/10</strong> 次，"开心"全对，"难过"和"生气"容易混淆',bar:60,barCls:'blue'},{l:'备注',c:'今天状态一般，注意力不太集中，可能跟昨晚没睡好有关',tags:['orange|状态一般','orange|难过/生气混淆']}]},
+          {emoji:'👆',name:'共同注意训练',time:'10:00 — 10:15 · 15分钟',badge:'4.0',badgeCls:'high',
+            rows:[{l:'目标',c:'跟随手指指向看目标物，并用手指指给对方看'},{l:'完成',c:'跟随指向 <strong>8/10</strong> 次，主动指向 <strong>3/5</strong> 次',bar:65,barCls:'purple'},{l:'备注',c:'跟随指向做得不错，主动指向还需要更多练习',tags:['green|跟随指向好','orange|主动指向待提升']}]}
+        ],
+        aiSummary:'今天乐乐状态不太好，可能跟睡眠有关。<strong>情绪识别</strong>中"难过"和"生气"的区分是难点，建议用夸张表情的卡通图片来练习。<strong>共同注意</strong>的跟随能力不错，主动指向可以在日常生活中多创造机会练习。'
+      },
+      {week:'周四',date:'17',dot:'green',dateStr:'周四 · 2月17日',summary:'3项训练 · 用时45分钟',score:'4.6',scoreCls:'',sessions:[],
+        aiSummary:'本周最佳表现日！仿说训练突破性进步，首次成功仿说三音节词"西瓜"。指令跟随已稳定在90%以上，<strong>建议下周升级到二步指令</strong>。生活自理训练中独立穿鞋成功。'
+      },
+      {week:'周五',date:'18',dot:'green',dateStr:'周五 · 2月18日',summary:'3项训练 · 用时45分钟',score:'4.2',scoreCls:'',sessions:[],
+        aiSummary:'社交问候训练中，乐乐在小区里<strong>主动对邻居阿姨说了"你好"</strong>，这是很大的突破！眼神对视保持稳定，轮流游戏有进步，能连续等待4轮了。'
+      },
+      {week:'周六',date:'19',dot:'gray',dateStr:'周六 · 2月19日',summary:'休息日',score:'—',scoreCls:'rest',sessions:[],
+        aiSummary:'今天是休息日，没有安排正式训练。适当休息有助于巩固学习成果 😊 不过日常生活中的自然互动也是很好的练习机会，比如一起去超市时可以练习指物命名和社交问候。'
+      },
+      {week:'周日',date:'20',dot:'green',dateStr:'周日 · 2月20日',summary:'3项训练 · 用时40分钟',score:'4.0',scoreCls:'',sessions:[],
+        aiSummary:'周末训练收尾不错。<strong>精细动作</strong>曲线剪纸首次尝试，虽然偏差较大但握剪姿势正确。<strong>生活自理</strong>独立刷牙完成度提升到70%。<strong>情绪管理</strong>在遇到困难时能用"我不要"表达而不是哭闹，进步很大！'
+      }
+    ]
+  }
+];
+
+var currentWeek = 2; // 默认本周
+
+function renderWeek(idx) {
+  var w = weeksData[idx];
+  document.getElementById('weekLabel').innerHTML = w.label + ' <span>' + w.tag + '</span>';
+  document.getElementById('wsDays').textContent = w.stats.days;
+  document.getElementById('wsItems').textContent = w.stats.items;
+  document.getElementById('wsScore').textContent = w.stats.score;
+  document.getElementById('wsRate').textContent = w.stats.rate;
+  document.getElementById('prevWeek').disabled = (idx === 0);
+  document.getElementById('nextWeek').disabled = (idx === weeksData.length - 1);
+
+  // 渲染日期锚点
+  var anchorsHtml = '';
+  w.days.forEach(function(d, i) {
+    anchorsHtml += '<button class="day-anchor' + (i===0?' active':'') + '" onclick="scrollToDay('+i+',this)"><div class="da-week">'+d.week+'</div><div class="da-date">'+d.date+'</div><div class="da-dot '+d.dot+'"></div></button>';
+  });
+  document.getElementById('dayAnchors').innerHTML = anchorsHtml;
+
+  // 渲染所有天的内容
+  var html = '';
+  w.days.forEach(function(d, i) {
+    html += '<div class="day-section" id="daySection'+i+'">';
+    html += '<div class="day-header"><div class="day-header-icon">📋</div><div class="day-header-info"><div class="day-header-date">'+d.dateStr+'</div><div class="day-header-summary">'+d.summary+'</div></div><div class="day-header-score'+(d.scoreCls?' '+d.scoreCls:'')+'">'+d.score+'</div></div>';
+
+    // 训练卡片
+    if (d.sessions && d.sessions.length > 0) {
+      d.sessions.forEach(function(s) {
+        html += '<div class="session-card"><div class="session-top"><div class="session-emoji">'+s.emoji+'</div><div class="session-info"><div class="session-name">'+s.name+'</div><div class="session-time">'+s.time+'</div></div><div class="session-badge '+s.badgeCls+'">'+s.badge+'</div></div><div class="session-detail">';
+        s.rows.forEach(function(r) {
+          html += '<div class="detail-row"><div class="detail-label">'+r.l+'</div><div class="detail-content">'+r.c;
+          if (r.bar !== undefined) {
+            html += '<div class="goal-wrap"><div class="goal-bar"><div class="goal-fill '+r.barCls+'" style="width:'+r.bar+'%"></div></div><div class="goal-pct">'+r.bar+'%</div></div>';
+          }
+          if (r.tags) {
+            html += '<div class="tags">';
+            r.tags.forEach(function(t) {
+              var parts = t.split('|');
+              html += '<span class="tag '+parts[0]+'">'+parts[1]+'</span>';
+            });
+            html += '</div>';
+          }
+          html += '</div></div>';
+        });
+        html += '</div></div>';
+      });
+    }
+
+    // AI小结
+    html += '<div class="ai-summary"><div class="ai-summary-header"><div class="ai-summary-avatar"><img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI"></div><div class="ai-summary-label">AI '+(d.scoreCls==='rest'?'提示':'当日小结')+'</div></div><div class="ai-summary-text">'+d.aiSummary+'</div></div>';
+    html += '</div>';
+  });
+
+  var area = document.getElementById('scrollArea');
+  area.innerHTML = html;
+  area.scrollTop = 0;
+}
+
+function changeWeek(dir) {
+  var next = currentWeek + dir;
+  if (next < 0 || next >= weeksData.length) return;
+  currentWeek = next;
+  renderWeek(currentWeek);
+}
+
+function scrollToDay(idx, el) {
+  document.querySelectorAll('.day-anchor').forEach(function(a){ a.classList.remove('active'); });
+  el.classList.add('active');
+  var target = document.getElementById('daySection' + idx);
+  if (target) {
+    var area = document.getElementById('scrollArea');
+    area.scrollTo({ top: target.offsetTop - area.offsetTop - 8, behavior: 'smooth' });
+  }
+}
+
+// 滚动时高亮对应日期
+document.getElementById('scrollArea').addEventListener('scroll', function() {
+  var area = this;
+  var anchors = document.querySelectorAll('.day-anchor');
+  var sections = document.querySelectorAll('.day-section');
+  var scrollTop = area.scrollTop + 20;
+  var activeIdx = 0;
+  sections.forEach(function(s, i) {
+    if (s.offsetTop - area.offsetTop <= scrollTop) activeIdx = i;
+  });
+  anchors.forEach(function(a, i) {
+    a.classList.toggle('active', i === activeIdx);
+  });
+});
+
+// 初始渲染本周
+renderWeek(currentWeek);
+</script>
+</body>
+</html>

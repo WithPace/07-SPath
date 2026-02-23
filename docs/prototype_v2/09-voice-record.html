@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星途AI — 语音记录</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #7C4DFF;
+  --primary-light: #B388FF;
+  --bg: #F5F3FF;
+  --glass-white: rgba(255,255,255,0.88);
+  --glass-card: rgba(255,255,255,0.85);
+  --text: #1A1A2E;
+  --text-secondary: #6B7280;
+  --radius: 16px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: var(--bg); color: var(--text);
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh; padding: 20px;
+}
+.phone-frame {
+  width: 420px; height: 900px; background: var(--bg);
+  border-radius: 40px;
+  box-shadow: 0 25px 80px rgba(124,77,255,0.15), 0 0 0 1px rgba(124,77,255,0.08);
+  display: flex; flex-direction: column; overflow: hidden; position: relative;
+}
+/* 导航 */
+.nav-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 12px;
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(124,77,255,0.08);
+  flex-shrink: 0; z-index: 10;
+}
+.nav-left {
+  width: 40px; height: 40px; border-radius: 12px; border: none;
+  background: var(--glass-white); backdrop-filter: blur(10px);
+  font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s;
+}
+.nav-left:active { transform: scale(0.92); }
+.nav-title {
+  font-size: 17px; font-weight: 600;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-capsule {
+  display: flex; align-items: center; height: 32px; border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px); overflow: hidden;
+}
+.nav-capsule-btn {
+  width: 40px; height: 32px; border: none; background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.nav-capsule-btn:active { background: rgba(0,0,0,0.05); }
+.nav-capsule-new svg { width: 16px; height: 16px; stroke: #555; stroke-width: 2; fill: none; }
+.nav-capsule-dots { display: flex; gap: 3px; align-items: center; }
+.nav-capsule-dots span { width: 4px; height: 4px; border-radius: 50%; background: #555; }
+.nav-capsule-divider { width: 1px; height: 18px; background: rgba(0,0,0,0.1); }
+/* 消息流 */
+.messages {
+  flex: 1; overflow-y: auto; padding: 16px 16px 8px;
+  scroll-behavior: smooth;
+}
+.messages::-webkit-scrollbar { width: 0; }
+.msg-row { display: flex; gap: 10px; margin-bottom: 16px; max-width: 88%; animation: msgIn 0.4s ease; }
+.msg-row.ai { align-self: flex-start; }
+.msg-row.user { align-self: flex-end; flex-direction: row-reverse; margin-left: auto; }
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.avatar {
+  width: 36px; height: 36px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; overflow: hidden;
+}
+.avatar.ai-avatar { background: linear-gradient(135deg, var(--primary-light), var(--primary)); }
+.avatar.ai-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar.user-avatar { background: linear-gradient(135deg, #FFD54F, #FF8A65); }
+.bubble {
+  padding: 12px 16px; font-size: 15px; line-height: 1.65; word-break: break-word;
+}
+.ai .bubble {
+  background: var(--glass-white);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(124,77,255,0.08);
+  border-radius: 4px 16px 16px 16px;
+  box-shadow: 0 2px 12px rgba(124,77,255,0.06);
+}
+.user .bubble { background: #EDE7F6; border-radius: 16px 16px 4px 16px; }
+.bubble strong { color: var(--primary); font-weight: 600; }
+/* 语音气泡 */
+.voice-bubble {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; min-width: 160px;
+}
+.voice-icon { font-size: 20px; flex-shrink: 0; }
+.voice-waves {
+  flex: 1; display: flex; align-items: center; gap: 2px; height: 24px;
+}
+.voice-waves span {
+  width: 3px; border-radius: 2px; background: var(--primary);
+  animation: wave 1.2s ease-in-out infinite;
+}
+.voice-waves span:nth-child(1) { height: 8px; animation-delay: 0s; }
+.voice-waves span:nth-child(2) { height: 16px; animation-delay: 0.1s; }
+.voice-waves span:nth-child(3) { height: 12px; animation-delay: 0.2s; }
+.voice-waves span:nth-child(4) { height: 20px; animation-delay: 0.3s; }
+.voice-waves span:nth-child(5) { height: 14px; animation-delay: 0.4s; }
+.voice-waves span:nth-child(6) { height: 10px; animation-delay: 0.5s; }
+.voice-waves span:nth-child(7) { height: 18px; animation-delay: 0.6s; }
+.voice-waves span:nth-child(8) { height: 8px; animation-delay: 0.7s; }
+.user .voice-waves span { background: var(--primary); opacity: 0.6; }
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1); }
+}
+.voice-dur { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
+.voice-text {
+  font-size: 13px; color: var(--text-secondary); margin-top: 8px;
+  padding-top: 8px; border-top: 1px solid rgba(124,77,255,0.06);
+  line-height: 1.5;
+}
+/* 记录卡片通用 */
+.record-card {
+  background: var(--glass-card);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius); padding: 16px;
+  border: 1px solid rgba(124,77,255,0.1);
+  box-shadow: 0 4px 20px rgba(124,77,255,0.06);
+  margin-left: 46px; max-width: calc(88% - 46px);
+  margin-bottom: 16px; animation: msgIn 0.4s ease;
+}
+.record-card-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.record-card-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.record-card-icon.training { background: linear-gradient(135deg, #EDE7F6, #D1C4E9); }
+.record-card-icon.life { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); }
+.record-card-icon.behavior { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); }
+.record-card-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.record-card-tag {
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;
+  margin-left: auto;
+}
+.record-card-tag.training { background: rgba(124,77,255,0.1); color: var(--primary); }
+.record-card-tag.life { background: rgba(33,150,243,0.1); color: #2196F3; }
+.record-card-tag.behavior { background: rgba(255,152,0,0.1); color: #FF9800; }
+.record-card-body { margin-bottom: 12px; }
+.record-field {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 6px 0; font-size: 13px;
+}
+.record-field-label {
+  color: var(--text-secondary); flex-shrink: 0; min-width: 56px;
+}
+.record-field-value { color: var(--text); flex: 1; line-height: 1.5; }
+/* 训练记录特有 - 目标达成 */
+.goal-bar-wrap {
+  height: 6px; background: rgba(124,77,255,0.08); border-radius: 3px;
+  margin-top: 4px; overflow: hidden;
+}
+.goal-bar-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--primary), #E040FB);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.goal-text {
+  display: flex; justify-content: space-between; font-size: 11px;
+  color: var(--text-secondary); margin-top: 4px;
+}
+/* 行为记录 ABC */
+.abc-section { margin-top: 8px; }
+.abc-item {
+  display: flex; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid rgba(124,77,255,0.04);
+}
+.abc-item:last-child { border-bottom: none; }
+.abc-label {
+  width: 4px; border-radius: 2px; flex-shrink: 0;
+}
+.abc-label.a { background: #2196F3; }
+.abc-label.b { background: #FF9800; }
+.abc-label.c { background: #4CAF50; }
+.abc-content { flex: 1; }
+.abc-title {
+  font-size: 11px; font-weight: 600; margin-bottom: 2px;
+}
+.abc-title.a { color: #2196F3; }
+.abc-title.b { color: #FF9800; }
+.abc-title.c { color: #4CAF50; }
+.abc-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+/* 情绪强度 */
+.emotion-bar {
+  display: flex; align-items: center; gap: 8px; margin-top: 8px;
+  padding: 8px 12px; background: rgba(255,152,0,0.06); border-radius: 10px;
+}
+.emotion-label { font-size: 12px; color: var(--text-secondary); }
+.emotion-dots { display: flex; gap: 4px; }
+.emotion-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 1.5px solid rgba(255,152,0,0.3);
+}
+.emotion-dot.active { background: #FF9800; border-color: #FF9800; }
+.emotion-level { font-size: 12px; font-weight: 600; color: #FF9800; }
+/* 卡片操作按钮 */
+.record-card-actions {
+  display: flex; gap: 8px; padding-top: 12px;
+  border-top: 1px solid rgba(124,77,255,0.06);
+}
+.record-action-btn {
+  flex: 1; padding: 10px; border-radius: 12px; border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; text-align: center;
+}
+.record-action-btn.confirm {
+  background: linear-gradient(135deg, var(--primary), #E040FB); color: #fff;
+  box-shadow: 0 4px 16px rgba(124,77,255,0.3);
+}
+.record-action-btn.confirm:active { transform: scale(0.96); }
+.record-action-btn.edit {
+  background: rgba(124,77,255,0.08); color: var(--primary);
+}
+.record-action-btn.edit:active { transform: scale(0.96); }
+/* 比较标签 */
+.compare-tag {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11px; padding: 2px 6px; border-radius: 6px;
+  margin-left: 4px;
+}
+.compare-tag.up { background: rgba(76,175,80,0.1); color: #4CAF50; }
+.compare-tag.down { background: rgba(244,67,54,0.1); color: #F44336; }
+.compare-tag.same { background: rgba(107,114,128,0.08); color: #9CA3AF; }
+/* 里程碑标记 */
+.milestone {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 8px;
+  background: linear-gradient(135deg, rgba(124,77,255,0.08), rgba(224,64,251,0.08));
+  font-size: 12px; font-weight: 600; color: var(--primary);
+  margin-top: 8px;
+}
+/* 时间戳 */
+.time-stamp {
+  text-align: center; font-size: 11px; color: var(--text-secondary); padding: 4px 0;
+}
+/* 输入栏 */
+.input-bar {
+  flex-shrink: 0; display: flex; align-items: flex-end; gap: 8px;
+  padding: 10px 12px 28px;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(20px); border-top: 1px solid rgba(124,77,255,0.06);
+}
+.input-wrap {
+  flex: 1; background: #fff; border-radius: 16px;
+  border: 1.5px solid rgba(124,77,255,0.12);
+  overflow: visible; transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.input-wrap.focused {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(124,77,255,0.08);
+}
+.input-top {
+  display: flex; align-items: flex-start; padding: 8px 10px 0; gap: 8px;
+}
+.input-voice {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: none; background: rgba(124,77,255,0.08);
+  font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.15s;
+}
+.input-voice:active { background: rgba(124,77,255,0.18); }
+.input-voice.recording {
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(124,77,255,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(124,77,255,0); }
+}
+.input-field {
+  flex: 1; min-height: 35px; max-height: 120px;
+  border: none; background: transparent;
+  padding: 4px 0; font-size: 15px; font-family: inherit;
+  outline: none; resize: none; line-height: 1.4; overflow-y: auto;
+}
+.input-field::placeholder { color: #B0B0C0; }
+.input-add {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid rgba(124,77,255,0.25);
+  background: transparent; font-size: 18px; color: var(--primary);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.15s;
+}
+.input-add:active { background: rgba(124,77,255,0.08); }
+.input-bottom {
+  display: none; align-items: center; justify-content: space-between;
+  padding: 0px 12px 7px;
+}
+.input-wrap.focused .input-bottom { display: flex; }
+.input-wrap.focused .input-field { min-height: 64px; }
+.child-switch {
+  display: flex; align-items: center; gap: 3px;
+  padding: 3px 9px; border-radius: 12px;
+  border: 1px solid rgba(124,77,255,0.2);
+  background: rgba(124,77,255,0.04);
+  font-size: 11px; font-weight: 500; color: var(--primary);
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+}
+.child-switch:active { background: rgba(124,77,255,0.1); }
+.view-profile {
+  display: flex; align-items: center; gap: 2px;
+  border: none; background: transparent;
+  font-size: 11px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; padding: 3px 0; transition: color 0.15s;
+}
+.view-profile:hover { color: var(--primary); }
+.send-btn {
+  width: 36px; height: 36px; border-radius: 50%; border: none;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  color: #fff; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; box-shadow: 0 4px 16px rgba(124,77,255,0.3);
+  transition: all 0.2s; margin-bottom: 2px;
+}
+.send-btn:active { transform: scale(0.9); box-shadow: 0 2px 8px rgba(124,77,255,0.2); }
+/* 快捷操作 */
+.quick-actions {
+  flex-shrink: 0; padding: 8px 16px;
+  overflow-x: auto; overflow-y: hidden;
+  display: flex; gap: 8px; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.quick-actions::-webkit-scrollbar { display: none; }
+.quick-act-btn {
+  flex-shrink: 0; padding: 8px 16px; border-radius: 20px;
+  border: 1px solid rgba(124,77,255,0.15);
+  background: var(--glass-card); backdrop-filter: blur(16px);
+  font-size: 13px; font-weight: 500; color: var(--text);
+  cursor: pointer; white-space: nowrap; transition: all 0.2s;
+}
+.quick-act-btn:active { background: var(--primary); color: #fff; transform: scale(0.95); }
+/* 响应式 */
+@media (max-width: 460px) {
+  body { padding: 0; }
+  .phone-frame { width: 100%; height: 100vh; border-radius: 0; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- 导航 -->
+  <div class="nav-bar">
+    <button class="nav-left">☰</button>
+    <div class="nav-title">🌟 乐乐的星途</div>
+    <div class="nav-capsule">
+      <button class="nav-capsule-btn nav-capsule-new" title="新对话">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+      </button>
+      <div class="nav-capsule-divider"></div>
+      <button class="nav-capsule-btn" title="菜单">
+        <div class="nav-capsule-dots"><span></span><span></span><span></span></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- 消息流 -->
+  <div class="messages" id="messages">
+    <div class="time-stamp">今天 15:20</div>
+
+    <!-- 1. AI 问候 -->
+    <div class="msg-row ai">
+      <div class="avatar ai-avatar">
+        <img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">
+      </div>
+      <div class="bubble">
+        下午好！乐乐妈妈 ☀️<br>今天的训练做完了吗？可以语音告诉我训练情况，我来帮您记录。
+      </div>
+    </div>
+
+    <!-- 2. 用户语音消息 - 训练记录 -->
+    <div class="msg-row user">
+      <div class="avatar user-avatar">👩</div>
+      <div class="bubble voice-bubble">
+        <span class="voice-icon">🎤</span>
+        <div class="voice-waves">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <span class="voice-dur">0:23</span>
+      </div>
+    </div>
+
+    <!-- 语音转文字展示 -->
+    <div class="msg-row user">
+      <div class="avatar user-avatar">👩</div>
+      <div class="bubble">
+        今天做了共同注意力训练，用积木做"看这里"游戏，乐乐主动跟随指向了4次，比昨天多了1次，整体表现不错，大概练了15分钟。
+      </div>
+    </div>
+
+    <!-- 3. AI 回复 + 训练记录卡片（紫色主题） -->
+    <div class="msg-row ai">
+      <div class="avatar ai-avatar">
+        <img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">
+      </div>
+      <div class="bubble">
+        收到！我帮您整理了这次训练记录，请确认一下 📋
+      </div>
+    </div>
+
+    <!-- 训练记录卡片 -->
+    <div class="record-card">
+      <div class="record-card-header">
+        <div class="record-card-icon training">🎯</div>
+        <div class="record-card-title">训练记录</div>
+        <span class="record-card-tag training">共同注意力</span>
+      </div>
+      <div class="record-card-body">
+        <div class="record-field">
+          <span class="record-field-label">训练项</span>
+          <span class="record-field-value"><strong>共同注意力</strong> — "看这里"积木游戏</span>
+        </div>
+        <div class="record-field">
+          <span class="record-field-label">时长</span>
+          <span class="record-field-value">15 分钟</span>
+        </div>
+        <div class="record-field">
+          <span class="record-field-label">表现</span>
+          <span class="record-field-value">主动跟随指向 <strong>4次</strong> <span class="compare-tag up">↑1 较昨日</span></span>
+        </div>
+        <div class="record-field">
+          <span class="record-field-label">目标</span>
+          <span class="record-field-value">主动跟随指向 5次/轮</span>
+        </div>
+        <div class="goal-bar-wrap"><div class="goal-bar-fill" style="width:80%"></div></div>
+        <div class="goal-text"><span>目标达成</span><span>80%</span></div>
+      </div>
+      <div class="record-card-actions">
+        <button class="record-action-btn edit">✏️ 修改</button>
+        <button class="record-action-btn confirm">✓ 确认保存</button>
+      </div>
+    </div>
+
+    <!-- 4. 用户语音消息 - 生活记录 -->
+    <div class="msg-row user">
+      <div class="avatar user-avatar">👩</div>
+      <div class="bubble voice-bubble">
+        <span class="voice-icon">🎤</span>
+        <div class="voice-waves">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <span class="voice-dur">0:18</span>
+      </div>
+    </div>
+
+    <div class="msg-row user">
+      <div class="avatar user-avatar">👩</div>
+      <div class="bubble">
+        中午吃饭的时候，乐乐第一次自己用勺子把饭送到嘴里了，虽然洒了一些但是很棒！
+      </div>
+    </div>
+
+    <!-- 5. AI 回复 + 生活记录卡片（蓝色主题） -->
+    <div class="msg-row ai">
+      <div class="avatar ai-avatar">
+        <img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">
+      </div>
+      <div class="bubble">
+        太棒了！这是一个重要的里程碑 🎉 我记录下来了：
+      </div>
+    </div>
+
+    <!-- 生活记录卡片 -->
+    <div class="record-card">
+      <div class="record-card-header">
+        <div class="record-card-icon life">🍽️</div>
+        <div class="record-card-title">生活记录</div>
+        <span class="record-card-tag life">进食技能</span>
+      </div>
+      <div class="record-card-body">
+        <div class="record-field">
+          <span class="record-field-label">场景</span>
+          <span class="record-field-value">午餐 · 自主进食</span>
+        </div>
+        <div class="record-field">
+          <span class="record-field-label">表现</span>
+          <span class="record-field-value"><strong>首次独立用勺子进食</strong>，有少量洒落</span>
+        </div>
+        <div class="record-field">
+          <span class="record-field-label">独立度</span>
+          <span class="record-field-value">
+            ⭐⭐⭐⭐☆ 基本独立
+            <span class="compare-tag up">↑2级</span>
+          </span>
+        </div>
+        <div class="milestone">🏆 里程碑：首次独立用勺进食</div>
+      </div>
+      <div class="record-card-actions">
+        <button class="record-action-btn edit">✏️ 修改</button>
+        <button class="record-action-btn confirm">✓ 确认保存</button>
+      </div>
+    </div>
+
+    <!-- 6. 用户语音消息 - 行为记录 -->
+    <div class="msg-row user">
+      <div class="avatar user-avatar">👩</div>
+      <div class="bubble voice-bubble">
+        <span class="voice-icon">🎤</span>
+        <div class="voice-waves">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <span class="voice-dur">0:35</span>
+      </div>
+    </div>
+
+    <div class="msg-row user">
+      <div class="avatar user-avatar">👩</div>
+      <div class="bubble">
+        下午在超市的时候，乐乐突然大哭起来，可能是因为超市太吵了，灯光也很亮。我带他到安静的角落，抱着他轻轻摇了一会儿，大概5分钟后慢慢平静下来了。
+      </div>
+    </div>
+
+    <!-- 7. AI 回复 + 行为记录 ABC 卡片（橙色主题） -->
+    <div class="msg-row ai">
+      <div class="avatar ai-avatar">
+        <img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">
+      </div>
+      <div class="bubble">
+        理解，感觉过载是常见的触发因素。我用 ABC 分析帮您记录了这次行为：
+      </div>
+    </div>
+
+    <!-- 行为记录 ABC 卡片 -->
+    <div class="record-card">
+      <div class="record-card-header">
+        <div class="record-card-icon behavior">⚡</div>
+        <div class="record-card-title">行为记录</div>
+        <span class="record-card-tag behavior">情绪行为</span>
+      </div>
+      <div class="record-card-body">
+        <div class="abc-section">
+          <div class="abc-item">
+            <div class="abc-label a"></div>
+            <div class="abc-content">
+              <div class="abc-title a">A · 前因 Antecedent</div>
+              <div class="abc-text">超市环境 — 噪音大、灯光强烈（感觉过载）</div>
+            </div>
+          </div>
+          <div class="abc-item">
+            <div class="abc-label b"></div>
+            <div class="abc-content">
+              <div class="abc-title b">B · 行为 Behavior</div>
+              <div class="abc-text">突然大哭，情绪崩溃</div>
+            </div>
+          </div>
+          <div class="abc-item">
+            <div class="abc-label c"></div>
+            <div class="abc-content">
+              <div class="abc-title c">C · 后果 Consequence</div>
+              <div class="abc-text">转移到安静角落 + 拥抱安抚，约5分钟后平静</div>
+            </div>
+          </div>
+        </div>
+        <div class="emotion-bar">
+          <span class="emotion-label">情绪强度</span>
+          <div class="emotion-dots">
+            <div class="emotion-dot active"></div>
+            <div class="emotion-dot active"></div>
+            <div class="emotion-dot active"></div>
+            <div class="emotion-dot active"></div>
+            <div class="emotion-dot"></div>
+          </div>
+          <span class="emotion-level">4/5 较强</span>
+        </div>
+        <div class="record-field" style="margin-top:8px;">
+          <span class="record-field-label">AI建议</span>
+          <span class="record-field-value" style="color:var(--primary);">下次去超市前可准备降噪耳机，选择人少时段，逐步脱敏</span>
+        </div>
+      </div>
+      <div class="record-card-actions">
+        <button class="record-action-btn edit">✏️ 修改</button>
+        <button class="record-action-btn confirm">✓ 确认保存</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 快捷操作 -->
+  <div class="quick-actions">
+    <button class="quick-act-btn">🎯 记录训练</button>
+    <button class="quick-act-btn">📝 记录生活</button>
+    <button class="quick-act-btn">⚡ 记录行为</button>
+    <button class="quick-act-btn">📊 查看看板</button>
+  </div>
+
+  <!-- 输入栏 -->
+  <div class="input-bar">
+    <div class="input-wrap" id="inputWrap">
+      <div class="input-top">
+        <button class="input-voice" id="voiceBtn" title="语音输入">🎤</button>
+        <textarea class="input-field" id="inputField" rows="1" placeholder="按住说话或输入文字..."></textarea>
+        <button class="input-add" title="拍照/相册">+</button>
+      </div>
+      <div class="input-bottom">
+        <div class="child-switch">乐乐 ⇄</div>
+        <button class="view-profile">查看档案 ›</button>
+      </div>
+    </div>
+    <button class="send-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+var messages = document.getElementById('messages');
+messages.scrollTop = messages.scrollHeight;
+
+var inputWrap = document.getElementById('inputWrap');
+var inputField = document.getElementById('inputField');
+var voiceBtn = document.getElementById('voiceBtn');
+
+// 聚焦展开
+inputField.addEventListener('focus', function() { inputWrap.classList.add('focused'); });
+inputWrap.addEventListener('mousedown', function(e) {
+  if (e.target !== inputField) e.preventDefault();
+});
+document.addEventListener('click', function(e) {
+  if (!inputWrap.contains(e.target)) inputWrap.classList.remove('focused');
+});
+
+// textarea 自动增高
+inputField.addEventListener('input', function() {
+  inputField.style.height = 'auto';
+  inputField.style.height = Math.min(inputField.scrollHeight, 100) + 'px';
+});
+
+// 语音按钮模拟
+var isRecording = false;
+voiceBtn.addEventListener('click', function() {
+  isRecording = !isRecording;
+  voiceBtn.classList.toggle('recording', isRecording);
+  voiceBtn.textContent = isRecording ? '⏹' : '🎤';
+});
+
+// 确认保存按钮
+document.querySelectorAll('.record-action-btn.confirm').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    btn.textContent = '✓ 已保存';
+    btn.style.opacity = '0.6';
+    btn.style.pointerEvents = 'none';
+  });
+});
+
+// 快捷按钮
+document.querySelectorAll('.quick-act-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    inputField.value = btn.textContent.trim();
+    inputField.focus();
+    inputField.dispatchEvent(new Event('input'));
+  });
+});
+
+// 发送
+document.querySelector('.send-btn').addEventListener('click', function() {
+  if (inputField.value.trim()) {
+    inputField.value = '';
+    inputField.style.height = 'auto';
+    inputField.focus();
+  }
+});
+
+inputField.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+    e.preventDefault();
+    document.querySelector('.send-btn').click();
+  }
+});
+</script>
+</body>
+</html>

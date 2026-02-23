@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星途AI - 手机号登录</title>
+<style>
+  :root {
+    --primary: #7C4DFF;
+    --primary-light: #B388FF;
+    --bg: #F5F3FF;
+    --glass-white: rgba(255,255,255,0.88);
+    --glass-card: rgba(255,255,255,0.85);
+    --text: #1A1A2E;
+    --text-secondary: #6B7280;
+    --radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background: linear-gradient(135deg, #EDE7F6 0%, #F3E5F5 50%, #E8EAF6 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .phone-frame {
+    width: 420px;
+    height: 900px;
+    border-radius: 40px;
+    background: var(--bg);
+    box-shadow: 0 25px 80px rgba(124,77,255,0.15), 0 0 0 1px rgba(124,77,255,0.08);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .phone-content {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 28px 32px;
+  }
+
+  /* Logo */
+  .logo-area {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .logo-text {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), #E040FB);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+  }
+
+  .logo-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  /* 星星角色 */
+  .star-character {
+    font-size: 72px;
+    margin: 20px 0 12px;
+    animation: starFloat 3s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  @keyframes starFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-10px) rotate(3deg); }
+    75% { transform: translateY(-6px) rotate(-3deg); }
+  }
+
+  .ai-hint {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+    letter-spacing: 0.5px;
+  }
+
+  /* 毛玻璃卡片 */
+  .glass-card {
+    background: var(--glass-white);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--radius);
+    border: 1px solid rgba(124,77,255,0.08);
+    box-shadow: 0 4px 20px rgba(124,77,255,0.06);
+    padding: 24px 20px;
+    width: 100%;
+  }
+
+  .form-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 22px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .form-group input {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(124,77,255,0.12);
+    padding: 0 14px;
+    font-size: 15px;
+    color: var(--text);
+    background: rgba(255,255,255,0.6);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+  }
+
+  .form-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(124,77,255,0.08);
+  }
+
+  .form-group input::placeholder {
+    color: #C4B5D9;
+  }
+
+  .phone-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .phone-row input {
+    flex: 1;
+  }
+
+  .btn-code {
+    flex-shrink: 0;
+    width: 120px;
+    height: 48px;
+    border-radius: 12px;
+    border: 1.5px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+    font-family: inherit;
+  }
+
+  .btn-code:hover:not(:disabled) {
+    background: rgba(124,77,255,0.06);
+  }
+
+  .btn-code:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: var(--text-secondary);
+    color: var(--text-secondary);
+  }
+
+  /* 验证码区域展开动画 */
+  .code-area {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  .code-area.visible {
+    max-height: 100px;
+    opacity: 1;
+  }
+
+  /* 主按钮 */
+  .btn-login {
+    width: 100%;
+    height: 50px;
+    border-radius: var(--radius);
+    border: none;
+    background: linear-gradient(135deg, var(--primary), #E040FB);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 6px;
+    font-family: inherit;
+  }
+
+  .btn-login:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-login:not(:disabled):hover {
+    transform: translateY(-1px);
+  }
+
+  .btn-login:not(:disabled):active {
+    transform: translateY(0);
+  }
+
+  /* 光泽扫过动画 */
+  .btn-login::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    animation: sheen 3s ease-in-out infinite;
+  }
+
+  .btn-login:disabled::after {
+    animation: none;
+  }
+
+  @keyframes sheen {
+    0%, 100% { left: -100%; }
+    50% { left: 140%; }
+  }
+
+  /* 协议勾选 */
+  .agreement {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .custom-checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid rgba(124,77,255,0.25);
+    background: rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .custom-checkbox:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .custom-checkbox.checked {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .custom-checkbox .check-icon {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.15s, transform 0.15s;
+  }
+
+  .custom-checkbox.checked .check-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .agreement-text a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .agreement-text a:hover {
+    text-decoration: underline;
+  }
+
+  /* 模态弹窗 */
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s, visibility 0.25s;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-box {
+    width: 360px;
+    max-height: 70%;
+    border-radius: 20px;
+    background: var(--glass-white);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(124,77,255,0.08);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .modal-overlay.active .modal-box {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(124,77,255,0.06);
+  }
+
+  .modal-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .modal-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(124,77,255,0.08);
+    color: var(--text-secondary);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .modal-close:hover {
+    background: rgba(124,77,255,0.15);
+  }
+
+  .modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.8;
+  }
+
+  .modal-body h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 16px 0 8px;
+  }
+
+  .modal-body h4:first-child {
+    margin-top: 0;
+  }
+
+  .modal-body p {
+    margin-bottom: 8px;
+    color: #444;
+  }
+
+  /* Toast */
+  .toast {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(26,26,46,0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    color: #fff;
+    font-size: 14px;
+    padding: 12px 24px;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* 响应式 */
+  @media (max-width: 460px) {
+    body {
+      padding: 0;
+      align-items: stretch;
+    }
+
+    .phone-frame {
+      width: 100%;
+      height: 100vh;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .modal-box {
+      width: calc(100% - 32px);
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="phone-content">
+    <!-- Logo -->
+    <div class="logo-area">
+      <div class="logo-text">星途AI</div>
+      <div class="logo-subtitle">每个星星都有自己的轨迹</div>
+    </div>
+
+    <!-- 星星角色 -->
+    <div class="star-character">⭐</div>
+
+    <!-- 提示文字 -->
+    <div class="ai-hint">AI 康复助手 · 为您守护每一步成长</div>
+
+    <!-- 表单卡片 -->
+    <div class="glass-card">
+      <div class="form-title">手机号登录</div>
+
+      <div class="form-group">
+        <label for="phone">手机号</label>
+        <div class="phone-row">
+          <input id="phone" type="tel" maxlength="11" placeholder="请输入手机号" inputmode="numeric" autocomplete="tel">
+          <button class="btn-code" id="btnCode" disabled>获取验证码</button>
+        </div>
+      </div>
+
+      <div class="code-area" id="codeArea">
+        <div class="form-group" style="margin-bottom:0;">
+          <label for="code">验证码</label>
+          <input id="code" type="tel" maxlength="6" placeholder="请输入6位验证码" inputmode="numeric" autocomplete="one-time-code">
+        </div>
+      </div>
+
+      <button class="btn-login" id="btnLogin" disabled>登 录</button>
+    </div>
+
+    <!-- 协议 -->
+    <div class="agreement">
+      <div class="custom-checkbox" id="checkbox" tabindex="0" role="checkbox" aria-checked="false">
+        <span class="check-icon">✓</span>
+      </div>
+      <div class="agreement-text">
+        我已阅读并同意<a href="javascript:void(0)" id="linkTerms">《用户服务协议》</a>和<a href="javascript:void(0)" id="linkPrivacy">《隐私政策》</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 用户服务协议弹窗 -->
+  <div class="modal-overlay" id="modalTerms">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>用户服务协议</h3>
+        <button class="modal-close" data-close="modalTerms">✕</button>
+      </div>
+      <div class="modal-body">
+        <h4>一、服务说明</h4>
+        <p>星途AI（以下简称"本平台"）是一款基于人工智能技术的自闭症儿童康复辅助服务平台。本平台提供AI对话、评估筛查、训练建议、行为记录、数据看板等功能，旨在为家长、医生和特教老师提供科学、便捷的康复辅助工具。</p>
+        <p>本平台提供的所有内容和建议仅供参考，不构成医疗诊断或治疗方案。用户应结合专业医疗机构的意见做出决策。</p>
+
+        <h4>二、账号注册与管理</h4>
+        <p>用户需使用有效手机号注册账号，并确保提供的信息真实、准确。每个手机号仅可注册一个账号。用户应妥善保管账号信息，因账号泄露造成的损失由用户自行承担。</p>
+        <p>本平台有权对异常账号进行限制或封禁处理，包括但不限于：恶意注册、违规操作、危害平台安全等行为。</p>
+
+        <h4>三、用户行为规范</h4>
+        <p>用户在使用本平台时，应遵守国家法律法规，不得利用本平台从事违法违规活动。用户不得上传、发布含有违法、暴力、色情、虚假等内容的信息。</p>
+        <p>用户应尊重其他用户的隐私和权益，不得未经授权获取、使用或传播他人信息。</p>
+
+        <h4>四、知识产权</h4>
+        <p>本平台的所有内容，包括但不限于文字、图片、音频、视频、软件、算法模型等，均受知识产权法律保护。未经本平台书面许可，任何人不得复制、修改、传播或以其他方式使用。</p>
+        <p>用户在平台上生成的内容，其知识产权归用户所有，但用户授予本平台在服务范围内使用该内容的许可。</p>
+
+        <h4>五、免责声明</h4>
+        <p>本平台基于AI技术提供辅助建议，不保证建议的绝对准确性和完整性。AI生成的评估结果和训练建议仅供参考，不能替代专业医疗诊断。</p>
+        <p>因不可抗力、网络故障、系统维护等原因导致的服务中断或数据丢失，本平台不承担责任，但将尽力减少对用户的影响。</p>
+
+        <h4>六、协议修改与终止</h4>
+        <p>本平台有权根据业务发展需要修改本协议内容，修改后的协议将在平台上公布。用户继续使用本平台即视为同意修改后的协议。</p>
+        <p>如用户违反本协议，本平台有权终止向该用户提供服务。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 隐私政策弹窗 -->
+  <div class="modal-overlay" id="modalPrivacy">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>隐私政策</h3>
+        <button class="modal-close" data-close="modalPrivacy">✕</button>
+      </div>
+      <div class="modal-body">
+        <h4>一、信息收集</h4>
+        <p>为提供服务，我们会收集以下信息：手机号码（用于账号注册和登录验证）、您主动填写的儿童基本信息（姓名、年龄、性别等）、对话记录和训练数据、设备信息和日志数据。</p>
+        <p>我们仅收集提供服务所必需的最少信息，不会过度收集用户数据。</p>
+
+        <h4>二、信息使用</h4>
+        <p>收集的信息将用于：提供AI对话和评估服务、生成个性化训练建议和康复方案、数据分析和看板展示、服务优化和产品改进。</p>
+        <p>我们不会将用户信息用于与服务无关的目的，也不会向用户发送与服务无关的商业广告。</p>
+
+        <h4>三、信息共享</h4>
+        <p>我们不会向第三方出售用户个人信息。在以下情况下，我们可能会共享用户信息：经用户明确授权同意的；在协作团队（care_team）中，按照用户设定的权限与医生、老师共享相关数据；法律法规要求的。</p>
+
+        <h4>四、信息存储与安全</h4>
+        <p>用户数据存储在经过安全认证的云服务器上，采用加密传输和存储技术。我们实施了严格的数据访问控制，采用行级安全策略（RLS）确保用户只能访问授权范围内的数据。</p>
+        <p>尽管我们采取了合理的安全措施，但无法保证信息的绝对安全。如发生数据泄露事件，我们将及时通知受影响的用户。</p>
+
+        <h4>五、用户权利</h4>
+        <p>用户有权：查看、修改自己的个人信息；删除自己的账号和相关数据；撤回已授予的数据访问权限；导出自己的数据；对数据处理提出异议。</p>
+        <p>如需行使上述权利，请通过平台内的设置功能操作或联系我们的客服团队。</p>
+
+        <h4>六、未成年人保护</h4>
+        <p>本平台高度重视未成年人信息保护。平台服务对象包含未成年儿童信息，我们要求所有儿童信息必须由其监护人（家长）提供和管理。</p>
+        <p>我们对儿童数据实施更严格的保护措施，包括加密存储、最小化收集、严格的访问控制等。未经监护人授权，任何第三方不得访问儿童数据。</p>
+
+        <h4>七、政策更新</h4>
+        <p>我们可能会不时更新本隐私政策。更新后的政策将在平台上公布，重大变更将通过平台通知告知用户。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function() {
+  const phoneInput = document.getElementById('phone');
+  const codeInput = document.getElementById('code');
+  const btnCode = document.getElementById('btnCode');
+  const btnLogin = document.getElementById('btnLogin');
+  const codeArea = document.getElementById('codeArea');
+  const checkbox = document.getElementById('checkbox');
+  const toast = document.getElementById('toast');
+  const modalTerms = document.getElementById('modalTerms');
+  const modalPrivacy = document.getElementById('modalPrivacy');
+
+  let agreed = false;
+  let countdown = 0;
+  let timer = null;
+  let codeVisible = false;
+
+  // 手机号只允许数字
+  phoneInput.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 11);
+    updateCodeBtn();
+    updateLoginBtn();
+  });
+
+  // 验证码只允许数字
+  codeInput.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 6);
+    updateLoginBtn();
+  });
+
+  function isPhoneValid() {
+    return /^1\d{10}$/.test(phoneInput.value);
+  }
+
+  function isCodeValid() {
+    return /^\d{6}$/.test(codeInput.value);
+  }
+
+  function updateCodeBtn() {
+    btnCode.disabled = !isPhoneValid() || countdown > 0;
+  }
+
+  function updateLoginBtn() {
+    btnLogin.disabled = !(isPhoneValid() && isCodeValid() && agreed);
+  }
+
+  // 获取验证码
+  btnCode.addEventListener('click', function() {
+    if (!isPhoneValid()) {
+      showToast('请输入正确的手机号');
+      return;
+    }
+
+    // 展开验证码区域
+    if (!codeVisible) {
+      codeArea.classList.add('visible');
+      codeVisible = true;
+      setTimeout(() => codeInput.focus(), 400);
+    }
+
+    // 倒计时
+    countdown = 60;
+    btnCode.disabled = true;
+    btnCode.textContent = countdown + 's 后重发';
+    showToast('验证码已发送');
+
+    timer = setInterval(function() {
+      countdown--;
+      if (countdown <= 0) {
+        clearInterval(timer);
+        countdown = 0;
+        btnCode.textContent = '获取验证码';
+        updateCodeBtn();
+      } else {
+        btnCode.textContent = countdown + 's 后重发';
+      }
+    }, 1000);
+  });
+
+  // 登录
+  btnLogin.addEventListener('click', doLogin);
+
+  function doLogin() {
+    if (!isPhoneValid()) {
+      showToast('请输入正确的手机号');
+      return;
+    }
+    if (!isCodeValid()) {
+      showToast('请输入6位验证码');
+      return;
+    }
+    if (!agreed) {
+      showToast('请先同意用户协议和隐私政策');
+      return;
+    }
+    showToast('🎉 登录成功，正在进入星途AI…');
+  }
+
+  // 回车快捷键
+  phoneInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && isPhoneValid() && !countdown) {
+      btnCode.click();
+    }
+  });
+
+  codeInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !btnLogin.disabled) {
+      doLogin();
+    }
+  });
+
+  // Checkbox
+  checkbox.addEventListener('click', toggleAgreement);
+  checkbox.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleAgreement();
+    }
+  });
+
+  function toggleAgreement() {
+    agreed = !agreed;
+    checkbox.classList.toggle('checked', agreed);
+    checkbox.setAttribute('aria-checked', agreed);
+    updateLoginBtn();
+  }
+
+  // 协议链接
+  document.getElementById('linkTerms').addEventListener('click', function(e) {
+    e.preventDefault();
+    modalTerms.classList.add('active');
+  });
+
+  document.getElementById('linkPrivacy').addEventListener('click', function(e) {
+    e.preventDefault();
+    modalPrivacy.classList.add('active');
+  });
+
+  // 关闭弹窗 - 点击遮罩
+  [modalTerms, modalPrivacy].forEach(function(modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+  });
+
+  // 关闭弹窗 - 关闭按钮
+  document.querySelectorAll('.modal-close').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id = this.getAttribute('data-close');
+      document.getElementById(id).classList.remove('active');
+    });
+  });
+
+  // Toast
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(function() {
+      toast.classList.remove('show');
+    }, 2200);
+  }
+})();
+</script>
+</body>
+</html>

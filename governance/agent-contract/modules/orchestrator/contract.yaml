@@ -1,0 +1,16 @@
+module: orchestrator
+description: "Entry orchestration, routing, and cross-module policy enforcement."
+scope:
+  - backend.orchestrator
+workflow:
+  required_stages:
+    - audit
+    - optimize
+    - fill_gap
+quality_gates:
+  required_checks:
+    - routing_policy_verified
+    - authz_boundary_checked
+risk_focus:
+  - routing_regression
+  - permission_bypass

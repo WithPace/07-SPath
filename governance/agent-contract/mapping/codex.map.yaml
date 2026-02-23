@@ -1,0 +1,3 @@
+agent: codex
+target: AGENTS.md
+template: governance/agent-contract/templates/agents.md.tmpl

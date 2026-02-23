@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星途AI — 对话页</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #7C4DFF;
+  --primary-light: #B388FF;
+  --bg: #F5F3FF;
+  --glass-white: rgba(255,255,255,0.88);
+  --glass-card: rgba(255,255,255,0.85);
+  --text: #1A1A2E;
+  --text-secondary: #6B7280;
+  --radius: 16px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+.phone-frame {
+  width: 420px; height: 900px;
+  background: var(--bg);
+  border-radius: 40px;
+  box-shadow: 0 25px 80px rgba(124,77,255,0.15), 0 0 0 1px rgba(124,77,255,0.08);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+/* 顶部导航 */
+.nav-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 12px;
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(124,77,255,0.08);
+  flex-shrink: 0;
+  z-index: 10;
+}
+.nav-left {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: var(--glass-white);
+  backdrop-filter: blur(10px);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s;
+}
+.nav-left:active { transform: scale(0.92); }
+.nav-title {
+  font-size: 17px; font-weight: 600;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+/* 小程序胶囊按钮 */
+.nav-capsule {
+  display: flex; align-items: center;
+  height: 32px;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+.nav-capsule-btn {
+  width: 40px; height: 32px;
+  border: none; background: transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.nav-capsule-btn:active { background: rgba(0,0,0,0.05); }
+/* 新对话图标 */
+.nav-capsule-new svg {
+  width: 16px; height: 16px;
+  stroke: #555; stroke-width: 2; fill: none;
+}
+/* 三个点菜单 */
+.nav-capsule-dots {
+  display: flex; gap: 3px; align-items: center;
+}
+.nav-capsule-dots span {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: #555;
+}
+.nav-capsule-divider {
+  width: 1px; height: 18px;
+  background: rgba(0,0,0,0.1);
+}
+/* 消息流 */
+.messages {
+  flex: 1; overflow-y: auto; padding: 16px 16px 8px;
+  display: flex; flex-direction: column; gap: 16px;
+  scroll-behavior: smooth;
+}
+.messages::-webkit-scrollbar { width: 0; }
+.msg-row { display: flex; gap: 10px; max-width: 88%; }
+.msg-row.ai { align-self: flex-start; }
+.msg-row.user { align-self: flex-end; flex-direction: row-reverse; }
+.msg-row.full-width { max-width: 100%; }
+.avatar {
+  width: 36px; height: 36px; border-radius: 12px;
+  flex-shrink: 0; overflow: hidden;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  display: flex; align-items: center; justify-content: center;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.user-avatar {
+  background: linear-gradient(135deg, #FFD54F, #FF8A65);
+  font-size: 16px; line-height: 1;
+}
+.bubble {
+  padding: 12px 16px;
+  font-size: 15px; line-height: 1.65;
+  word-break: break-word;
+  position: relative;
+}
+.ai .bubble {
+  background: var(--glass-white);
+  backdrop-filter: blur(12px);
+  border-radius: 4px 16px 16px 16px;
+  box-shadow: 0 2px 12px rgba(124,77,255,0.06);
+}
+.user .bubble {
+  background: #EDE7F6;
+  border: none;
+  border-radius: 16px 16px 4px 16px;
+}
+/* 流式光标 */
+.streaming .bubble::after {
+  content: ''; display: inline-block;
+  width: 2px; height: 16px;
+  background: var(--primary);
+  margin-left: 3px; vertical-align: text-bottom;
+  animation: blink 1s steps(2) infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+/* 卡片（独立行，与气泡左右对齐） */
+.card {
+  background: var(--glass-card);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid rgba(124,77,255,0.1);
+  box-shadow: 0 4px 20px rgba(124,77,255,0.06);
+  margin-left: 46px;
+  max-width: calc(88% - 46px);
+}
+.card-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+}
+.card-icon {
+  width: 32px; height: 32px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.card-icon.training { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); }
+.card-icon.chart { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); }
+.card-title { font-size: 14px; font-weight: 600; }
+.card-subtitle { font-size: 12px; color: var(--text-secondary); }
+.card-stats {
+  display: flex; gap: 12px; margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(124,77,255,0.08);
+}
+.stat-item { flex: 1; text-align: center; }
+.stat-value {
+  font-size: 20px; font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.card-footer {
+  text-align: center; padding-top: 10px;
+  border-top: 1px solid rgba(124,77,255,0.08);
+  font-size: 13px; color: var(--primary);
+  cursor: pointer; font-weight: 500;
+}
+.card-footer:active { opacity: 0.7; }
+/* 卡片任务列表 */
+.card-tasks {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: 12px;
+}
+.card-task-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px;
+}
+.task-tag {
+  font-size: 11px; font-weight: 600;
+  padding: 2px 6px; border-radius: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.task-name {
+  font-weight: 600; color: var(--text);
+  white-space: nowrap;
+}
+.task-meta {
+  color: var(--text-secondary); font-size: 12px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* 图片消息 */
+.msg-image {
+  border-radius: 12px; overflow: hidden;
+  margin-top: 8px; max-width: 220px;
+}
+.msg-image img {
+  width: 100%; height: auto; display: block;
+  border-radius: 12px;
+}
+/* SVG 图表卡片 */
+.chart-card svg { width: 100%; height: auto; }
+/* 快捷操作 */
+.quick-actions {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex; gap: 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.quick-actions::-webkit-scrollbar { display: none; }
+.quick-btn {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(124,77,255,0.15);
+  background: var(--glass-card);
+  backdrop-filter: blur(16px);
+  font-size: 13px; font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.quick-btn:active {
+  background: var(--primary);
+  color: #fff;
+  transform: scale(0.95);
+}
+/* 输入栏 */
+.input-bar {
+  flex-shrink: 0;
+  display: flex; align-items: flex-end; gap: 8px;
+  padding: 10px 12px 28px;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(124,77,255,0.06);
+}
+.input-wrap {
+  flex: 1;
+  background: #fff;
+  border-radius: 16px;
+  border: 1.5px solid rgba(124,77,255,0.12);
+  overflow: visible;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.input-wrap.focused {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(124,77,255,0.08);
+}
+.input-top {
+  display: flex; align-items: flex-start;
+  padding: 8px 10px 0; gap: 8px;
+}
+.input-voice {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: none; background: rgba(124,77,255,0.08);
+  font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.15s;
+}
+.input-voice:active { background: rgba(124,77,255,0.18); }
+.input-field {
+  flex: 1; min-height: 35px; max-height: 120px;
+  border: none; background: transparent;
+  padding: 4px 0; font-size: 15px; font-family: inherit;
+  outline: none; resize: none; line-height: 1.4;
+  overflow-y: auto;
+}
+.input-field::placeholder { color: #B0B0C0; }
+.input-add {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid rgba(124,77,255,0.25);
+  background: transparent; font-size: 18px; color: var(--primary);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.15s;
+}
+.input-add:active { background: rgba(124,77,255,0.08); }
+.input-bottom {
+  display: none; align-items: center;
+  justify-content: space-between;
+  padding: 0px 12px 7px;
+}
+.input-wrap.focused .input-bottom { display: flex; }
+.input-wrap.focused .input-field { min-height: 64px; }
+.child-switch {
+  display: flex; align-items: center; gap: 3px;
+  padding: 3px 9px; border-radius: 12px;
+  border: 1px solid rgba(124,77,255,0.2);
+  background: rgba(124,77,255,0.04);
+  font-size: 11px; font-weight: 500; color: var(--primary);
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+}
+.child-switch:active { background: rgba(124,77,255,0.1); }
+.view-profile {
+  display: flex; align-items: center; gap: 2px;
+  border: none; background: transparent;
+  font-size: 11px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; padding: 3px 0; transition: color 0.15s;
+}
+.view-profile:hover { color: var(--primary); }
+/* 孩子切换弹窗 */
+.child-modal-overlay {
+  position: absolute; bottom: 100%; left: 0; right: 0;
+  z-index: 20; display: none;
+}
+.child-modal-overlay.show { display: block; }
+.child-modal {
+  background: #fff; border-radius: 14px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.1);
+  margin: 0 0 8px; padding: 12px;
+  border: 1px solid rgba(124,77,255,0.08);
+}
+.child-modal-title {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  margin-bottom: 8px; padding-left: 2px;
+}
+.child-option {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 8px; border-radius: 10px;
+  cursor: pointer; transition: background 0.15s;
+}
+.child-option:hover { background: rgba(124,77,255,0.05); }
+.child-option.active { background: rgba(124,77,255,0.08); }
+.child-option-avatar {
+  width: 32px; height: 32px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.child-option-info { flex: 1; }
+.child-option-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.child-option-desc { font-size: 11px; color: var(--text-secondary); }
+.child-option-check {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid #D0D0D0;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.child-option.active .child-option-check {
+  background: var(--primary); border-color: var(--primary);
+}
+.child-option.active .child-option-check::after {
+  content: '✓'; color: #fff; font-size: 11px; font-weight: 700;
+}
+.send-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  color: #fff; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(124,77,255,0.3);
+  transition: all 0.2s; margin-bottom: 2px;
+}
+.send-btn:active { transform: scale(0.9); box-shadow: 0 2px 8px rgba(124,77,255,0.2); }
+/* 时间戳 */
+.time-stamp {
+  text-align: center; font-size: 11px;
+  color: var(--text-secondary);
+  padding: 4px 0;
+}
+/* 有序列表样式 */
+.bubble ol {
+  padding-left: 20px; margin: 8px 0 0;
+}
+.bubble ol li {
+  margin-bottom: 6px; font-size: 14px; line-height: 1.6;
+}
+.bubble ol li strong { color: var(--primary); }
+/* 气泡内表格 */
+.bubble table {
+  width: 100%; border-collapse: collapse;
+  margin-top: 8px; font-size: 12px;
+}
+.bubble table th {
+  background: rgba(124,77,255,0.08);
+  color: var(--primary); font-weight: 600;
+  padding: 6px 8px; text-align: left;
+  border-bottom: 1.5px solid rgba(124,77,255,0.15);
+  white-space: nowrap;
+}
+.bubble table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  color: var(--text);
+}
+.bubble table tr:last-child td { border-bottom: none; }
+.bubble table .up { color: #4CAF50; font-weight: 600; }
+.bubble table .down { color: #F44336; font-weight: 600; }
+.bubble table .same { color: #9CA3AF; }
+/* 含表格的气泡撑满宽度 */
+.bubble:has(table) { width: 100%; min-width: 0; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- 顶部导航 -->
+  <div class="nav-bar">
+    <button class="nav-left">☰</button>
+    <div class="nav-title">🌟 乐乐的星途</div>
+    <div class="nav-capsule">
+      <button class="nav-capsule-btn nav-capsule-new" title="新对话">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+      </button>
+      <div class="nav-capsule-divider"></div>
+      <button class="nav-capsule-btn" title="菜单">
+        <div class="nav-capsule-dots"><span></span><span></span><span></span></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- 消息流 -->
+  <div class="messages" id="messages">
+    <div class="time-stamp">今天 08:32</div>
+
+    <!-- 1. AI 问候 -->
+    <div class="msg-row ai">
+      <div class="avatar">
+        <img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">
+      </div>
+      <div class="bubble">
+        早上好！乐乐妈妈 ☀️<br><br>
+        乐乐昨晚睡了9小时，状态应该不错。今天建议从共同注意力训练开始。
+      </div>
+    </div>
+
+    <!-- 2. 用户消息 -->
+    <div class="msg-row user">
+      <div class="avatar user-avatar">👩</div>
+      <div class="bubble">好的，今天练什么？</div>
+    </div>
+
+    <!-- 3. AI 回复：训练安排 -->
+    <div class="msg-row ai">
+      <div class="avatar">
+        <img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">
+      </div>
+      <div class="bubble">
+        根据乐乐最近的进步，今天安排这3项训练 💪
+        <ol>
+          <li><strong>共同注意力</strong> — 用彩色积木做"看这里"游戏，目标：主动跟随指向 3次</li>
+          <li><strong>社交回应</strong> — 叫名字回头练习，配合乐乐喜欢的小星星贴纸奖励</li>
+          <li><strong>精细动作</strong> — 串珠子游戏，目标：独立完成5颗，提升手眼协调</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- 4. 训练卡片（缩略态，全宽） -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon training">🎯</div>
+        <div>
+          <div class="card-title">今日训练计划</div>
+          <div class="card-subtitle">2026年2月19日 · 共3项</div>
+        </div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-item">
+          <div class="stat-value">3</div>
+          <div class="stat-label">训练项目</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">45</div>
+          <div class="stat-label">预计分钟</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">82%</div>
+          <div class="stat-label">昨日完成率</div>
+        </div>
+      </div>
+      <div class="card-tasks">
+        <div class="card-task-item">
+          <span class="task-tag" style="background:rgba(124,77,255,0.12);color:#7C4DFF;">沟通</span>
+          <span class="task-name">共同注意力</span>
+          <span class="task-meta">15分钟 · 积木游戏</span>
+        </div>
+        <div class="card-task-item">
+          <span class="task-tag" style="background:rgba(255,107,107,0.12);color:#FF6B6B;">社交</span>
+          <span class="task-name">社交回应</span>
+          <span class="task-meta">15分钟 · 叫名回头</span>
+        </div>
+        <div class="card-task-item">
+          <span class="task-tag" style="background:rgba(255,217,61,0.15);color:#D4A017;">运动</span>
+          <span class="task-name">精细动作</span>
+          <span class="task-meta">15分钟 · 串珠子</span>
+        </div>
+      </div>
+      <div class="card-footer">点击查看详情 →</div>
+    </div>
+
+    <!-- 5. 用户消息 -->
+    <div class="msg-row user">
+      <div class="avatar user-avatar">👩</div>
+      <div class="bubble">看看这周数据</div>
+    </div>
+
+    <!-- 6. AI 回复 + 趋势图卡片（全宽） -->
+    <div class="msg-row ai">
+      <div class="avatar">
+        <img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">
+      </div>
+      <div class="bubble">
+        这周乐乐整体表现很棒！共同注意力提升明显，来看趋势 📈
+      </div>
+    </div>
+    <div class="card chart-card">
+      <div class="card-header">
+        <div class="card-icon chart">📊</div>
+        <div>
+          <div class="card-title">本周训练趋势</div>
+          <div class="card-subtitle">2.13 — 2.19 · 共同注意力</div>
+        </div>
+      </div>
+      <svg viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#7C4DFF" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#7C4DFF" stop-opacity="0.02"/>
+              </linearGradient>
+              <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#7C4DFF"/>
+                <stop offset="100%" stop-color="#E040FB"/>
+              </linearGradient>
+            </defs>
+            <!-- 网格线 -->
+            <line x1="40" y1="20" x2="300" y2="20" stroke="#E8E0FF" stroke-width="0.5"/>
+            <line x1="40" y1="55" x2="300" y2="55" stroke="#E8E0FF" stroke-width="0.5"/>
+            <line x1="40" y1="90" x2="300" y2="90" stroke="#E8E0FF" stroke-width="0.5"/>
+            <line x1="40" y1="125" x2="300" y2="125" stroke="#E8E0FF" stroke-width="0.5"/>
+            <!-- Y轴标签 -->
+            <text x="32" y="24" text-anchor="end" font-size="10" fill="#9CA3AF">100%</text>
+            <text x="32" y="59" text-anchor="end" font-size="10" fill="#9CA3AF">75%</text>
+            <text x="32" y="94" text-anchor="end" font-size="10" fill="#9CA3AF">50%</text>
+            <text x="32" y="129" text-anchor="end" font-size="10" fill="#9CA3AF">25%</text>
+            <!-- 面积 -->
+            <path d="M58,100 L101,88 L144,82 L187,70 L230,55 L273,40 L273,125 L58,125 Z" fill="url(#areaGrad)"/>
+            <!-- 折线 -->
+            <polyline points="58,100 101,88 144,82 187,70 230,55 273,40" fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- 数据点 -->
+            <circle cx="58" cy="100" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="101" cy="88" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="144" cy="82" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="187" cy="70" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="230" cy="55" r="4" fill="#fff" stroke="#7C4DFF" stroke-width="2"/>
+            <circle cx="273" cy="40" r="5" fill="#7C4DFF" stroke="#fff" stroke-width="2.5"/>
+            <!-- 最新值标签 -->
+            <rect x="253" y="22" width="40" height="18" rx="9" fill="#7C4DFF"/>
+            <text x="273" y="34" text-anchor="middle" font-size="10" fill="#fff" font-weight="600">85%</text>
+            <!-- X轴标签 -->
+            <text x="58" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">周一</text>
+            <text x="101" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">周二</text>
+            <text x="144" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">周三</text>
+            <text x="187" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">周四</text>
+            <text x="230" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">周五</text>
+            <text x="273" y="142" text-anchor="middle" font-size="10" fill="#9CA3AF">今天</text>
+          </svg>
+      <div class="card-footer">点击查看详情 →</div>
+    </div>
+
+    <!-- 6.5 用户问详细数据 -->
+    <div class="msg-row user">
+      <div class="avatar user-avatar">👩</div>
+      <div class="bubble">每项训练的具体数据呢？</div>
+    </div>
+
+    <!-- 6.6 AI 回复表格 -->
+    <div class="msg-row ai">
+      <div class="avatar">
+        <img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">
+      </div>
+      <div class="bubble">
+        这是本周各项训练的详细数据 📋
+        <table>
+          <tr><th>训练项目</th><th>完成率</th><th>较上周</th><th>时长</th></tr>
+          <tr><td>共同注意力</td><td>85%</td><td class="up">↑12%</td><td>98分钟</td></tr>
+          <tr><td>社交回应</td><td>72%</td><td class="up">↑8%</td><td>75分钟</td></tr>
+          <tr><td>精细动作</td><td>68%</td><td class="same">→0%</td><td>62分钟</td></tr>
+          <tr><td>语言理解</td><td>60%</td><td class="up">↑5%</td><td>45分钟</td></tr>
+          <tr><td>情绪管理</td><td>55%</td><td class="down">↓3%</td><td>30分钟</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 7. 用户发送图片 -->
+    <div class="msg-row user">
+      <div class="avatar user-avatar">👩</div>
+      <div>
+        <div class="bubble" style="margin-bottom:6px;">刚拍的，乐乐在串珠子 😊</div>
+        <div class="msg-image">
+          <img src="https://images.unsplash.com/photo-1587654780291-39c9404d7dd0?w=400&h=300&fit=crop" alt="孩子活动照片">
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. AI 对图片的分析回复（流式光标） -->
+    <div class="msg-row ai streaming">
+      <div class="avatar">
+        <img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">
+      </div>
+      <div class="bubble">
+        看到了！乐乐的握珠姿势比上周进步很多 👏<br><br>
+        从照片来看：<br>
+        · 拇指和食指的对捏动作更稳定了<br>
+        · 注意力集中时间明显延长<br>
+        · 建议下次可以尝试更小的珠子，进一步锻炼精细动作<br><br>
+        继续加油，乐乐妈妈！每一步都算数 🌟
+      </div>
+    </div>
+  </div>
+
+  <!-- 快捷操作横滑条 -->
+  <div class="quick-actions">
+    <button class="quick-btn">🏋️ 开始训练</button>
+    <button class="quick-btn">📝 记录生活</button>
+    <button class="quick-btn">📊 查看看板</button>
+    <button class="quick-btn">🧪 做个筛查</button>
+  </div>
+
+  <!-- 输入栏 -->
+  <div class="input-bar">
+    <div class="input-wrap" id="inputWrap">
+      <!-- 孩子切换弹窗 -->
+      <div class="child-modal-overlay" id="childModal">
+        <div class="child-modal">
+          <div class="child-modal-title">切换咨询对象</div>
+          <div class="child-option active" onclick="switchChild(this,'乐乐')">
+            <div class="child-option-avatar" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">🧒</div>
+            <div class="child-option-info">
+              <div class="child-option-name">乐乐</div>
+              <div class="child-option-desc">4岁3个月 · 男</div>
+            </div>
+            <div class="child-option-check"></div>
+          </div>
+          <div class="child-option" onclick="switchChild(this,'朵朵')">
+            <div class="child-option-avatar" style="background:linear-gradient(135deg,#FCE4EC,#F8BBD0);">👧</div>
+            <div class="child-option-info">
+              <div class="child-option-name">朵朵</div>
+              <div class="child-option-desc">6岁1个月 · 女</div>
+            </div>
+            <div class="child-option-check"></div>
+          </div>
+        </div>
+      </div>
+      <!-- 顶部行：语音 + 输入 + 加号 -->
+      <div class="input-top">
+        <button class="input-voice" title="语音输入">🎤</button>
+        <textarea class="input-field" id="inputField" rows="1" placeholder="发消息或按住说话..."></textarea>
+        <button class="input-add" title="拍照/相册">+</button>
+      </div>
+      <!-- 底部行：切换孩子 + 查看档案（聚焦时显示） -->
+      <div class="input-bottom">
+        <div class="child-switch" id="childSwitch">乐乐 ⇄</div>
+        <button class="view-profile" id="viewProfile">查看档案 ›</button>
+      </div>
+    </div>
+    <button class="send-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const messages = document.getElementById('messages');
+messages.scrollTop = messages.scrollHeight;
+
+const inputWrap = document.getElementById('inputWrap');
+const inputField = document.getElementById('inputField');
+const childSwitch = document.getElementById('childSwitch');
+const childModal = document.getElementById('childModal');
+
+// 聚焦展开
+inputField.addEventListener('focus', () => {
+  inputWrap.classList.add('focused');
+});
+
+// 阻止底部按钮点击时触发 blur 收起
+inputWrap.addEventListener('mousedown', (e) => {
+  if (e.target !== inputField) {
+    e.preventDefault(); // 阻止 blur
+  }
+});
+
+// 点击输入框外部才收起
+document.addEventListener('click', (e) => {
+  if (!inputWrap.contains(e.target) && !childModal.contains(e.target)) {
+    inputWrap.classList.remove('focused');
+    childModal.classList.remove('show');
+  }
+});
+
+// textarea 自动增高
+inputField.addEventListener('input', () => {
+  inputField.style.height = 'auto';
+  inputField.style.height = Math.min(inputField.scrollHeight, 100) + 'px';
+});
+
+// 切换孩子弹窗
+childSwitch.addEventListener('click', (e) => {
+  e.stopPropagation();
+  childModal.classList.toggle('show');
+});
+
+function switchChild(el, name) {
+  document.querySelectorAll('.child-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  childSwitch.textContent = name + ' ⇄';
+  childModal.classList.remove('show');
+  // 更新标题
+  document.querySelector('.nav-title').innerHTML = '🌟 ' + name + '的星途';
+}
+
+// 快捷按钮
+document.querySelectorAll('.quick-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    inputField.value = btn.textContent.trim();
+    inputField.focus();
+    inputField.dispatchEvent(new Event('input'));
+  });
+});
+
+// 发送
+document.querySelector('.send-btn').addEventListener('click', () => {
+  if (inputField.value.trim()) {
+    inputField.value = '';
+    inputField.style.height = 'auto';
+    inputField.focus();
+  }
+});
+
+// 回车发送（Shift+Enter 换行）
+inputField.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+    e.preventDefault();
+    document.querySelector('.send-btn').click();
+  }
+});
+</script>
+</body>
+</html>

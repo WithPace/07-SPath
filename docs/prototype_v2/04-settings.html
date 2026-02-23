@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星途AI — 设置页</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #7C4DFF;
+  --primary-light: #B388FF;
+  --bg: #F5F3FF;
+  --glass-white: rgba(255,255,255,0.88);
+  --glass-card: rgba(255,255,255,0.85);
+  --text: #1A1A2E;
+  --text-secondary: #6B7280;
+  --radius: 16px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: var(--bg); color: var(--text);
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh; padding: 20px;
+}
+.phone-frame {
+  width: 420px; height: 900px; background: var(--bg);
+  border-radius: 40px;
+  box-shadow: 0 25px 80px rgba(124,77,255,0.15), 0 0 0 1px rgba(124,77,255,0.08);
+  display: flex; flex-direction: column; overflow: hidden; position: relative;
+}
+.nav-bar {
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px 20px 12px;
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(124,77,255,0.08);
+  flex-shrink: 0; z-index: 10; position: relative;
+}
+.nav-back {
+  position: absolute; left: 20px;
+  width: 40px; height: 40px; border-radius: 12px; border: none;
+  background: var(--glass-white); backdrop-filter: blur(10px);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s;
+}
+.nav-back:active { transform: scale(0.92); }
+.nav-back svg { width: 20px; height: 20px; stroke: var(--text); stroke-width: 2; fill: none; }
+.nav-title {
+  font-size: 17px; font-weight: 600;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.scroll-area {
+  flex: 1; overflow-y: auto; padding: 16px 16px 32px;
+  -webkit-overflow-scrolling: touch;
+}
+.scroll-area::-webkit-scrollbar { width: 0; }
+.scroll-inner { display: flex; flex-direction: column; gap: 14px; }
+.group {
+  background: var(--glass-white);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius);
+  border: 1px solid rgba(124,77,255,0.08);
+  box-shadow: 0 4px 20px rgba(124,77,255,0.06);
+  overflow: hidden;
+}
+.item {
+  display: flex; align-items: center;
+  min-height: 52px; padding: 12px 16px;
+  cursor: pointer; transition: background 0.15s; position: relative;
+}
+.item:active { background: rgba(124,77,255,0.04); }
+.item + .item::before {
+  content: ''; position: absolute; top: 0; left: 52px; right: 0;
+  height: 1px; background: rgba(124,77,255,0.08);
+}
+.item-icon {
+  width: 20px; height: 20px; flex-shrink: 0; margin-right: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.item-icon svg { width: 20px; height: 20px; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.item-icon.purple svg { stroke: var(--primary); }
+.item-icon.blue svg { stroke: #2196F3; }
+.item-icon.green svg { stroke: #4CAF50; }
+.item-icon.orange svg { stroke: #FF9800; }
+.item-icon.red svg { stroke: #EF4444; }
+.item-icon.gray svg { stroke: var(--text-secondary); }
+.item-body { flex: 1; min-width: 0; }
+.item-title { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.3; }
+.item-title.red { color: #EF4444; }
+.item-subtitle { font-size: 11px; color: var(--text-secondary); line-height: 1.4; margin-top: 2px; }
+.item-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: 8px; }
+.item-value { font-size: 14px; color: var(--text-secondary); white-space: nowrap; }
+.item-arrow svg { width: 16px; height: 16px; stroke: #C0C0C0; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.item-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: #fff; font-weight: 600; flex-shrink: 0;
+}
+.badge-upgrade {
+  display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  color: #fff; font-size: 12px; font-weight: 600;
+}
+.toggle {
+  width: 51px; height: 31px; border-radius: 16px; background: #E0E0E0;
+  border: none; cursor: pointer; position: relative; transition: background 0.25s; flex-shrink: 0;
+}
+.toggle.on { background: var(--primary); }
+.toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 27px; height: 27px; border-radius: 50%; background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: transform 0.25s;
+}
+.toggle.on::after { transform: translateX(20px); }
+.logout-item {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 52px; padding: 12px 16px; cursor: pointer; transition: background 0.15s;
+}
+.logout-item:active { background: rgba(239,68,68,0.06); }
+.logout-text { font-size: 15px; font-weight: 500; color: #EF4444; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="nav-bar">
+    <button class="nav-back" onclick="history.back()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="nav-title">设置</div>
+  </div>
+
+  <div class="scroll-area">
+    <div class="scroll-inner">
+    <!-- 个人信息 -->
+    <div class="group">
+      <div class="item" onclick="showToast('修改头像')">
+        <div class="item-icon purple"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="item-body"><div class="item-title">头像</div></div>
+        <div class="item-right">
+          <div class="item-avatar">乐</div>
+          <span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </div>
+      </div>
+      <div class="item" onclick="openSub('sub-nickname')">
+        <div class="item-icon purple"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+        <div class="item-body"><div class="item-title">昵称</div></div>
+        <div class="item-right">
+          <span class="item-value">乐乐妈妈</span>
+          <span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </div>
+      </div>
+      <div class="item" onclick="openSub('sub-phone')">
+        <div class="item-icon purple"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+        <div class="item-body"><div class="item-title">手机号</div></div>
+        <div class="item-right">
+          <span class="item-value">138****8000</span>
+          <span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIP订阅 -->
+    <div class="group">
+      <div class="item" onclick="showToast('当前为免费版')">
+        <div class="item-icon orange"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="item-body"><div class="item-title">当前等级</div></div>
+        <div class="item-right">
+          <span class="item-value">免费版</span>
+          <span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </div>
+      </div>
+      <div class="item" onclick="openSub('sub-usage')">
+        <div class="item-icon blue"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+        <div class="item-body"><div class="item-title">用量统计</div></div>
+        <div class="item-right">
+          <span class="item-value">本月 23/50 次</span>
+          <span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </div>
+      </div>
+      <div class="item" onclick="showToast('即将开放，敬请期待')">
+        <div class="item-icon purple"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg></div>
+        <div class="item-body"><div class="item-title">升级 VIP</div></div>
+        <div class="item-right">
+          <span class="badge-upgrade">去升级</span>
+          <span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 隐私与安全 -->
+    <div class="group">
+      <div class="item" onclick="openSub('sub-permission')">
+        <div class="item-icon green"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="item-body">
+          <div class="item-title">数据访问权限</div>
+          <div class="item-subtitle">控制医生/老师可查看的数据</div>
+        </div>
+        <div class="item-right"><span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+      </div>
+      <div class="item" onclick="showToast('数据导出中...')">
+        <div class="item-icon blue"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+        <div class="item-body">
+          <div class="item-title">数据导出</div>
+          <div class="item-subtitle">导出所有训练和评估数据</div>
+        </div>
+        <div class="item-right"><span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+      </div>
+      <div class="item" onclick="showToast('请联系客服注销账号')">
+        <div class="item-icon red"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+        <div class="item-body"><div class="item-title red">注销账号</div></div>
+        <div class="item-right"><span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+      </div>
+    </div>
+
+    <!-- 通知设置 -->
+    <div class="group">
+      <div class="item">
+        <div class="item-icon purple"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <div class="item-body">
+          <div class="item-title">训练提醒</div>
+          <div class="item-subtitle">每日训练时间到时提醒</div>
+        </div>
+        <div class="item-right"><button class="toggle on" onclick="toggleSwitch(this,'训练提醒')"></button></div>
+      </div>
+      <div class="item">
+        <div class="item-icon blue"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div class="item-body">
+          <div class="item-title">评估通知</div>
+          <div class="item-subtitle">定期评估到期提醒</div>
+        </div>
+        <div class="item-right"><button class="toggle on" onclick="toggleSwitch(this,'评估通知')"></button></div>
+      </div>
+      <div class="item">
+        <div class="item-icon green"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="item-body">
+          <div class="item-title">协作消息</div>
+          <div class="item-subtitle">医生/老师发来的消息通知</div>
+        </div>
+        <div class="item-right"><button class="toggle on" onclick="toggleSwitch(this,'协作消息')"></button></div>
+      </div>
+    </div>
+
+    <!-- 关于 -->
+    <div class="group">
+      <div class="item" onclick="openSub('sub-about')">
+        <div class="item-icon purple"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+        <div class="item-body"><div class="item-title">关于星途</div></div>
+        <div class="item-right">
+          <span class="item-value">v1.0.0</span>
+          <span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </div>
+      </div>
+      <div class="item" onclick="openSub('sub-terms')">
+        <div class="item-icon gray"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="item-body"><div class="item-title">用户协议</div></div>
+        <div class="item-right"><span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+      </div>
+      <div class="item" onclick="openSub('sub-privacy')">
+        <div class="item-icon gray"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <div class="item-body"><div class="item-title">隐私政策</div></div>
+        <div class="item-right"><span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+      </div>
+      <div class="item" onclick="openSub('sub-feedback')">
+        <div class="item-icon gray"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+        <div class="item-body"><div class="item-title">意见反馈</div></div>
+        <div class="item-right"><span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+      </div>
+    </div>
+
+    <!-- 退出登录 -->
+    <div class="group">
+      <div class="logout-item" onclick="showToast('已退出登录')">
+        <span class="logout-text">退出登录</span>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- 子页面容器 - absolute定位不影响主布局 -->
+  <div class="sub-page" id="sub-nickname">
+    <div class="sub-nav">
+      <button class="sub-nav-back" onclick="closeSub('sub-nickname')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="sub-nav-title">修改昵称</span>
+      <button class="sub-nav-action" onclick="showToast('已保存');closeSub('sub-nickname')">保存</button>
+    </div>
+    <div class="sub-body">
+      <div>
+        <div class="form-label">昵称</div>
+        <input class="form-input" value="乐乐妈妈" maxlength="20" placeholder="请输入昵称">
+        <div class="form-hint">2-20个字符，支持中英文和数字</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-page" id="sub-phone">
+    <div class="sub-nav">
+      <button class="sub-nav-back" onclick="closeSub('sub-phone')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="sub-nav-title">修改手机号</span>
+    </div>
+    <div class="sub-body">
+      <div>
+        <div class="form-label">当前手机号</div>
+        <input class="form-input" value="138****8000" disabled style="background:#F5F3FF;color:var(--text-secondary);">
+      </div>
+      <div>
+        <div class="form-label">新手机号</div>
+        <input class="form-input" type="tel" maxlength="11" placeholder="请输入新手机号" inputmode="numeric">
+      </div>
+      <div>
+        <div class="form-label">验证码</div>
+        <div style="display:flex;gap:10px;">
+          <input class="form-input" type="tel" maxlength="6" placeholder="请输入验证码" inputmode="numeric" style="flex:1;">
+          <button style="flex-shrink:0;width:110px;height:48px;border:1.5px solid var(--primary);border-radius:12px;background:transparent;color:var(--primary);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;">获取验证码</button>
+        </div>
+      </div>
+      <button class="form-btn" onclick="showToast('手机号修改成功');closeSub('sub-phone')">确认修改</button>
+    </div>
+  </div>
+
+  <div class="sub-page" id="sub-usage">
+    <div class="sub-nav">
+      <button class="sub-nav-back" onclick="closeSub('sub-usage')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="sub-nav-title">用量统计</span>
+    </div>
+    <div class="sub-body">
+      <div class="group" style="padding:20px;">
+        <div class="usage-header">
+          <div class="usage-big">23<span style="font-size:20px;-webkit-text-fill-color:var(--text-secondary);">/50</span></div>
+          <div class="usage-label">本月已用对话次数</div>
+        </div>
+        <div class="usage-bar-wrap"><div class="usage-bar-fill" style="width:46%"></div></div>
+        <div class="usage-row"><span>已用 46%</span><span>剩余 27 次</span></div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-val">156</div><div class="stat-name">累计对话</div></div>
+        <div class="stat-card"><div class="stat-val">42</div><div class="stat-name">训练记录</div></div>
+        <div class="stat-card"><div class="stat-val">8</div><div class="stat-name">评估次数</div></div>
+        <div class="stat-card"><div class="stat-val">15</div><div class="stat-name">生活记录</div></div>
+      </div>
+      <div class="group" style="padding:16px;">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">月度趋势</div>
+        <svg viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+          <defs><linearGradient id="ug" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7C4DFF" stop-opacity="0.2"/><stop offset="100%" stop-color="#7C4DFF" stop-opacity="0"/></linearGradient></defs>
+          <path d="M20,70 L75,55 L130,60 L185,40 L240,35 L295,25 L295,90 L20,90Z" fill="url(#ug)"/>
+          <polyline points="20,70 75,55 130,60 185,40 240,35 295,25" fill="none" stroke="#7C4DFF" stroke-width="2" stroke-linecap="round"/>
+          <text x="20" y="98" font-size="9" fill="#9CA3AF">9月</text>
+          <text x="75" y="98" font-size="9" fill="#9CA3AF">10月</text>
+          <text x="130" y="98" font-size="9" fill="#9CA3AF">11月</text>
+          <text x="185" y="98" font-size="9" fill="#9CA3AF">12月</text>
+          <text x="240" y="98" font-size="9" fill="#9CA3AF">1月</text>
+          <text x="290" y="98" font-size="9" fill="#9CA3AF">2月</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-page" id="sub-permission">
+    <div class="sub-nav">
+      <button class="sub-nav-back" onclick="closeSub('sub-permission')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="sub-nav-title">数据访问权限</span>
+    </div>
+    <!-- 孩子切换 tab -->
+    <div class="child-tabs">
+      <button class="child-tab active" onclick="switchChild(this,0)"><span class="child-tab-avatar" style="background:linear-gradient(135deg,#B388FF,#7C4DFF);">乐</span>乐乐</button>
+      <button class="child-tab" onclick="switchChild(this,1)"><span class="child-tab-avatar" style="background:linear-gradient(135deg,#FFD54F,#FF8A65);">星</span>小星</button>
+    </div>
+    <!-- 乐乐的权限 -->
+    <div class="sub-body child-perm-panel" id="childPerm0" style="display:flex;">
+      <div class="perm-section-title">👨‍⚕️ 王医生（主治医师）</div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">评估数据</div><div class="perm-desc">M-CHAT筛查结果、能力画像</div></div>
+        <button class="toggle on" onclick="toggleSwitch(this,'评估数据')"></button>
+      </div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">训练记录</div><div class="perm-desc">每日训练完成情况和进度</div></div>
+        <button class="toggle on" onclick="toggleSwitch(this,'训练记录')"></button>
+      </div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">行为记录</div><div class="perm-desc">行为事件和ABC分析</div></div>
+        <button class="toggle on" onclick="toggleSwitch(this,'行为记录')"></button>
+      </div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">生活记录</div><div class="perm-desc">日常生活技能记录</div></div>
+        <button class="toggle" onclick="toggleSwitch(this,'生活记录')"></button>
+      </div>
+      <div class="perm-section-title" style="margin-top:16px;">👩‍🏫 李老师（特教老师）</div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">训练记录</div><div class="perm-desc">每日训练完成情况和进度</div></div>
+        <button class="toggle on" onclick="toggleSwitch(this,'训练记录')"></button>
+      </div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">行为记录</div><div class="perm-desc">行为事件和ABC分析</div></div>
+        <button class="toggle on" onclick="toggleSwitch(this,'行为记录')"></button>
+      </div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">评估数据</div><div class="perm-desc">M-CHAT筛查结果、能力画像</div></div>
+        <button class="toggle" onclick="toggleSwitch(this,'评估数据')"></button>
+      </div>
+    </div>
+    <!-- 小星的权限 -->
+    <div class="sub-body child-perm-panel" id="childPerm1" style="display:none;">
+      <div class="perm-section-title">👩‍⚕️ 张医生（发育行为科）</div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">评估数据</div><div class="perm-desc">M-CHAT筛查结果、能力画像</div></div>
+        <button class="toggle on" onclick="toggleSwitch(this,'评估数据')"></button>
+      </div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">训练记录</div><div class="perm-desc">每日训练完成情况和进度</div></div>
+        <button class="toggle" onclick="toggleSwitch(this,'训练记录')"></button>
+      </div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">行为记录</div><div class="perm-desc">行为事件和ABC分析</div></div>
+        <button class="toggle on" onclick="toggleSwitch(this,'行为记录')"></button>
+      </div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">生活记录</div><div class="perm-desc">日常生活技能记录</div></div>
+        <button class="toggle on" onclick="toggleSwitch(this,'生活记录')"></button>
+      </div>
+      <div class="perm-section-title" style="margin-top:16px;">👩‍🏫 赵老师（语言治疗师）</div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">训练记录</div><div class="perm-desc">每日训练完成情况和进度</div></div>
+        <button class="toggle on" onclick="toggleSwitch(this,'训练记录')"></button>
+      </div>
+      <div class="perm-item">
+        <div class="perm-info"><div class="perm-name">评估数据</div><div class="perm-desc">M-CHAT筛查结果、能力画像</div></div>
+        <button class="toggle" onclick="toggleSwitch(this,'评估数据')"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 子页面：用户协议 -->
+  <div class="sub-page" id="sub-terms">
+    <div class="sub-nav">
+      <button class="sub-nav-back" onclick="closeSub('sub-terms')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="sub-nav-title">用户服务协议</span>
+    </div>
+    <div class="sub-body legal-body">
+      <h4>一、服务说明</h4>
+      <p>星途AI（以下简称"本平台"）是一款基于人工智能技术的自闭症儿童康复辅助服务平台。本平台提供AI对话、评估筛查、训练建议、行为记录、数据看板等功能，旨在为家长、医生和特教老师提供科学、便捷的康复辅助工具。</p>
+      <p>本平台提供的所有内容和建议仅供参考，不构成医疗诊断或治疗方案。用户应结合专业医疗机构的意见做出决策。</p>
+      <h4>二、账号注册与管理</h4>
+      <p>用户需使用有效手机号注册账号，并确保提供的信息真实、准确。每个手机号仅可注册一个账号。用户应妥善保管账号信息，因账号泄露造成的损失由用户自行承担。</p>
+      <p>本平台有权对异常账号进行限制或封禁处理，包括但不限于：恶意注册、违规操作、危害平台安全等行为。</p>
+      <h4>三、用户行为规范</h4>
+      <p>用户在使用本平台时，应遵守国家法律法规，不得利用本平台从事违法违规活动。用户不得上传、发布含有违法、暴力、色情、虚假等内容的信息。</p>
+      <p>用户应尊重其他用户的隐私和权益，不得未经授权获取、使用或传播他人信息。</p>
+      <h4>四、知识产权</h4>
+      <p>本平台的所有内容，包括但不限于文字、图片、音频、视频、软件、算法模型等，均受知识产权法律保护。未经本平台书面许可，任何人不得复制、修改、传播或以其他方式使用。</p>
+      <p>用户在平台上生成的内容，其知识产权归用户所有，但用户授予本平台在服务范围内使用该内容的许可。</p>
+      <h4>五、免责声明</h4>
+      <p>本平台基于AI技术提供辅助建议，不保证建议的绝对准确性和完整性。AI生成的评估结果和训练建议仅供参考，不能替代专业医疗诊断。</p>
+      <p>因不可抗力、网络故障、系统维护等原因导致的服务中断或数据丢失，本平台不承担责任，但将尽力减少对用户的影响。</p>
+      <h4>六、协议修改与终止</h4>
+      <p>本平台有权根据业务发展需要修改本协议内容，修改后的协议将在平台上公布。用户继续使用本平台即视为同意修改后的协议。</p>
+      <p>如用户违反本协议，本平台有权终止向该用户提供服务。</p>
+    </div>
+  </div>
+
+  <!-- 子页面：隐私政策 -->
+  <div class="sub-page" id="sub-privacy">
+    <div class="sub-nav">
+      <button class="sub-nav-back" onclick="closeSub('sub-privacy')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="sub-nav-title">隐私政策</span>
+    </div>
+    <div class="sub-body legal-body">
+      <h4>一、信息收集</h4>
+      <p>为提供服务，我们会收集以下信息：手机号码（用于账号注册和登录验证）、您主动填写的儿童基本信息（姓名、年龄、性别等）、对话记录和训练数据、设备信息和日志数据。</p>
+      <p>我们仅收集提供服务所必需的最少信息，不会过度收集用户数据。</p>
+      <h4>二、信息使用</h4>
+      <p>收集的信息将用于：提供AI对话和评估服务、生成个性化训练建议和康复方案、数据分析和看板展示、服务优化和产品改进。</p>
+      <p>我们不会将用户信息用于与服务无关的目的，也不会向用户发送与服务无关的商业广告。</p>
+      <h4>三、信息共享</h4>
+      <p>我们不会向第三方出售用户个人信息。在以下情况下，我们可能会共享用户信息：经用户明确授权同意的；在协作团队（care_team）中，按照用户设定的权限与医生、老师共享相关数据；法律法规要求的。</p>
+      <h4>四、信息存储与安全</h4>
+      <p>用户数据存储在经过安全认证的云服务器上，采用加密传输和存储技术。我们实施了严格的数据访问控制，采用行级安全策略（RLS）确保用户只能访问授权范围内的数据。</p>
+      <p>尽管我们采取了合理的安全措施，但无法保证信息的绝对安全。如发生数据泄露事件，我们将及时通知受影响的用户。</p>
+      <h4>五、用户权利</h4>
+      <p>用户有权：查看、修改自己的个人信息；删除自己的账号和相关数据；撤回已授予的数据访问权限；导出自己的数据；对数据处理提出异议。</p>
+      <p>如需行使上述权利，请通过平台内的设置功能操作或联系我们的客服团队。</p>
+      <h4>六、未成年人保护</h4>
+      <p>本平台高度重视未成年人信息保护。平台服务对象包含未成年儿童信息，我们要求所有儿童信息必须由其监护人（家长）提供和管理。</p>
+      <p>我们对儿童数据实施更严格的保护措施，包括加密存储、最小化收集、严格的访问控制等。未经监护人授权，任何第三方不得访问儿童数据。</p>
+      <h4>七、政策更新</h4>
+      <p>我们可能会不时更新本隐私政策。更新后的政策将在平台上公布，重大变更将通过平台通知告知用户。</p>
+    </div>
+  </div>
+
+  <div class="sub-page" id="sub-about">
+    <div class="sub-nav">
+      <button class="sub-nav-back" onclick="closeSub('sub-about')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="sub-nav-title">关于星途</span>
+    </div>
+    <div class="sub-body" style="align-items:center;">
+      <div class="about-logo">
+        <span class="about-star">⭐</span>
+        <div class="about-name">星途AI</div>
+        <div class="about-ver">Version 1.0.0 beta</div>
+      </div>
+      <div class="about-desc">
+        AI 驱动的自闭症儿童康复助手<br>
+        陪伴每一步成长<br><br>
+        每个星星都有自己的轨迹 ✨
+      </div>
+      <div class="group" style="width:100%;margin-top:16px;">
+        <div class="item" onclick="showToast('已是最新版')">
+          <div class="item-body"><div class="item-title">检查更新</div></div>
+          <div class="item-right">
+            <span class="item-value">已是最新版</span>
+            <span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+          </div>
+        </div>
+        <div class="item" onclick="showToast('⭐ 感谢您的支持！')">
+          <div class="item-body"><div class="item-title">给个好评</div></div>
+          <div class="item-right"><span class="item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text-secondary);text-align:center;margin-top:auto;padding-top:20px;">
+        © 2026 南京米斗教育科技有限公司<br>苏ICP备XXXXXXXX号
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-page" id="sub-feedback">
+    <div class="sub-nav">
+      <button class="sub-nav-back" onclick="closeSub('sub-feedback')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="sub-nav-title">意见反馈</span>
+      <button class="sub-nav-action" onclick="showToast('感谢您的反馈！');closeSub('sub-feedback')">提交</button>
+    </div>
+    <div class="sub-body">
+      <div>
+        <div class="form-label">反馈类型</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="fbTags">
+          <span class="fb-tag active">功能建议</span>
+          <span class="fb-tag">Bug反馈</span>
+          <span class="fb-tag">体验问题</span>
+          <span class="fb-tag">其他</span>
+        </div>
+      </div>
+      <div>
+        <div class="form-label">详细描述</div>
+        <textarea class="feedback-textarea" placeholder="请描述您的问题或建议，我们会认真对待每一条反馈..."></textarea>
+      </div>
+      <div>
+        <div class="form-label">联系方式（选填）</div>
+        <input class="form-input" placeholder="手机号或邮箱，方便我们回复您">
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<style>
+.sub-page {
+  position: absolute; inset: 0; background: var(--bg); z-index: 30;
+  transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+  display: flex; flex-direction: column; border-radius: 40px; overflow: hidden;
+}
+.sub-page.show { transform: translateX(0); }
+.sub-nav {
+  display: flex; align-items: center; padding: 16px 20px 12px;
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(124,77,255,0.08); flex-shrink: 0;
+}
+.sub-nav-back {
+  width: 40px; height: 40px; border-radius: 12px; border: none;
+  background: var(--glass-white); backdrop-filter: blur(10px);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s; margin-right: 12px;
+}
+.sub-nav-back:active { transform: scale(0.92); }
+.sub-nav-back svg { width: 20px; height: 20px; stroke: var(--text); stroke-width: 2; fill: none; }
+.sub-nav-title { font-size: 17px; font-weight: 600; color: var(--text); }
+.sub-nav-action {
+  margin-left: auto; border: none; background: none;
+  font-size: 15px; font-weight: 600; color: var(--primary);
+  cursor: pointer; padding: 4px 8px;
+}
+.sub-nav-action:active { opacity: 0.6; }
+.sub-body {
+  flex: 1; overflow-y: auto; padding: 20px 16px 32px;
+  display: flex; flex-direction: column; gap: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+.sub-body::-webkit-scrollbar { width: 0; }
+.form-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; }
+.form-input {
+  width: 100%; height: 48px; border: 1.5px solid rgba(124,77,255,0.12);
+  border-radius: 12px; padding: 0 14px; font-size: 15px; font-family: inherit;
+  color: var(--text); background: #fff; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,77,255,0.08); }
+.form-input::placeholder { color: #B0B0C0; }
+.form-hint { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+.form-btn {
+  width: 100%; height: 50px; border: none; border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  color: #fff; font-size: 16px; font-weight: 600; font-family: inherit;
+  cursor: pointer; box-shadow: 0 4px 16px rgba(124,77,255,0.3);
+  transition: all 0.2s; margin-top: 8px;
+}
+.form-btn:active { transform: scale(0.98); }
+.usage-header { text-align: center; padding: 20px 0; }
+.usage-big {
+  font-size: 48px; font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.usage-label { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+.usage-bar-wrap { height: 8px; background: rgba(124,77,255,0.08); border-radius: 4px; margin-top: 12px; overflow: hidden; }
+.usage-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--primary), #E040FB); }
+.usage-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-card {
+  background: var(--glass-white); backdrop-filter: blur(20px);
+  border-radius: 12px; padding: 16px; text-align: center;
+  border: 1px solid rgba(124,77,255,0.08);
+}
+.stat-val {
+  font-size: 24px; font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-name { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.perm-section-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; padding-left: 4px; }
+.perm-item {
+  display: flex; align-items: center; padding: 14px 16px;
+  background: var(--glass-white); backdrop-filter: blur(20px);
+  border-radius: 12px; border: 1px solid rgba(124,77,255,0.08); margin-bottom: 8px;
+}
+.perm-info { flex: 1; }
+.perm-name { font-size: 14px; font-weight: 500; color: var(--text); }
+.perm-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.about-logo { text-align: center; padding: 32px 0 16px; }
+.about-star { font-size: 64px; display: block; margin-bottom: 12px; }
+.about-name {
+  font-size: 24px; font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.about-ver { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+.about-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.8; text-align: center; padding: 0 20px; }
+.feedback-textarea {
+  width: 100%; min-height: 120px; border: 1.5px solid rgba(124,77,255,0.12);
+  border-radius: 12px; padding: 12px 14px; font-size: 15px; font-family: inherit;
+  color: var(--text); background: #fff; outline: none; resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.feedback-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,77,255,0.08); }
+.feedback-textarea::placeholder { color: #B0B0C0; }
+.fb-tag {
+  padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500;
+  border: 1.5px solid rgba(124,77,255,0.15); color: var(--text-secondary);
+  cursor: pointer; transition: all 0.2s;
+}
+.fb-tag.active { border-color: var(--primary); background: rgba(124,77,255,0.08); color: var(--primary); }
+.toast {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.85);
+  background: rgba(0,0,0,0.75); color: #fff;
+  padding: 10px 24px; border-radius: 10px; font-size: 14px;
+  z-index: 100; opacity: 0; pointer-events: none;
+  transition: all 0.25s ease; white-space: nowrap; backdrop-filter: blur(10px);
+}
+.toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.child-tabs {
+  display: flex; gap: 0; padding: 0 16px; flex-shrink: 0;
+  border-bottom: 1px solid rgba(124,77,255,0.08); background: rgba(255,255,255,0.5);
+}
+.child-tab {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 0; border: none; background: none; font-size: 14px; font-weight: 500;
+  color: var(--text-secondary); cursor: pointer; position: relative;
+  font-family: inherit; transition: color 0.2s;
+}
+.child-tab.active { color: var(--primary); font-weight: 600; }
+.child-tab.active::after {
+  content: ''; position: absolute; bottom: 0; left: 20%; right: 20%;
+  height: 2.5px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary), #E040FB);
+}
+.child-tab-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #fff; font-weight: 600;
+}
+.legal-body h4 {
+  font-size: 15px; font-weight: 600; color: var(--text);
+  margin-bottom: 8px; margin-top: 4px;
+}
+.legal-body p {
+  font-size: 13px; line-height: 1.8; color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+@media (max-width: 460px) {
+  body { padding: 0; }
+  .phone-frame { width: 100%; height: 100vh; border-radius: 0; box-shadow: none; }
+  .sub-page { border-radius: 0; }
+}
+</style>
+
+<script>
+var toastTimer = null;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 1500);
+}
+function toggleSwitch(el, name) {
+  el.classList.toggle('on');
+  showToast(name + ' ' + (el.classList.contains('on') ? '已开启' : '已关闭'));
+}
+function openSub(id) { document.getElementById(id).classList.add('show'); }
+function closeSub(id) { document.getElementById(id).classList.remove('show'); }
+function switchChild(el, idx) {
+  document.querySelectorAll('.child-tab').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  document.querySelectorAll('.child-perm-panel').forEach(function(p) { p.style.display = 'none'; });
+  document.getElementById('childPerm' + idx).style.display = 'flex';
+}
+
+document.getElementById('fbTags').addEventListener('click', function(e) {
+  if (e.target.classList.contains('fb-tag')) {
+    this.querySelectorAll('.fb-tag').forEach(function(t) { t.classList.remove('active'); });
+    e.target.classList.add('active');
+  }
+});
+</script>
+</body>
+</html>

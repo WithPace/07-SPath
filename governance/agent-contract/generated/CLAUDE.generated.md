@@ -1,0 +1,25 @@
+# CLAUDE.md
+
+Generated from `governance/agent-contract/source/contract.yaml`.
+
+Project: `starpath`
+Version: `1`
+
+## Principles
+- `evidence_before_claim`
+- `safety_first`
+
+## Workflow Stages
+- `intake`
+- `audit`
+- `optimize`
+- `fill_gap`
+- `plan`
+- `execute`
+- `verify`
+- `report`
+
+## Module Contracts (3)
+- `orchestrator`: Entry orchestration, routing, and cross-module policy enforcement. (`governance/agent-contract/modules/orchestrator/contract.yaml`)
+- `assessment`: Assessment domain behavior, scoring flow, and evidence traceability. (`governance/agent-contract/modules/assessment/contract.yaml`)
+- `training`: Training plan/session behavior, progress consistency, and safe guidance. (`governance/agent-contract/modules/training/contract.yaml`)

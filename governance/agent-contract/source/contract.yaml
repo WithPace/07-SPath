@@ -1,0 +1,68 @@
+version: 1
+meta:
+  project: starpath
+  owners:
+    - product
+    - engineering
+  applies_to:
+    - codex
+    - claude
+    - cursor
+principles:
+  - id: evidence_before_claim
+    statement: "No completion claims without verification evidence."
+  - id: safety_first
+    statement: "Destructive actions require explicit approval."
+roles:
+  planner:
+    goal: "Decompose work and surface missing pieces."
+  implementer:
+    goal: "Implement minimal, testable changes."
+  reviewer:
+    goal: "Find regressions and risks first."
+constraints:
+  execution:
+    non_interactive: true
+    max_parallel_tasks: 3
+    forbidden_commands:
+      - git reset --hard
+      - rm -rf /
+  security:
+    require_approval_for_destructive: true
+workflow:
+  stages:
+    - intake
+    - audit
+    - optimize
+    - fill_gap
+    - plan
+    - execute
+    - verify
+    - report
+quality_gates:
+  required_checks:
+    - contract_consistency
+    - required_clauses_present
+    - verification_evidence_attached
+  block_on_fail: true
+gap_management:
+  register_file: docs/governance/GAP-REGISTER.md
+  triage_labels:
+    - missing
+    - conflict
+    - risk
+    - debt
+  sla_days: 7
+modules:
+  required:
+    - orchestrator
+    - assessment
+    - training
+  base_path: governance/agent-contract/modules
+mapping:
+  codex:
+    target: AGENTS.md
+  claude:
+    target: CLAUDE.md
+  cursor:
+    target: .cursor/rules/starpath-contract.mdc

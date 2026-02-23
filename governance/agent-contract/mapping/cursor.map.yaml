@@ -1,0 +1,3 @@
+agent: cursor
+target: .cursor/rules/starpath-contract.mdc
+template: governance/agent-contract/templates/cursor-rule.tmpl

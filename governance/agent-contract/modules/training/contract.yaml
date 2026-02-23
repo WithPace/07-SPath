@@ -1,0 +1,16 @@
+module: training
+description: "Training plan/session behavior, progress consistency, and safe guidance."
+scope:
+  - backend.training
+workflow:
+  required_stages:
+    - audit
+    - optimize
+    - fill_gap
+quality_gates:
+  required_checks:
+    - plan_consistency_verified
+    - session_writeback_verified
+risk_focus:
+  - recommendation_regression
+  - stale_snapshot_side_effect

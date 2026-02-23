@@ -1,0 +1,10 @@
+risks:
+  - id: P0-destructive-command
+    severity: P0
+    description: Destructive command executed without approval.
+  - id: P1-contract-drift
+    severity: P1
+    description: Generated agent files drift from contract source.
+  - id: P2-missing-evidence
+    severity: P2
+    description: Completion claimed without verification evidence.

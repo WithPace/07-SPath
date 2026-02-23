@@ -1,0 +1,9 @@
+principles:
+  - evidence_before_claim
+workflow_stages:
+  - audit
+  - optimize
+  - fill_gap
+constraints:
+  forbidden_commands:
+    - git reset --hard

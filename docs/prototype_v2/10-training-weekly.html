@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星途AI — 一周训练记录</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #7C4DFF;
+  --primary-light: #B388FF;
+  --bg: #F5F3FF;
+  --glass-white: rgba(255,255,255,0.88);
+  --glass-card: rgba(255,255,255,0.85);
+  --text: #1A1A2E;
+  --text-secondary: #6B7280;
+  --radius: 16px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: var(--bg); color: var(--text);
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh; padding: 20px;
+}
+.phone-frame {
+  width: 420px; height: 900px; background: var(--bg);
+  border-radius: 40px;
+  box-shadow: 0 25px 80px rgba(124,77,255,0.15), 0 0 0 1px rgba(124,77,255,0.08);
+  display: flex; flex-direction: column; overflow: hidden; position: relative;
+}
+.nav-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 12px;
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(124,77,255,0.08);
+  flex-shrink: 0; z-index: 10;
+}
+.nav-left {
+  width: 40px; height: 40px; border-radius: 12px; border: none;
+  background: var(--glass-white); backdrop-filter: blur(10px);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s;
+}
+.nav-left:active { transform: scale(0.92); }
+.nav-left svg { width: 20px; height: 20px; stroke: var(--text); stroke-width: 2; fill: none; }
+.nav-title {
+  font-size: 17px; font-weight: 600;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-capsule {
+  display: flex; align-items: center; height: 32px; border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px); overflow: hidden;
+}
+.nav-capsule-btn {
+  width: 40px; height: 32px; border: none; background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.nav-capsule-btn:active { background: rgba(0,0,0,0.05); }
+.nav-capsule-btn svg { width: 16px; height: 16px; stroke: var(--text); stroke-width: 2; fill: none; }
+.nav-capsule-divider { width: 1px; height: 18px; background: rgba(0,0,0,0.08); }
+
+.messages {
+  flex: 1; overflow-y: auto; padding: 16px 16px 8px;
+  scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+}
+.messages::-webkit-scrollbar { width: 0; }
+.msg-row { display: flex; gap: 10px; margin-bottom: 16px; max-width: 92%; animation: msgIn 0.4s ease; }
+.msg-row.ai { align-self: flex-start; }
+.msg-row.user { align-self: flex-end; flex-direction: row-reverse; margin-left: auto; }
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.avatar {
+  width: 36px; height: 36px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; overflow: hidden;
+}
+.avatar.ai-avatar { background: linear-gradient(135deg, var(--primary-light), var(--primary)); }
+.avatar.ai-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar.user-avatar { background: linear-gradient(135deg, #FFD54F, #FF8A65); }
+.bubble {
+  padding: 12px 16px; font-size: 15px; line-height: 1.65; word-break: break-word;
+}
+.ai .bubble {
+  background: var(--glass-white);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(124,77,255,0.08);
+  border-radius: 4px 16px 16px 16px;
+  box-shadow: 0 2px 12px rgba(124,77,255,0.06);
+}
+.user .bubble {
+  background: linear-gradient(135deg, var(--primary), #9C6AFF);
+  color: #fff; border-radius: 16px 16px 4px 16px;
+}
+.bubble strong { color: var(--primary); font-weight: 600; }
+.user .bubble strong { color: #fff; }
+
+/* 训练周报卡片 */
+.weekly-card {
+  background: var(--glass-card);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(124,77,255,0.1);
+  border-radius: var(--radius); margin-top: 10px; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(124,77,255,0.06);
+}
+.weekly-header {
+  padding: 16px; display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(124,77,255,0.06);
+}
+.weekly-header-left { display: flex; align-items: center; gap: 10px; }
+.weekly-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.weekly-title { font-size: 15px; font-weight: 600; color: var(--text); }
+.weekly-date { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+.weekly-badge {
+  padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 600;
+  background: rgba(76,175,80,0.1); color: #4CAF50;
+}
+
+/* 统计概览 */
+.stats-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+  border-bottom: 1px solid rgba(124,77,255,0.06);
+}
+.stat-cell {
+  text-align: center; padding: 14px 8px;
+  border-right: 1px solid rgba(124,77,255,0.06);
+}
+.stat-cell:last-child { border-right: none; }
+.stat-num {
+  font-size: 22px; font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+/* 每日条目 */
+.day-list { padding: 12px 16px; }
+.day-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; position: relative;
+}
+.day-item + .day-item { border-top: 1px solid rgba(124,77,255,0.05); }
+.day-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+}
+.day-dot.green { background: #4CAF50; }
+.day-dot.yellow { background: #FF9800; }
+.day-dot.red { background: #EF4444; }
+.day-dot.gray { background: #D1D5DB; }
+.day-info { flex: 1; min-width: 0; }
+.day-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.day-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.day-tag {
+  padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 500;
+  background: rgba(124,77,255,0.06); color: var(--text-secondary);
+  white-space: nowrap;
+}
+.day-score {
+  font-size: 13px; font-weight: 600; flex-shrink: 0; margin-top: 3px;
+}
+.day-score.high { color: #4CAF50; }
+.day-score.mid { color: #FF9800; }
+.day-score.low { color: #EF4444; }
+.day-score.none { color: #D1D5DB; }
+
+/* 技能进度 */
+.skill-section { padding: 0 16px 16px; }
+.skill-section-title { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; }
+.skill-item { margin-bottom: 10px; }
+.skill-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.skill-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.skill-pct { font-size: 12px; font-weight: 600; color: var(--primary); }
+.skill-bar { height: 6px; background: rgba(124,77,255,0.08); border-radius: 3px; overflow: hidden; }
+.skill-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+.skill-fill.purple { background: linear-gradient(90deg, var(--primary), #E040FB); }
+.skill-fill.blue { background: linear-gradient(90deg, #2196F3, #42A5F5); }
+.skill-fill.green { background: linear-gradient(90deg, #4CAF50, #66BB6A); }
+.skill-fill.orange { background: linear-gradient(90deg, #FF9800, #FFB74D); }
+
+/* 底部操作 */
+.weekly-footer {
+  display: flex; gap: 8px; padding: 12px 16px;
+  border-top: 1px solid rgba(124,77,255,0.06);
+}
+.weekly-btn {
+  flex: 1; padding: 10px; border-radius: 12px; border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer; text-align: center;
+  font-family: inherit; transition: all 0.2s;
+}
+.weekly-btn.primary {
+  background: linear-gradient(135deg, var(--primary), #E040FB); color: #fff;
+  box-shadow: 0 4px 16px rgba(124,77,255,0.3);
+}
+.weekly-btn.primary:active { transform: scale(0.96); }
+.weekly-btn.secondary {
+  background: rgba(124,77,255,0.08); color: var(--primary);
+  border: 1px solid rgba(124,77,255,0.15);
+}
+.weekly-btn.secondary:active { transform: scale(0.96); }
+
+/* 打字动画 */
+.typing-dots { display: inline-flex; gap: 4px; padding: 4px 0; }
+.typing-dots span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--primary-light); animation: blink 1.4s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink {
+  0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+  30% { opacity: 1; transform: scale(1); }
+}
+
+/* 输入栏 */
+.input-bar {
+  padding: 12px 16px 28px; flex-shrink: 0;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(124,77,255,0.06);
+  display: flex; gap: 10px; align-items: center;
+}
+.input-field {
+  flex: 1; padding: 12px 16px; border-radius: 20px;
+  background: #fff; border: 1.5px solid rgba(124,77,255,0.12);
+  color: var(--text); font-size: 15px; font-family: inherit; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,77,255,0.08); }
+.input-field::placeholder { color: #B0B0C0; }
+.send-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #E040FB);
+  border: none; color: #fff; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(124,77,255,0.3); transition: all 0.2s;
+}
+.send-btn:active { transform: scale(0.9); }
+
+@media (max-width: 460px) {
+  body { padding: 0; }
+  .phone-frame { width: 100%; height: 100vh; border-radius: 0; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="nav-bar">
+    <button class="nav-left" onclick="history.back()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="nav-title">星途AI</div>
+    <div class="nav-capsule">
+      <button class="nav-capsule-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+      <div class="nav-capsule-divider"></div>
+      <button class="nav-capsule-btn"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/></svg></button>
+    </div>
+  </div>
+
+  <div class="messages" id="messages"></div>
+
+  <div class="input-bar">
+    <input class="input-field" placeholder="输入消息..." id="inputField">
+    <button class="send-btn" onclick="sendInput()">↑</button>
+  </div>
+</div>
+
+<script>
+var msgBox = document.getElementById('messages');
+
+function scrollBottom() {
+  requestAnimationFrame(function(){ msgBox.scrollTop = msgBox.scrollHeight; });
+}
+
+function addMsg(type, html, typing) {
+  return new Promise(function(resolve) {
+    var row = document.createElement('div');
+    row.className = 'msg-row ' + type;
+    var av = document.createElement('div');
+    if (type === 'ai') {
+      av.className = 'avatar ai-avatar';
+      av.innerHTML = '<img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">';
+    } else {
+      av.className = 'avatar user-avatar';
+      av.textContent = '👩';
+    }
+    var b = document.createElement('div');
+    b.className = 'bubble';
+    if (typing) {
+      b.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+      row.appendChild(av); row.appendChild(b); msgBox.appendChild(row); scrollBottom();
+      setTimeout(function(){ b.innerHTML = html; scrollBottom(); resolve(); }, 900 + Math.random()*500);
+    } else {
+      b.innerHTML = html; row.appendChild(av); row.appendChild(b);
+      msgBox.appendChild(row); scrollBottom(); resolve();
+    }
+  });
+}
+
+function addCard() {
+  return new Promise(function(resolve) {
+    var row = document.createElement('div');
+    row.className = 'msg-row ai';
+    row.style.maxWidth = '96%';
+    var av = document.createElement('div');
+    av.className = 'avatar ai-avatar';
+    av.innerHTML = '<img src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=starpath-ai&mouth=cute&eyes=cute" alt="AI">';
+    var b = document.createElement('div');
+    b.className = 'bubble';
+    b.style.padding = '12px 14px';
+    b.innerHTML = '这是乐乐本周的训练记录汇总 📊' +
+    '<div class="weekly-card">' +
+      '<div class="weekly-header">' +
+        '<div class="weekly-header-left">' +
+          '<div class="weekly-icon">📋</div>' +
+          '<div><div class="weekly-title">一周训练记录</div><div class="weekly-date">2026.02.14 — 2026.02.20</div></div>' +
+        '</div>' +
+        '<div class="weekly-badge">完成率 86%</div>' +
+      '</div>' +
+      '<div class="stats-row">' +
+        '<div class="stat-cell"><div class="stat-num">6</div><div class="stat-label">训练天数</div></div>' +
+        '<div class="stat-cell"><div class="stat-num">18</div><div class="stat-label">完成项目</div></div>' +
+        '<div class="stat-cell"><div class="stat-num">4.2</div><div class="stat-label">平均评分</div></div>' +
+      '</div>' +
+      '<div class="day-list">' +
+        '<div class="day-item"><div class="day-dot green"></div><div class="day-info"><div class="day-name">周一 2/14</div><div class="day-tags"><span class="day-tag">眼神对视</span><span class="day-tag">指令跟随</span><span class="day-tag">仿说训练</span></div></div><div class="day-score high">4.5</div></div>' +
+        '<div class="day-item"><div class="day-dot green"></div><div class="day-info"><div class="day-name">周二 2/15</div><div class="day-tags"><span class="day-tag">社交问候</span><span class="day-tag">轮流游戏</span><span class="day-tag">精细动作</span></div></div><div class="day-score high">4.3</div></div>' +
+        '<div class="day-item"><div class="day-dot yellow"></div><div class="day-info"><div class="day-name">周三 2/16</div><div class="day-tags"><span class="day-tag">情绪识别</span><span class="day-tag">共同注意</span></div></div><div class="day-score mid">3.8</div></div>' +
+        '<div class="day-item"><div class="day-dot green"></div><div class="day-info"><div class="day-name">周四 2/17</div><div class="day-tags"><span class="day-tag">仿说训练</span><span class="day-tag">指令跟随</span><span class="day-tag">生活自理</span><span class="day-tag">情绪管理</span></div></div><div class="day-score high">4.6</div></div>' +
+        '<div class="day-item"><div class="day-dot green"></div><div class="day-info"><div class="day-name">周五 2/18</div><div class="day-tags"><span class="day-tag">社交问候</span><span class="day-tag">眼神对视</span><span class="day-tag">轮流游戏</span><span class="day-tag">精细动作</span><span class="day-tag">共同注意</span></div></div><div class="day-score high">4.2</div></div>' +
+        '<div class="day-item"><div class="day-dot gray"></div><div class="day-info"><div class="day-name">周六 2/19</div><div class="day-tags"><span class="day-tag">休息日</span></div></div><div class="day-score none">—</div></div>' +
+        '<div class="day-item"><div class="day-dot green"></div><div class="day-info"><div class="day-name">周日 2/20</div><div class="day-tags"><span class="day-tag">精细动作</span><span class="day-tag">生活自理</span><span class="day-tag">情绪管理</span></div></div><div class="day-score high">4.0</div></div>' +
+      '</div>' +
+      '<div class="skill-section">' +
+        '<div class="skill-section-title">技能进度</div>' +
+        '<div class="skill-item"><div class="skill-top"><span class="skill-name">🗣 语言沟通</span><span class="skill-pct">72%</span></div><div class="skill-bar"><div class="skill-fill purple" style="width:72%"></div></div></div>' +
+        '<div class="skill-item"><div class="skill-top"><span class="skill-name">👥 社交互动</span><span class="skill-pct">65%</span></div><div class="skill-bar"><div class="skill-fill blue" style="width:65%"></div></div></div>' +
+        '<div class="skill-item"><div class="skill-top"><span class="skill-name">✋ 精细动作</span><span class="skill-pct">80%</span></div><div class="skill-bar"><div class="skill-fill green" style="width:80%"></div></div></div>' +
+        '<div class="skill-item"><div class="skill-top"><span class="skill-name">🏠 生活自理</span><span class="skill-pct">58%</span></div><div class="skill-bar"><div class="skill-fill orange" style="width:58%"></div></div></div>' +
+      '</div>' +
+      '<div class="weekly-footer">' +
+        '<button class="weekly-btn primary">查看详细记录</button>' +
+        '<button class="weekly-btn secondary">分享给老师</button>' +
+      '</div>' +
+    '</div>';
+    row.appendChild(av); row.appendChild(b);
+    msgBox.appendChild(row); scrollBottom();
+    setTimeout(resolve, 100);
+  });
+}
+
+async function startFlow() {
+  await addMsg('user', '给我一周内的训练记录');
+  await new Promise(function(r){ setTimeout(r, 400); });
+  await addMsg('ai', '好的，我来帮您整理乐乐最近一周的训练记录 📊<br><br>正在汇总数据...', true);
+  await new Promise(function(r){ setTimeout(r, 800); });
+  await addCard();
+  await new Promise(function(r){ setTimeout(r, 600); });
+  await addMsg('ai', '总体来看，乐乐这周表现不错 👏<br><br>几个亮点：<br>• <strong>精细动作</strong>进步最明显，达到80%<br>• 训练出勤率很高，7天练了6天<br>• 周四的综合评分最高（4.6分）<br><br>建议下周可以多关注<strong>生活自理</strong>方面，目前58%还有提升空间。需要我调整下周的训练计划吗？', true);
+}
+
+function sendInput() {
+  var v = document.getElementById('inputField').value.trim();
+  if (!v) return;
+  addMsg('user', v);
+  document.getElementById('inputField').value = '';
+}
+document.getElementById('inputField').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') sendInput();
+});
+
+startFlow();
+</script>
+</body>
+</html>

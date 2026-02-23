@@ -1,0 +1,3 @@
+agent: claude
+target: CLAUDE.md
+template: governance/agent-contract/templates/claude.md.tmpl
