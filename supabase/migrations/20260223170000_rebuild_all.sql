@@ -677,4 +677,103 @@ for all using (public.is_admin_user()) with check (public.is_admin_user());
 create policy campaigns_admin_access on public.campaigns
 for all using (public.is_admin_user()) with check (public.is_admin_user());
 
+
+-- transactional outbox writeback helper
+create function public.finalize_writeback(
+  p_request_id uuid,
+  p_actor_user_id uuid,
+  p_child_id uuid,
+  p_action_name varchar,
+  p_affected_tables jsonb,
+  p_event_source_table varchar,
+  p_event_type varchar,
+  p_priority_level varchar,
+  p_target_snapshot_type varchar,
+  p_payload jsonb,
+  p_db_write_status varchar,
+  p_outbox_write_status varchar,
+  p_final_status varchar,
+  p_latency_ms integer,
+  p_error_code varchar,
+  p_error_message text
+)
+returns void
+language plpgsql
+security definer
+as $$
+declare
+  v_event_id uuid;
+begin
+  insert into public.snapshot_refresh_events (
+    request_id,
+    child_id,
+    event_source_table,
+    event_type,
+    priority_level,
+    target_snapshot_type,
+    payload,
+    status
+  ) values (
+    p_request_id,
+    p_child_id,
+    p_event_source_table,
+    p_event_type,
+    p_priority_level,
+    p_target_snapshot_type,
+    coalesce(p_payload, '{}'::jsonb),
+    'pending'
+  ) returning id into v_event_id;
+
+  insert into public.operation_logs (
+    request_id,
+    actor_user_id,
+    child_id,
+    action_name,
+    affected_tables,
+    db_write_status,
+    outbox_write_status,
+    final_status,
+    latency_ms,
+    error_code,
+    error_message
+  ) values (
+    p_request_id,
+    p_actor_user_id,
+    p_child_id,
+    p_action_name,
+    coalesce(p_affected_tables, '[]'::jsonb),
+    p_db_write_status,
+    p_outbox_write_status,
+    p_final_status,
+    p_latency_ms,
+    p_error_code,
+    p_error_message
+  );
+end;
+$$;
+
+-- conversation consistency helper
+create function public.sync_conversation_after_message()
+returns trigger
+language plpgsql
+security definer
+as $$
+begin
+  update public.conversations
+  set
+    last_message_at = new.created_at,
+    message_count = message_count + 1,
+    updated_at = now()
+  where id = new.conversation_id;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_chat_message_update_conversation on public.chat_messages;
+create trigger trg_chat_message_update_conversation
+after insert on public.chat_messages
+for each row
+execute function public.sync_conversation_after_message();
+
 commit;
