@@ -168,12 +168,36 @@ if [ "$session_count" -lt 1 ]; then
   exit 1
 fi
 
-op_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status&request_id=eq.${training_record_request_id}&action_name=eq.training_record_create" \
+profile_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/children_profiles?select=id,version,domain_levels,overall_summary,assessed_by&child_id=eq.${child_id}&assessed_by=eq.${user_id}&order=version.desc&limit=5" \
+  -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+  -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
+profile_count=$(echo "$profile_resp" | jq 'length')
+if [ "$profile_count" -lt 1 ]; then
+  echo "children_profiles side effects missing" >&2
+  echo "$profile_resp" >&2
+  exit 1
+fi
+
+latest_profile_domain_count=$(echo "$profile_resp" | jq '.[0].domain_levels | keys | length')
+if [ "$latest_profile_domain_count" -lt 1 ]; then
+  echo "children_profiles domain_levels not populated" >&2
+  echo "$profile_resp" >&2
+  exit 1
+fi
+
+op_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status,affected_tables&request_id=eq.${training_record_request_id}&action_name=eq.training_record_create" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
 op_count=$(echo "$op_resp" | jq 'length')
 if [ "$op_count" -lt 1 ]; then
   echo "training record operation_logs missing" >&2
+  echo "$op_resp" >&2
+  exit 1
+fi
+
+has_profile_table=$(echo "$op_resp" | jq '.[0].affected_tables | index("children_profiles") != null')
+if [ "$has_profile_table" != "true" ]; then
+  echo "training record operation_logs missing children_profiles in affected_tables" >&2
   echo "$op_resp" >&2
   exit 1
 fi

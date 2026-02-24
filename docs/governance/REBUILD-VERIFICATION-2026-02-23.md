@@ -4,7 +4,7 @@
 
 - Supabase linked project destructive rebuild applied via migration.
 - Runtime chain verified: `orchestrator -> {chat-casual, assessment, training, training-advice, training-record, dashboard} -> finalize_writeback`.
-- Live assertions include `chat_messages` (with dashboard `cards_json`), `assessments`, `training_plans`, `training_sessions`, `operation_logs`, `snapshot_refresh_events`, and `conversations`.
+- Live assertions include `chat_messages` (with dashboard `cards_json`), `assessments`, `training_plans`, `training_sessions`, `children_profiles`, `operation_logs`, `snapshot_refresh_events`, and `conversations`.
 
 ## Environment Notes
 
@@ -36,12 +36,12 @@
 13. Training-record smoke output sample:
    - `training_record_request_id=0adf115e-4bd5-4a6a-bc5f-7afdeab56285`
 14. Final sweep smoke output sample (latest run):
-   - `assessment_request_id=1d20a5bc-b0bf-41b5-9b19-71ac9fa89ae3`
-   - `training_advice_request_id=d9e1b045-5246-414a-9a14-8863b7360837`
-   - `chat_request_id=a0cad9e5-e741-42f7-a313-012c84949a66`
-   - `dashboard_request_id=1aadcc52-e263-4d6a-95b5-7d782c8fd927`
-   - `training_request_id=65a6997e-14dd-46d4-94b7-c4ea33514a17`
-   - `training_record_request_id=a6a1f9b1-a727-4e8d-aba0-4decbd45cb70`
+   - `assessment_request_id=53515c24-8ffa-4b30-ae45-0fe149b6b08b`
+   - `training_advice_request_id=708133f2-1502-4194-8b86-97c70813f2e0`
+   - `chat_request_id=0a5ef9de-976f-4c36-89ae-373848bb0152`
+   - `dashboard_request_id=df8198dd-f67b-4750-ade7-ca1d77d8bd65`
+   - `training_request_id=29cb92d0-ff35-4da9-9bf5-188afe4f5dbf`
+   - `training_record_request_id=45d91227-774e-4746-a915-9a89ae1991fa`
 15. `bash tests/governance/test_build_idempotent.sh` -> PASS.
 16. `bash tests/ci/test_final_gate_script.sh` -> PASS.
 17. `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
@@ -54,7 +54,13 @@
    - `user_id=3aa817b2-7583-4e4f-9b74-2b70df8a0e8c`
    - `child_id=80646766-51a6-4a98-8730-ee7dca284932`
 23. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS.
-24. Latest verification timestamp (UTC): `2026-02-24T10:15:11Z`
+24. `supabase functions deploy training-record --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
+25. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS.
+26. Training-record profile sync smoke output sample:
+   - `training_record_request_id=45d91227-774e-4746-a915-9a89ae1991fa`
+   - `user_id=d614d7d2-fbbd-4979-b438-6736728d7900`
+   - `child_id=8818d4a0-2d6c-4705-829d-907ed6cf99f7`
+27. Latest verification timestamp (UTC): `2026-02-24T11:53:20Z`
 
 ## Assertions Confirmed
 
@@ -64,8 +70,9 @@
 - `operation_logs` contains `action_name=assessment_generate` and `action_name=training_advice_generate` for new modules.
 - `operation_logs` contains `action_name=training_generate` for training module.
 - `operation_logs` contains `action_name=training_record_create` for training-record module.
+- `operation_logs.affected_tables` for `training_record_create` includes `children_profiles`.
 - `operation_logs` contains `action_name=dashboard_generate` for dashboard module.
-- `assessments`, `training_plans`, and `training_sessions` domain tables receive live writeback rows.
+- `assessments`, `training_plans`, `training_sessions`, and `children_profiles` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
 - Conversation header sync works (`message_count >= 2`).

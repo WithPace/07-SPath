@@ -31,7 +31,8 @@
 18. `bash tests/ci/test_workflow_presence.sh` -> PASS
 19. `bash tests/e2e/test_orchestrator_training_live.sh` -> PASS
 20. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS
-21. Latest verification timestamp (UTC): `2026-02-24T10:15:11Z`
+21. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS
+22. Latest verification timestamp (UTC): `2026-02-24T11:53:20Z`
 
 ## Outputs
 
@@ -42,7 +43,7 @@
 - Live chain writes validated in `chat_messages`, `operation_logs`, `snapshot_refresh_events`
 - Assessment/training domain writes validated in `assessments`, `training_plans`
 - Training module writeback validated with `operation_logs(action_name=training_generate)`
-- Training-record domain writes validated in `training_sessions`
+- Training-record domain writes validated in `training_sessions`, `children_profiles`
 - Dashboard writes validated in `chat_messages.cards_json` with `operation_logs(action_name=dashboard_generate)`
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
