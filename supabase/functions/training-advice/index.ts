@@ -18,6 +18,12 @@ function buildPlanTitle(message: string): string {
   return `${datePart} 训练方案 - ${base || "个性化建议"}`;
 }
 
+function buildCurrentFocus(title: string, modelText: string): string {
+  const summary = modelText.replace(/\s+/g, " ").trim();
+  const concise = summary.length > 48 ? summary.slice(0, 48) : summary;
+  return `${title}｜${concise || "家庭训练执行重点"}`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: SSE_HEADERS });
@@ -80,6 +86,22 @@ Deno.serve(async (req) => {
       throw new Error(`INTERNAL_ERROR: write training plan failed: ${planInsert.error?.message ?? "unknown"}`);
     }
 
+    const currentFocus = buildCurrentFocus(title, model.text);
+    const memoryUpsert = await client
+      .from("children_memory")
+      .upsert({
+        child_id: payload.child_id,
+        current_focus: currentFocus,
+        last_interaction_summary: model.text.slice(0, 280),
+        updated_at: new Date().toISOString(),
+      }, { onConflict: "child_id" })
+      .select("id,current_focus")
+      .single();
+
+    if (memoryUpsert.error || !memoryUpsert.data?.id) {
+      throw new Error(`INTERNAL_ERROR: write children memory failed: ${memoryUpsert.error?.message ?? "unknown"}`);
+    }
+
     const assistantInsert = await client.from("chat_messages").insert({
       conversation_id: payload.conversation_id,
       child_id: payload.child_id,
@@ -100,13 +122,15 @@ Deno.serve(async (req) => {
       actorUserId: user.id,
       childId: payload.child_id,
       actionName: "training_advice_generate",
-      affectedTables: ["training_plans", "snapshot_refresh_events", "operation_logs"],
+      affectedTables: ["training_plans", "children_memory", "snapshot_refresh_events", "operation_logs"],
       eventSourceTable: "training_plans",
       eventType: "insert",
       priorityLevel: "S2",
-      targetSnapshotType: "short_term",
+      targetSnapshotType: "both",
       payload: {
         training_plan_id: planInsert.data.id,
+        children_memory_id: memoryUpsert.data.id,
+        current_focus: memoryUpsert.data.current_focus,
         conversation_id: payload.conversation_id,
       },
       dbWriteStatus: "success",

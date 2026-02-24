@@ -208,6 +208,24 @@ if [ "$plan_count" -lt 1 ]; then
   exit 1
 fi
 
+memory_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/children_memory?select=id,current_focus,last_interaction_summary,child_id&child_id=eq.${child_id}&order=updated_at.desc&limit=5" \
+  -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+  -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
+
+memory_count=$(echo "$memory_resp" | jq 'length')
+if [ "$memory_count" -lt 1 ]; then
+  echo "children_memory side effects missing" >&2
+  echo "$memory_resp" >&2
+  exit 1
+fi
+
+current_focus=$(echo "$memory_resp" | jq -r '.[0].current_focus // ""')
+if [ -z "$current_focus" ]; then
+  echo "children_memory current_focus missing" >&2
+  echo "$memory_resp" >&2
+  exit 1
+fi
+
 op_assess=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status,affected_tables&request_id=eq.${assessment_request_id}&action_name=eq.assessment_generate" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
@@ -225,12 +243,19 @@ if [ "$has_profile_table" != "true" ]; then
   exit 1
 fi
 
-op_training=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status&request_id=eq.${training_request_id}&action_name=eq.training_advice_generate" \
+op_training=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status,affected_tables&request_id=eq.${training_request_id}&action_name=eq.training_advice_generate" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
 op_training_count=$(echo "$op_training" | jq 'length')
 if [ "$op_training_count" -lt 1 ]; then
   echo "training operation_logs missing" >&2
+  echo "$op_training" >&2
+  exit 1
+fi
+
+has_memory_table=$(echo "$op_training" | jq '.[0].affected_tables | index("children_memory") != null')
+if [ "$has_memory_table" != "true" ]; then
+  echo "training operation_logs missing children_memory in affected_tables" >&2
   echo "$op_training" >&2
   exit 1
 fi

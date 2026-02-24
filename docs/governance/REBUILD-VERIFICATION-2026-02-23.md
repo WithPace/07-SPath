@@ -4,7 +4,7 @@
 
 - Supabase linked project destructive rebuild applied via migration.
 - Runtime chain verified: `orchestrator -> {chat-casual, assessment, training, training-advice, training-record, dashboard} -> finalize_writeback`.
-- Live assertions include `chat_messages` (with dashboard `cards_json`), `assessments`, `training_plans`, `training_sessions`, `children_profiles`, `operation_logs`, `snapshot_refresh_events`, and `conversations`.
+- Live assertions include `chat_messages` (with dashboard `cards_json`), `assessments`, `training_plans`, `training_sessions`, `children_profiles`, `children_memory`, `operation_logs`, `snapshot_refresh_events`, and `conversations`.
 
 ## Environment Notes
 
@@ -57,10 +57,11 @@
 24. `supabase functions deploy training-record --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
 25. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS.
 26. Training-record profile sync smoke output sample:
-   - `training_record_request_id=a831cafe-0f75-4dad-a2d9-2128f343da90`
-   - `user_id=8cd3e27a-94fc-434e-a6a5-9dc5e73bd53f`
-   - `child_id=96f17676-4745-4355-bf5c-32bc124e0487`
-27. Latest verification timestamp (UTC): `2026-02-24T12:05:18Z`
+   - `training_record_request_id=a86f7f56-dbd2-43c1-a378-4abd284b4f54`
+   - `user_id=ef7b7a55-e0c0-4ac1-a7a8-e3e635a7c598`
+   - `child_id=6bc3df0f-88ff-4e32-9ea9-a3624fbc6fc7`
+27. `supabase functions deploy training-advice --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
+28. Latest verification timestamp (UTC): `2026-02-24T12:28:33Z`
 
 ## Assertions Confirmed
 
@@ -69,11 +70,12 @@
 - `operation_logs` contains `action_name=chat_casual_reply` with same `request_id`.
 - `operation_logs` contains `action_name=assessment_generate` and `action_name=training_advice_generate` for new modules.
 - `operation_logs.affected_tables` for `assessment_generate` includes `children_profiles`.
+- `operation_logs.affected_tables` for `training_advice_generate` includes `children_memory`.
 - `operation_logs` contains `action_name=training_generate` for training module.
 - `operation_logs` contains `action_name=training_record_create` for training-record module.
 - `operation_logs.affected_tables` for `training_record_create` includes `children_profiles`.
 - `operation_logs` contains `action_name=dashboard_generate` for dashboard module.
-- `assessments`, `training_plans`, `training_sessions`, and `children_profiles` domain tables receive live writeback rows.
+- `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
 - Conversation header sync works (`message_count >= 2`).

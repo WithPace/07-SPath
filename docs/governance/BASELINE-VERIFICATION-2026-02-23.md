@@ -32,7 +32,7 @@
 19. `bash tests/e2e/test_orchestrator_training_live.sh` -> PASS
 20. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS
 21. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS
-22. Latest verification timestamp (UTC): `2026-02-24T12:05:18Z`
+22. Latest verification timestamp (UTC): `2026-02-24T12:28:33Z`
 
 ## Outputs
 
@@ -41,7 +41,7 @@
 - `.cursor/rules/starpath-contract.mdc` generated and synced
 - `governance/agent-contract/contract.lock.json` generated
 - Live chain writes validated in `chat_messages`, `operation_logs`, `snapshot_refresh_events`
-- Assessment/training domain writes validated in `assessments`, `training_plans`, `children_profiles`
+- Assessment/training domain writes validated in `assessments`, `training_plans`, `children_profiles`, `children_memory`
 - Training module writeback validated with `operation_logs(action_name=training_generate)`
 - Training-record domain writes validated in `training_sessions`, `children_profiles`
 - Dashboard writes validated in `chat_messages.cards_json` with `operation_logs(action_name=dashboard_generate)`
