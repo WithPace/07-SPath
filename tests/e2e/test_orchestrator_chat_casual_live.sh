@@ -52,6 +52,52 @@ run_id=$(date +%s)
 email="codex.smoke.${run_id}@example.com"
 password="CodexSmoke#${run_id}"
 request_id=$(uid)
+request_ids=("$request_id")
+user_id=""
+child_id=""
+
+cleanup() {
+  set +e
+  for rid in "${request_ids[@]:-}"; do
+    if [ -z "$rid" ]; then
+      continue
+    fi
+    curl "${curl_common[@]}" -X DELETE "${SUPABASE_URL}/rest/v1/operation_logs?request_id=eq.${rid}" \
+      -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+      -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" >/dev/null
+    curl "${curl_common[@]}" -X DELETE "${SUPABASE_URL}/rest/v1/snapshot_refresh_events?request_id=eq.${rid}" \
+      -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+      -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" >/dev/null
+  done
+
+  if [ -n "${child_id:-}" ] && [ -n "${user_id:-}" ]; then
+    curl "${curl_common[@]}" -X DELETE "${SUPABASE_URL}/rest/v1/chat_messages?child_id=eq.${child_id}&user_id=eq.${user_id}" \
+      -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+      -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" >/dev/null
+    curl "${curl_common[@]}" -X DELETE "${SUPABASE_URL}/rest/v1/conversations?child_id=eq.${child_id}&user_id=eq.${user_id}" \
+      -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+      -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" >/dev/null
+    curl "${curl_common[@]}" -X DELETE "${SUPABASE_URL}/rest/v1/care_teams?child_id=eq.${child_id}&user_id=eq.${user_id}" \
+      -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+      -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" >/dev/null
+  fi
+
+  if [ -n "${child_id:-}" ]; then
+    curl "${curl_common[@]}" -X DELETE "${SUPABASE_URL}/rest/v1/children?id=eq.${child_id}" \
+      -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+      -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" >/dev/null
+  fi
+
+  if [ -n "${user_id:-}" ]; then
+    curl "${curl_common[@]}" -X DELETE "${SUPABASE_URL}/rest/v1/users?id=eq.${user_id}" \
+      -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+      -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" >/dev/null
+    curl "${curl_common[@]}" -X DELETE "${SUPABASE_URL}/auth/v1/admin/users/${user_id}" \
+      "${service_headers[@]}" >/dev/null
+  fi
+}
+
+trap cleanup EXIT
 
 create_user_resp=$(curl "${curl_common[@]}" -X POST "${SUPABASE_URL}/auth/v1/admin/users" \
   "${service_headers[@]}" \
@@ -99,11 +145,26 @@ curl "${curl_common[@]}" -X POST "${SUPABASE_URL}/rest/v1/care_teams" \
   -H "Prefer: return=minimal" \
   -d "[{\"user_id\":\"${user_id}\",\"child_id\":\"${child_id}\",\"role\":\"parent\",\"permissions\":{},\"status\":\"active\"}]" >/dev/null
 
-orchestrator_resp=$(curl "${curl_common[@]}" -N --max-time 180 -X POST "${SUPABASE_URL}/functions/v1/orchestrator" \
-  -H "apikey: ${SUPABASE_ANON_KEY}" \
-  -H "Authorization: Bearer ${access_token}" \
-  -H "Content-Type: application/json" \
-  -d "{\"child_id\":\"${child_id}\",\"message\":\"请给我一个今天在家训练的小建议\",\"request_id\":\"${request_id}\"}")
+orchestrator_resp=""
+max_attempts=3
+for attempt in 1 2 3; do
+  request_id=$(uid)
+  request_ids+=("$request_id")
+  orchestrator_resp=$(curl "${curl_common[@]}" -N --max-time 180 -X POST "${SUPABASE_URL}/functions/v1/orchestrator" \
+    -H "apikey: ${SUPABASE_ANON_KEY}" \
+    -H "Authorization: Bearer ${access_token}" \
+    -H "Content-Type: application/json" \
+    -d "{\"child_id\":\"${child_id}\",\"message\":\"请给我一个今天在家训练的小建议\",\"request_id\":\"${request_id}\"}")
+
+  if echo "$orchestrator_resp" | grep -q "event: done"; then
+    break
+  fi
+
+  if [ "$attempt" -lt "$max_attempts" ] && echo "$orchestrator_resp" | grep -q "WORKER_LIMIT"; then
+    sleep "$attempt"
+    continue
+  fi
+done
 
 if echo "$orchestrator_resp" | grep -q "event: error"; then
   echo "orchestrator returned error event" >&2

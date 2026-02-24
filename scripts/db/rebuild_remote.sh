@@ -12,6 +12,22 @@ if [ -z "$project_ref" ]; then
   project_ref=$(awk -F= '$1=="SUPABASE_URL"{print $2}' .env | sed -E 's#https?://([^.]+)\..*#\1#')
 fi
 
+if [ "${ALLOW_DESTRUCTIVE_REBUILD:-0}" != "1" ]; then
+  echo "refuse destructive rebuild: set ALLOW_DESTRUCTIVE_REBUILD=1" >&2
+  exit 1
+fi
+
+allowed_refs="${ALLOWED_PROJECT_REFS:-}"
+if [ -z "$allowed_refs" ]; then
+  echo "refuse destructive rebuild: missing ALLOWED_PROJECT_REFS allowlist" >&2
+  exit 1
+fi
+
+if ! echo ",${allowed_refs}," | grep -q ",${project_ref},"; then
+  echo "refuse destructive rebuild: project_ref '${project_ref}' not in ALLOWED_PROJECT_REFS" >&2
+  exit 1
+fi
+
 if [ -n "$project_ref" ]; then
   if [ -n "${SUPABASE_DB_PASSWORD:-}" ]; then
     supabase link --project-ref "$project_ref" --password "$SUPABASE_DB_PASSWORD" --yes
