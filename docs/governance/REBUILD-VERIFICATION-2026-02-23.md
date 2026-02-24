@@ -3,8 +3,8 @@
 ## Scope
 
 - Supabase linked project destructive rebuild applied via migration.
-- Runtime chain verified: `orchestrator -> {chat-casual, assessment, training-advice, training-record} -> finalize_writeback`.
-- Live assertions include `chat_messages`, `assessments`, `training_plans`, `training_sessions`, `operation_logs`, `snapshot_refresh_events`, and `conversations`.
+- Runtime chain verified: `orchestrator -> {chat-casual, assessment, training-advice, training-record, dashboard} -> finalize_writeback`.
+- Live assertions include `chat_messages` (with dashboard `cards_json`), `assessments`, `training_plans`, `training_sessions`, `operation_logs`, `snapshot_refresh_events`, and `conversations`.
 
 ## Environment Notes
 
@@ -22,25 +22,29 @@
 5. `bash tests/e2e/test_orchestrator_chat_casual_live.sh` -> PASS.
 6. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS.
 7. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS.
-8. `bash scripts/ci/final_gate.sh` -> PASS (`governance + db + functions + e2e + ci` full sweep).
-9. Chat chain smoke output sample:
-   - `request_id=2a66dca7-55c1-4e20-ad3a-2bcb7b243305`
-   - `user_id=94d775e1-ac7b-4cdb-a061-4590c89fb1b9`
-   - `child_id=a8bff8a7-fd94-4596-992f-6e7701700828`
-10. Assessment-training smoke output sample:
-   - `assessment_request_id=d8a3d4ba-0395-4256-8137-b7dcb7c4d21f`
-   - `training_request_id=a32dc367-e029-4a38-95f2-5a8c854d2c15`
-11. Training-record smoke output sample:
-   - `training_record_request_id=ad116998-76f4-4a3e-b0d1-4d86bb3a14a0`
-12. Final sweep smoke output sample:
-   - `assessment_request_id=e223b603-5645-4683-a6ba-66a2852d98c3`
-   - `training_request_id=a0523ed8-87fd-4118-bfa3-eec2879565c7`
-   - `chat_request_id=28887680-ec8e-4dcb-bf87-4ecb456fad9a`
-   - `training_record_request_id=32c56388-07f8-4743-ac8f-d1d42bd0c12c`
-13. `bash tests/governance/test_build_idempotent.sh` -> PASS.
-14. `bash tests/ci/test_final_gate_script.sh` -> PASS.
-15. `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
-16. Latest verification timestamp (UTC): `2026-02-24T04:22:28Z`
+8. `bash tests/e2e/test_orchestrator_dashboard_live.sh` -> PASS.
+9. `bash scripts/ci/final_gate.sh` -> PASS (`governance + db + functions + e2e + ci` full sweep).
+10. Chat chain smoke output sample:
+   - `request_id=2fcd6527-645a-44f4-9b14-ca169ebe2b5b`
+   - `user_id=5abd075d-e21d-4f64-837d-b00cb65832a1`
+   - `child_id=9acc774f-7d44-4f6f-98bb-3c7774377cd4`
+11. Assessment-training smoke output sample:
+   - `assessment_request_id=b0b15ec3-2e17-49a9-864d-a8078ccd4342`
+   - `training_request_id=0c34f4f8-6826-4680-9a51-2b666a8a0056`
+12. Dashboard smoke output sample:
+   - `dashboard_request_id=f2c98cd3-68a4-43d8-b1a6-7b5e2b89a061`
+13. Training-record smoke output sample:
+   - `training_record_request_id=90309d2b-0cb5-40aa-8333-f5bf57aceb50`
+14. Final sweep smoke output sample:
+   - `assessment_request_id=b0b15ec3-2e17-49a9-864d-a8078ccd4342`
+   - `training_request_id=0c34f4f8-6826-4680-9a51-2b666a8a0056`
+   - `chat_request_id=2fcd6527-645a-44f4-9b14-ca169ebe2b5b`
+   - `dashboard_request_id=f2c98cd3-68a4-43d8-b1a6-7b5e2b89a061`
+   - `training_record_request_id=90309d2b-0cb5-40aa-8333-f5bf57aceb50`
+15. `bash tests/governance/test_build_idempotent.sh` -> PASS.
+16. `bash tests/ci/test_final_gate_script.sh` -> PASS.
+17. `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
+18. Latest verification timestamp (UTC): `2026-02-24T06:04:16Z`
 
 ## Assertions Confirmed
 
@@ -49,7 +53,9 @@
 - `operation_logs` contains `action_name=chat_casual_reply` with same `request_id`.
 - `operation_logs` contains `action_name=assessment_generate` and `action_name=training_advice_generate` for new modules.
 - `operation_logs` contains `action_name=training_record_create` for training-record module.
+- `operation_logs` contains `action_name=dashboard_generate` for dashboard module.
 - `assessments`, `training_plans`, and `training_sessions` domain tables receive live writeback rows.
+- Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
 - Conversation header sync works (`message_count >= 2`).
 

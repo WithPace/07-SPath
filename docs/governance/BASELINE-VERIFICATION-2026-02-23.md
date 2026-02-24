@@ -7,7 +7,7 @@
 - Required clauses verification
 - Runtime target sync
 - CI workflow presence
-- Rebuild execution-chain baseline linkage
+- Rebuild execution-chain baseline linkage (including dashboard chain)
 
 ## Command Evidence
 
@@ -26,6 +26,7 @@
 13. `bash tests/e2e/test_orchestrator_chat_casual_live.sh` -> PASS
 14. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS
 15. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS
+16. `bash tests/e2e/test_orchestrator_dashboard_live.sh` -> PASS
 
 ## Outputs
 
@@ -36,8 +37,9 @@
 - Live chain writes validated in `chat_messages`, `operation_logs`, `snapshot_refresh_events`
 - Assessment/training domain writes validated in `assessments`, `training_plans`
 - Training-record domain writes validated in `training_sessions`
+- Dashboard writes validated in `chat_messages.cards_json` with `operation_logs(action_name=dashboard_generate)`
 
 ## Open Gaps
 
-- Three module contracts are defined (`orchestrator`, `assessment`, `training`); remaining future modules are tracked in `docs/governance/GAP-REGISTER.md`.
+- Three module contracts are defined (`orchestrator`, `assessment`, `training`); dashboard runtime chain is live, but dashboard-specific module contract is still pending and tracked in `docs/governance/GAP-REGISTER.md`.
 - CI gate for DB rebuild + execution-chain smoke is active in `.github/workflows/db-rebuild-and-chain-smoke.yml`.

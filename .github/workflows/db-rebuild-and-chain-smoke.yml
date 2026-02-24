@@ -74,6 +74,7 @@ jobs:
           supabase functions deploy assessment --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
           supabase functions deploy training-advice --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
           supabase functions deploy training-record --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
+          supabase functions deploy dashboard --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
 
       - name: Live orchestrator chain smoke
         run: bash tests/e2e/test_orchestrator_chat_casual_live.sh
@@ -83,3 +84,6 @@ jobs:
 
       - name: Live training record chain smoke
         run: bash tests/e2e/test_orchestrator_training_record_live.sh
+
+      - name: Live dashboard chain smoke
+        run: bash tests/e2e/test_orchestrator_dashboard_live.sh
