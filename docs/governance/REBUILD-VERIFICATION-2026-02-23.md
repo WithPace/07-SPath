@@ -20,17 +20,19 @@
 3. `bash tests/functions/test_shared_modules.sh` -> PASS.
 4. `bash tests/functions/test_chain_files.sh` -> PASS.
 5. `bash tests/e2e/test_orchestrator_chat_casual_live.sh` -> PASS.
-6. `/tmp/final_gate.sh` -> PASS (`governance + db + functions + e2e + ci` full sweep).
+6. `bash scripts/ci/final_gate.sh` -> PASS (`governance + db + functions + e2e + ci` full sweep).
 7. Smoke run output sample:
    - `request_id=2a66dca7-55c1-4e20-ad3a-2bcb7b243305`
    - `user_id=94d775e1-ac7b-4cdb-a061-4590c89fb1b9`
    - `child_id=a8bff8a7-fd94-4596-992f-6e7701700828`
 8. Final sweep smoke output sample:
-   - `request_id=2a03ced1-1b23-4df7-bb12-aa973463383a`
-   - `user_id=12317b89-39a7-473b-a82d-65e27050b862`
-   - `child_id=1afb3f43-9b98-40e1-80c6-21e61a8fb779`
+   - `request_id=4a213ac7-a2fa-4ca9-8ebe-7beb5f2fe1fc`
+   - `user_id=acc9041f-83f8-46b5-bb0b-235c297f4868`
+   - `child_id=a8ae4551-b55c-4ffd-851b-0ece5abd4415`
 9. `bash tests/governance/test_build_idempotent.sh` -> PASS.
-10. Latest verification timestamp (UTC): `2026-02-23T15:47:26Z`
+10. `bash tests/ci/test_final_gate_script.sh` -> PASS.
+11. `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
+12. Latest verification timestamp (UTC): `2026-02-24T01:15:06Z`
 
 ## Assertions Confirmed
 
@@ -43,4 +45,4 @@
 ## Remaining Gaps
 
 - No blocking gaps for rebuild + execution chain baseline.
-- Known local constraint: `supabase db dump` requires Docker; current scripts already apply migration fallback when Docker is unavailable.
+- Remaining reliability/tooling gaps are tracked in `docs/governance/GAP-REGISTER.md`.
