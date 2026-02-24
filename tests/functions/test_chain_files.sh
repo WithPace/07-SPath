@@ -15,6 +15,7 @@ grep -q "training_generate" supabase/functions/orchestrator/index.ts
 grep -q "training_record" supabase/functions/orchestrator/index.ts
 grep -q "dashboard" supabase/functions/orchestrator/index.ts
 grep -q "finalizeWriteback" supabase/functions/chat-casual/index.ts
+grep -q "children_memory" supabase/functions/chat-casual/index.ts
 grep -q "finalizeWriteback" supabase/functions/assessment/index.ts
 grep -q "children_profiles" supabase/functions/assessment/index.ts
 grep -q "finalizeWriteback" supabase/functions/training/index.ts

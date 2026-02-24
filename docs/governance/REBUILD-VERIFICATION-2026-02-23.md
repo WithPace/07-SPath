@@ -36,12 +36,12 @@
 13. Training-record smoke output sample:
    - `training_record_request_id=0adf115e-4bd5-4a6a-bc5f-7afdeab56285`
 14. Final sweep smoke output sample (latest run):
-   - `assessment_request_id=9acb7cdf-9ad6-4ce9-88f2-106482ab38b3`
-   - `training_advice_request_id=5fa703e7-a5a5-4c53-8a4b-b41c9f2f7442`
-   - `chat_request_id=2b04f09b-0dae-4d75-ad5b-e09065ffec5d`
-   - `dashboard_request_id=3271b980-4d1d-4617-b492-dd41680358ec`
-   - `training_request_id=9fe09099-2020-4639-9add-95d42b7794c5`
-   - `training_record_request_id=a831cafe-0f75-4dad-a2d9-2128f343da90`
+   - `assessment_request_id=9675e6d8-73a7-43be-af3b-ca6a3afcc7ed`
+   - `training_advice_request_id=c6baae05-9cd6-4896-8b72-410d9acbc0c6`
+   - `chat_request_id=ed9b137f-1e24-4bc4-94a1-5a1ad10c88ae`
+   - `dashboard_request_id=159cbfb5-679b-4287-8dec-6786399c69bb`
+   - `training_request_id=c2ad7b3f-cd22-46eb-b505-5f8bbe7f3354`
+   - `training_record_request_id=dfc5e2d1-d5f5-451b-8eab-5a22c7ee1878`
 15. `bash tests/governance/test_build_idempotent.sh` -> PASS.
 16. `bash tests/ci/test_final_gate_script.sh` -> PASS.
 17. `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
@@ -61,13 +61,19 @@
    - `user_id=ef7b7a55-e0c0-4ac1-a7a8-e3e635a7c598`
    - `child_id=6bc3df0f-88ff-4e32-9ea9-a3624fbc6fc7`
 27. `supabase functions deploy training-advice --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
-28. Latest verification timestamp (UTC): `2026-02-24T12:28:33Z`
+28. `supabase functions deploy chat-casual --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
+29. Chat memory sync smoke output sample:
+   - `chat_request_id=ed9b137f-1e24-4bc4-94a1-5a1ad10c88ae`
+   - `user_id=b9bb26ed-c07c-472d-b89f-703004fcf85b`
+   - `child_id=15e18a22-cdb6-4fc6-884f-a7ccbfbdf92c`
+30. Latest verification timestamp (UTC): `2026-02-24T13:10:38Z`
 
 ## Assertions Confirmed
 
 - `orchestrator` returns SSE `event: done`.
 - One or more `user` and `assistant` messages persisted for the same child/user.
 - `operation_logs` contains `action_name=chat_casual_reply` with same `request_id`.
+- `operation_logs.affected_tables` for `chat_casual_reply` includes `children_memory`.
 - `operation_logs` contains `action_name=assessment_generate` and `action_name=training_advice_generate` for new modules.
 - `operation_logs.affected_tables` for `assessment_generate` includes `children_profiles`.
 - `operation_logs.affected_tables` for `training_advice_generate` includes `children_memory`.

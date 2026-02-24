@@ -11,6 +11,18 @@ type ChatPayload = {
   orchestrator_latency_ms?: number;
 };
 
+function buildMemorySummary(modelText: string): string {
+  const normalized = modelText.replace(/\s+/g, " ").trim();
+  if (!normalized) return "本次对话完成，建议保持日常稳定互动。";
+  return normalized.length > 280 ? normalized.slice(0, 280) : normalized;
+}
+
+function buildFallbackFocus(message: string): string {
+  const trimmed = message.replace(/\s+/g, " ").trim();
+  const base = trimmed.length > 24 ? trimmed.slice(0, 24) : trimmed;
+  return `日常沟通支持：${base || "亲子互动与情绪安抚"}`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: SSE_HEADERS });
@@ -45,6 +57,32 @@ Deno.serve(async (req) => {
     ]);
 
     const client = getServiceClient();
+    const memorySummary = buildMemorySummary(model.text);
+    const currentMemory = await client
+      .from("children_memory")
+      .select("id,current_focus")
+      .eq("child_id", payload.child_id)
+      .maybeSingle();
+
+    if (currentMemory.error) {
+      throw new Error(`INTERNAL_ERROR: load children memory failed: ${currentMemory.error.message}`);
+    }
+
+    const memoryUpsert = await client
+      .from("children_memory")
+      .upsert({
+        child_id: payload.child_id,
+        current_focus: currentMemory.data?.current_focus || buildFallbackFocus(payload.message),
+        last_interaction_summary: memorySummary,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: "child_id" })
+      .select("id")
+      .single();
+
+    if (memoryUpsert.error || !memoryUpsert.data?.id) {
+      throw new Error(`INTERNAL_ERROR: write children memory failed: ${memoryUpsert.error?.message ?? "unknown"}`);
+    }
+
     const assistantInsert = await client.from("chat_messages").insert({
       conversation_id: payload.conversation_id,
       child_id: payload.child_id,
@@ -66,12 +104,15 @@ Deno.serve(async (req) => {
       actorUserId: user.id,
       childId: payload.child_id,
       actionName: "chat_casual_reply",
-      affectedTables: ["chat_messages", "snapshot_refresh_events", "operation_logs"],
+      affectedTables: ["chat_messages", "children_memory", "snapshot_refresh_events", "operation_logs"],
       eventSourceTable: "chat_messages",
       eventType: "insert",
       priorityLevel: "S2",
-      targetSnapshotType: "short_term",
-      payload: { conversation_id: payload.conversation_id },
+      targetSnapshotType: "both",
+      payload: {
+        conversation_id: payload.conversation_id,
+        children_memory_id: memoryUpsert.data.id,
+      },
       dbWriteStatus: "success",
       outboxWriteStatus: "success",
       finalStatus: "completed",
