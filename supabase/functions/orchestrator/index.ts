@@ -6,13 +6,13 @@ type OrchestratorPayload = {
   message: string;
   conversation_id?: string;
   request_id?: string;
-  module?: "chat_casual" | "assessment" | "training_advice" | string;
+  module?: "chat_casual" | "assessment" | "training_advice" | "training_record" | string;
 };
 
 type RouteTarget = {
-  functionName: "chat-casual" | "assessment" | "training-advice";
-  actionName: "chat_casual_reply" | "assessment_generate" | "training_advice_generate";
-  module: "chat_casual" | "assessment" | "training_advice";
+  functionName: "chat-casual" | "assessment" | "training-advice" | "training-record";
+  actionName: "chat_casual_reply" | "assessment_generate" | "training_advice_generate" | "training_record_create";
+  module: "chat_casual" | "assessment" | "training_advice" | "training_record";
 };
 
 function getAuthHeader(req: Request): string {
@@ -43,6 +43,14 @@ function resolveRoute(moduleInput?: string): RouteTarget {
       functionName: "training-advice",
       actionName: "training_advice_generate",
       module: "training_advice",
+    };
+  }
+
+  if (normalized === "training_record" || normalized === "trainingrecord") {
+    return {
+      functionName: "training-record",
+      actionName: "training_record_create",
+      module: "training_record",
     };
   }
 

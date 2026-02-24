@@ -25,6 +25,7 @@
 12. `bash tests/functions/test_chain_files.sh` -> PASS
 13. `bash tests/e2e/test_orchestrator_chat_casual_live.sh` -> PASS
 14. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS
+15. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS
 
 ## Outputs
 
@@ -34,6 +35,7 @@
 - `governance/agent-contract/contract.lock.json` generated
 - Live chain writes validated in `chat_messages`, `operation_logs`, `snapshot_refresh_events`
 - Assessment/training domain writes validated in `assessments`, `training_plans`
+- Training-record domain writes validated in `training_sessions`
 
 ## Open Gaps
 
