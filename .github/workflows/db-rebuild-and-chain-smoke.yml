@@ -4,9 +4,14 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: db-rebuild-and-chain-smoke-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -23,6 +28,8 @@ jobs:
       DEFAULT_LLM: ${{ secrets.DEFAULT_LLM }}
       ALLOW_DESTRUCTIVE_REBUILD: "1"
       ALLOWED_PROJECT_REFS: ${{ secrets.SUPABASE_PROJECT_REF }}
+      ORCH_MAX_ATTEMPTS: "5"
+      ORCH_RETRY_BASE_DELAY_SECONDS: "2"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
