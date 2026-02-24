@@ -128,6 +128,6 @@ else
 fi
 
 if ! dump_remote_schema_with_pg_dump /tmp/starpath_schema.sql "$db_password" "$db_host" "$db_port" "$db_user" "$db_name"; then
-  cp supabase/migrations/20260223170000_rebuild_all.sql /tmp/starpath_schema.sql
-  echo "fallback schema snapshot written from migration file"
+  echo "remote schema dump failed: pg_dump against official Supabase is required" >&2
+  exit 1
 fi
