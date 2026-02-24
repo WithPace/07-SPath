@@ -86,7 +86,27 @@
    - `dashboard_request_id=9730309a-8f17-49f5-a0f6-ce3b7bf848ab`
    - `user_id=6eb181a6-c49c-4ca3-a16c-700c0cff3c30`
    - `child_id=f5c6ba05-c0ae-4cc6-bc20-c6e99bb2e47e`
-38. Latest verification timestamp (UTC): `2026-02-24T14:46:11Z`
+38. `supabase functions deploy assessment --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
+39. `supabase functions deploy training --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
+40. `supabase functions deploy training-advice --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
+41. `supabase functions deploy training-record --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
+42. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS.
+43. Assessment/training-advice metadata sync smoke output sample:
+   - `assessment_request_id=63e5aea2-755a-4515-9b74-c313d00c477e`
+   - `training_request_id=e3f27ff6-2cd3-4e44-b50a-171314988ed2`
+44. `bash tests/e2e/test_orchestrator_training_live.sh` -> PASS.
+45. Training metadata sync smoke output sample:
+   - `training_request_id=5090a0cc-65b3-427a-b795-b203a47b3484`
+46. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS.
+47. Training-record metadata sync smoke output sample:
+   - `training_record_request_id=fc5fe82f-7721-44c0-baf8-2605a7d20147`
+48. `bash scripts/ci/final_gate.sh` -> PASS.
+49. Final-gate metadata sync smoke output sample:
+   - `assessment_request_id=345da6d8-275d-40a5-9d0c-6b9d272920b3`
+   - `training_advice_request_id=4962fac3-8f28-4d99-b4b6-9e4478c1ac2c`
+   - `training_request_id=991d461f-b3d2-40bc-a4e7-25ae1a57c84a`
+   - `training_record_request_id=acd3eb5d-a1e6-4fec-9ee8-d9305d523ea1`
+50. Latest verification timestamp (UTC): `2026-02-24T15:09:19Z`
 
 ## Assertions Confirmed
 
@@ -95,12 +115,12 @@
 - `operation_logs` contains `action_name=chat_casual_reply` with same `request_id`.
 - `operation_logs.affected_tables` for `chat_casual_reply` includes `children_memory`.
 - `operation_logs` contains `action_name=assessment_generate` and `action_name=training_advice_generate` for new modules.
-- `operation_logs.affected_tables` for `assessment_generate` includes `children_profiles`.
-- `operation_logs.affected_tables` for `training_advice_generate` includes `children_memory`.
+- `operation_logs.affected_tables` for `assessment_generate` includes `children_profiles` and `chat_messages`.
+- `operation_logs.affected_tables` for `training_advice_generate` includes `children_memory` and `chat_messages`.
 - `operation_logs` contains `action_name=training_generate` for training module.
-- `operation_logs.affected_tables` for `training_generate` includes `children_memory`.
+- `operation_logs.affected_tables` for `training_generate` includes `children_memory` and `chat_messages`.
 - `operation_logs` contains `action_name=training_record_create` for training-record module.
-- `operation_logs.affected_tables` for `training_record_create` includes `children_profiles`.
+- `operation_logs.affected_tables` for `training_record_create` includes `children_profiles` and `chat_messages`.
 - `operation_logs` contains `action_name=dashboard_generate` for dashboard module.
 - `operation_logs.affected_tables` for `dashboard_generate` includes `chat_messages`.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.

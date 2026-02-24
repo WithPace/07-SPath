@@ -288,7 +288,7 @@ Deno.serve(async (req) => {
       actorUserId: user.id,
       childId: payload.child_id,
       actionName: "assessment_generate",
-      affectedTables: ["assessments", "children_profiles", "snapshot_refresh_events", "operation_logs"],
+      affectedTables: ["assessments", "children_profiles", "chat_messages", "snapshot_refresh_events", "operation_logs"],
       eventSourceTable: "children_profiles",
       eventType: "insert",
       priorityLevel: "S1",

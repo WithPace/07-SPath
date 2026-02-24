@@ -243,6 +243,13 @@ if [ "$has_profile_table" != "true" ]; then
   exit 1
 fi
 
+has_assess_chat_messages=$(echo "$op_assess" | jq '.[0].affected_tables | index("chat_messages") != null')
+if [ "$has_assess_chat_messages" != "true" ]; then
+  echo "assessment operation_logs missing chat_messages in affected_tables" >&2
+  echo "$op_assess" >&2
+  exit 1
+fi
+
 op_training=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status,affected_tables&request_id=eq.${training_request_id}&action_name=eq.training_advice_generate" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
@@ -256,6 +263,13 @@ fi
 has_memory_table=$(echo "$op_training" | jq '.[0].affected_tables | index("children_memory") != null')
 if [ "$has_memory_table" != "true" ]; then
   echo "training operation_logs missing children_memory in affected_tables" >&2
+  echo "$op_training" >&2
+  exit 1
+fi
+
+has_training_chat_messages=$(echo "$op_training" | jq '.[0].affected_tables | index("chat_messages") != null')
+if [ "$has_training_chat_messages" != "true" ]; then
+  echo "training operation_logs missing chat_messages in affected_tables" >&2
   echo "$op_training" >&2
   exit 1
 fi

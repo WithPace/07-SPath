@@ -38,7 +38,15 @@
 25. `supabase functions deploy dashboard --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS
 26. `bash tests/e2e/test_orchestrator_dashboard_live.sh` -> PASS (`dashboard_request_id=391a0df3-bc6a-4a4d-a301-e08f909df192`)
 27. `bash scripts/ci/final_gate.sh` -> PASS
-28. Latest verification timestamp (UTC): `2026-02-24T14:46:11Z`
+28. `supabase functions deploy assessment --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS
+29. `supabase functions deploy training --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS
+30. `supabase functions deploy training-advice --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS
+31. `supabase functions deploy training-record --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS
+32. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS (`assessment_request_id=63e5aea2-755a-4515-9b74-c313d00c477e`, `training_request_id=e3f27ff6-2cd3-4e44-b50a-171314988ed2`)
+33. `bash tests/e2e/test_orchestrator_training_live.sh` -> PASS (`training_request_id=5090a0cc-65b3-427a-b795-b203a47b3484`)
+34. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS (`training_record_request_id=fc5fe82f-7721-44c0-baf8-2605a7d20147`)
+35. `bash scripts/ci/final_gate.sh` -> PASS
+36. Latest verification timestamp (UTC): `2026-02-24T15:09:19Z`
 
 ## Outputs
 
@@ -49,8 +57,9 @@
 - Live chain writes validated in `chat_messages`, `operation_logs`, `snapshot_refresh_events`
 - Chat-casual memory writeback validated in `children_memory.last_interaction_summary`
 - Assessment/training domain writes validated in `assessments`, `training_plans`, `children_profiles`, `children_memory`
-- Training module writeback validated with `operation_logs(action_name=training_generate)` and `affected_tables` including `children_memory`
-- Training-record domain writes validated in `training_sessions`, `children_profiles`
+- Training module writeback validated with `operation_logs(action_name=training_generate)` and `affected_tables` including `children_memory`, `chat_messages`
+- Training-advice/assessment writeback metadata validated with `affected_tables` including `chat_messages`
+- Training-record domain writes validated in `training_sessions`, `children_profiles`, with metadata including `chat_messages`
 - Dashboard writes validated in `chat_messages.cards_json` with `operation_logs(action_name=dashboard_generate)` and `affected_tables` including `chat_messages`
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 

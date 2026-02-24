@@ -202,6 +202,13 @@ if [ "$has_profile_table" != "true" ]; then
   exit 1
 fi
 
+has_chat_messages=$(echo "$op_resp" | jq '.[0].affected_tables | index("chat_messages") != null')
+if [ "$has_chat_messages" != "true" ]; then
+  echo "training record operation_logs missing chat_messages in affected_tables" >&2
+  echo "$op_resp" >&2
+  exit 1
+fi
+
 event_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/snapshot_refresh_events?select=id,request_id,status&request_id=eq.${training_record_request_id}" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")

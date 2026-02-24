@@ -18,12 +18,16 @@ grep -q "finalizeWriteback" supabase/functions/chat-casual/index.ts
 grep -q "children_memory" supabase/functions/chat-casual/index.ts
 grep -q "finalizeWriteback" supabase/functions/assessment/index.ts
 grep -q "children_profiles" supabase/functions/assessment/index.ts
+grep -q "affectedTables: .*chat_messages" supabase/functions/assessment/index.ts
 grep -q "finalizeWriteback" supabase/functions/training/index.ts
 grep -q "children_memory" supabase/functions/training/index.ts
+grep -q "affectedTables: .*chat_messages" supabase/functions/training/index.ts
 grep -q "finalizeWriteback" supabase/functions/training-advice/index.ts
 grep -q "children_memory" supabase/functions/training-advice/index.ts
+grep -q "affectedTables: .*chat_messages" supabase/functions/training-advice/index.ts
 grep -q "finalizeWriteback" supabase/functions/training-record/index.ts
 grep -q "children_profiles" supabase/functions/training-record/index.ts
+grep -q "affectedTables: .*chat_messages" supabase/functions/training-record/index.ts
 grep -q "finalizeWriteback" supabase/functions/dashboard/index.ts
 grep -q "affectedTables: .*chat_messages" supabase/functions/dashboard/index.ts
 echo "chain files and key hooks present"

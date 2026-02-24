@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
       actorUserId: user.id,
       childId: payload.child_id,
       actionName: "training_generate",
-      affectedTables: ["training_plans", "children_memory", "snapshot_refresh_events", "operation_logs"],
+      affectedTables: ["training_plans", "children_memory", "chat_messages", "snapshot_refresh_events", "operation_logs"],
       eventSourceTable: "training_plans",
       eventType: "insert",
       priorityLevel: "S2",
