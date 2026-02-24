@@ -35,12 +35,13 @@
    - `dashboard_request_id=96298e24-3710-40e7-9ca7-e04c07d57274`
 13. Training-record smoke output sample:
    - `training_record_request_id=0adf115e-4bd5-4a6a-bc5f-7afdeab56285`
-14. Final sweep smoke output sample:
-   - `assessment_request_id=c7fd5a88-92c3-4de1-a4b8-56b756942502`
-   - `training_request_id=fe262c18-312c-4529-aa38-864f02d6a92e`
-   - `chat_request_id=17d0d87f-570e-498e-af9a-73a06b94cdef`
-   - `dashboard_request_id=96298e24-3710-40e7-9ca7-e04c07d57274`
-   - `training_record_request_id=0adf115e-4bd5-4a6a-bc5f-7afdeab56285`
+14. Final sweep smoke output sample (latest run):
+   - `assessment_request_id=1d20a5bc-b0bf-41b5-9b19-71ac9fa89ae3`
+   - `training_advice_request_id=d9e1b045-5246-414a-9a14-8863b7360837`
+   - `chat_request_id=a0cad9e5-e741-42f7-a313-012c84949a66`
+   - `dashboard_request_id=1aadcc52-e263-4d6a-95b5-7d782c8fd927`
+   - `training_request_id=65a6997e-14dd-46d4-94b7-c4ea33514a17`
+   - `training_record_request_id=a6a1f9b1-a727-4e8d-aba0-4decbd45cb70`
 15. `bash tests/governance/test_build_idempotent.sh` -> PASS.
 16. `bash tests/ci/test_final_gate_script.sh` -> PASS.
 17. `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
@@ -53,7 +54,7 @@
    - `user_id=3aa817b2-7583-4e4f-9b74-2b70df8a0e8c`
    - `child_id=80646766-51a6-4a98-8730-ee7dca284932`
 23. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS.
-24. Latest verification timestamp (UTC): `2026-02-24T09:56:43Z`
+24. Latest verification timestamp (UTC): `2026-02-24T10:15:11Z`
 
 ## Assertions Confirmed
 
