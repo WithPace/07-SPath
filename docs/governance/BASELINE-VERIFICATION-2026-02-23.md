@@ -35,7 +35,10 @@
 22. `supabase functions deploy training --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS
 23. `bash tests/e2e/test_orchestrator_training_live.sh` -> PASS (`training_request_id=b9cd1f2a-eba6-4140-8446-193b559f0472`)
 24. `bash scripts/ci/final_gate.sh` -> PASS
-25. Latest verification timestamp (UTC): `2026-02-24T14:26:25Z`
+25. `supabase functions deploy dashboard --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS
+26. `bash tests/e2e/test_orchestrator_dashboard_live.sh` -> PASS (`dashboard_request_id=391a0df3-bc6a-4a4d-a301-e08f909df192`)
+27. `bash scripts/ci/final_gate.sh` -> PASS
+28. Latest verification timestamp (UTC): `2026-02-24T14:46:11Z`
 
 ## Outputs
 
@@ -48,7 +51,7 @@
 - Assessment/training domain writes validated in `assessments`, `training_plans`, `children_profiles`, `children_memory`
 - Training module writeback validated with `operation_logs(action_name=training_generate)` and `affected_tables` including `children_memory`
 - Training-record domain writes validated in `training_sessions`, `children_profiles`
-- Dashboard writes validated in `chat_messages.cards_json` with `operation_logs(action_name=dashboard_generate)`
+- Dashboard writes validated in `chat_messages.cards_json` with `operation_logs(action_name=dashboard_generate)` and `affected_tables` including `chat_messages`
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
 ## Current Status

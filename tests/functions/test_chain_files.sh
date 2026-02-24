@@ -25,4 +25,5 @@ grep -q "children_memory" supabase/functions/training-advice/index.ts
 grep -q "finalizeWriteback" supabase/functions/training-record/index.ts
 grep -q "children_profiles" supabase/functions/training-record/index.ts
 grep -q "finalizeWriteback" supabase/functions/dashboard/index.ts
+grep -q "affectedTables: .*chat_messages" supabase/functions/dashboard/index.ts
 echo "chain files and key hooks present"

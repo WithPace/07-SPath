@@ -215,6 +215,16 @@ if [ "$op_count" -lt 1 ]; then
   exit 1
 fi
 
+op_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status,affected_tables&request_id=eq.${dashboard_request_id}&action_name=eq.dashboard_generate" \
+  -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+  -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
+has_chat_messages=$(echo "$op_resp" | jq -r '.[0].affected_tables // [] | index("chat_messages") != null')
+if [ "$has_chat_messages" != "true" ]; then
+  echo "dashboard operation_logs missing chat_messages affected table" >&2
+  echo "$op_resp" >&2
+  exit 1
+fi
+
 event_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/snapshot_refresh_events?select=id,request_id,status&request_id=eq.${dashboard_request_id}" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")

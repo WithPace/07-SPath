@@ -76,7 +76,17 @@
    - `training_request_id=2f35fd8c-6b36-4eb2-8af0-d5b227ab02df`
    - `user_id=bb641c68-d65d-4981-8d0b-bcaf0d3fbe69`
    - `child_id=e003c4d5-baff-4680-a96a-3c39d9d6a28b`
-34. Latest verification timestamp (UTC): `2026-02-24T14:26:25Z`
+34. `supabase functions deploy dashboard --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
+35. Dashboard affected-table smoke output sample:
+   - `dashboard_request_id=391a0df3-bc6a-4a4d-a301-e08f909df192`
+   - `user_id=50e89c5a-3a75-4de0-85c9-0f1fb15ec5a0`
+   - `child_id=b3fcca37-948b-4954-8fad-fac823635a62`
+36. `bash scripts/ci/final_gate.sh` -> PASS.
+37. Final-gate dashboard smoke output sample:
+   - `dashboard_request_id=9730309a-8f17-49f5-a0f6-ce3b7bf848ab`
+   - `user_id=6eb181a6-c49c-4ca3-a16c-700c0cff3c30`
+   - `child_id=f5c6ba05-c0ae-4cc6-bc20-c6e99bb2e47e`
+38. Latest verification timestamp (UTC): `2026-02-24T14:46:11Z`
 
 ## Assertions Confirmed
 
@@ -92,6 +102,7 @@
 - `operation_logs` contains `action_name=training_record_create` for training-record module.
 - `operation_logs.affected_tables` for `training_record_create` includes `children_profiles`.
 - `operation_logs` contains `action_name=dashboard_generate` for dashboard module.
+- `operation_logs.affected_tables` for `dashboard_generate` includes `chat_messages`.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
