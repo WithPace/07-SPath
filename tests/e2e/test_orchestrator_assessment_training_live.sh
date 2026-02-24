@@ -179,6 +179,24 @@ if [ "$assess_count" -lt 1 ]; then
   exit 1
 fi
 
+profile_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/children_profiles?select=id,version,domain_levels,overall_summary,assessed_by&child_id=eq.${child_id}&assessed_by=eq.${user_id}&order=version.desc&limit=5" \
+  -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+  -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
+
+profile_count=$(echo "$profile_resp" | jq 'length')
+if [ "$profile_count" -lt 1 ]; then
+  echo "assessment children_profiles side effects missing" >&2
+  echo "$profile_resp" >&2
+  exit 1
+fi
+
+profile_domain_count=$(echo "$profile_resp" | jq '.[0].domain_levels | keys | length')
+if [ "$profile_domain_count" -lt 1 ]; then
+  echo "assessment children_profiles domain_levels not populated" >&2
+  echo "$profile_resp" >&2
+  exit 1
+fi
+
 plan_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/training_plans?select=id,title,status,created_by&child_id=eq.${child_id}&created_by=eq.${user_id}&order=created_at.desc&limit=5" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
@@ -190,12 +208,19 @@ if [ "$plan_count" -lt 1 ]; then
   exit 1
 fi
 
-op_assess=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status&request_id=eq.${assessment_request_id}&action_name=eq.assessment_generate" \
+op_assess=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status,affected_tables&request_id=eq.${assessment_request_id}&action_name=eq.assessment_generate" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
 op_assess_count=$(echo "$op_assess" | jq 'length')
 if [ "$op_assess_count" -lt 1 ]; then
   echo "assessment operation_logs missing" >&2
+  echo "$op_assess" >&2
+  exit 1
+fi
+
+has_profile_table=$(echo "$op_assess" | jq '.[0].affected_tables | index("children_profiles") != null')
+if [ "$has_profile_table" != "true" ]; then
+  echo "assessment operation_logs missing children_profiles in affected_tables" >&2
   echo "$op_assess" >&2
   exit 1
 fi

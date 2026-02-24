@@ -36,12 +36,12 @@
 13. Training-record smoke output sample:
    - `training_record_request_id=0adf115e-4bd5-4a6a-bc5f-7afdeab56285`
 14. Final sweep smoke output sample (latest run):
-   - `assessment_request_id=53515c24-8ffa-4b30-ae45-0fe149b6b08b`
-   - `training_advice_request_id=708133f2-1502-4194-8b86-97c70813f2e0`
-   - `chat_request_id=0a5ef9de-976f-4c36-89ae-373848bb0152`
-   - `dashboard_request_id=df8198dd-f67b-4750-ade7-ca1d77d8bd65`
-   - `training_request_id=29cb92d0-ff35-4da9-9bf5-188afe4f5dbf`
-   - `training_record_request_id=45d91227-774e-4746-a915-9a89ae1991fa`
+   - `assessment_request_id=9acb7cdf-9ad6-4ce9-88f2-106482ab38b3`
+   - `training_advice_request_id=5fa703e7-a5a5-4c53-8a4b-b41c9f2f7442`
+   - `chat_request_id=2b04f09b-0dae-4d75-ad5b-e09065ffec5d`
+   - `dashboard_request_id=3271b980-4d1d-4617-b492-dd41680358ec`
+   - `training_request_id=9fe09099-2020-4639-9add-95d42b7794c5`
+   - `training_record_request_id=a831cafe-0f75-4dad-a2d9-2128f343da90`
 15. `bash tests/governance/test_build_idempotent.sh` -> PASS.
 16. `bash tests/ci/test_final_gate_script.sh` -> PASS.
 17. `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
@@ -57,10 +57,10 @@
 24. `supabase functions deploy training-record --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
 25. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS.
 26. Training-record profile sync smoke output sample:
-   - `training_record_request_id=45d91227-774e-4746-a915-9a89ae1991fa`
-   - `user_id=d614d7d2-fbbd-4979-b438-6736728d7900`
-   - `child_id=8818d4a0-2d6c-4705-829d-907ed6cf99f7`
-27. Latest verification timestamp (UTC): `2026-02-24T11:53:20Z`
+   - `training_record_request_id=a831cafe-0f75-4dad-a2d9-2128f343da90`
+   - `user_id=8cd3e27a-94fc-434e-a6a5-9dc5e73bd53f`
+   - `child_id=96f17676-4745-4355-bf5c-32bc124e0487`
+27. Latest verification timestamp (UTC): `2026-02-24T12:05:18Z`
 
 ## Assertions Confirmed
 
@@ -68,6 +68,7 @@
 - One or more `user` and `assistant` messages persisted for the same child/user.
 - `operation_logs` contains `action_name=chat_casual_reply` with same `request_id`.
 - `operation_logs` contains `action_name=assessment_generate` and `action_name=training_advice_generate` for new modules.
+- `operation_logs.affected_tables` for `assessment_generate` includes `children_profiles`.
 - `operation_logs` contains `action_name=training_generate` for training module.
 - `operation_logs` contains `action_name=training_record_create` for training-record module.
 - `operation_logs.affected_tables` for `training_record_create` includes `children_profiles`.
