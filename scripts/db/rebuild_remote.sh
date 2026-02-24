@@ -7,7 +7,24 @@ if [ ! -f .env ]; then
   exit 1
 fi
 
-project_ref="${SUPABASE_PROJECT_REF:-}"
+read_env_or_file() {
+  local key="$1"
+  local default_value="${2:-}"
+  local value="${!key:-}"
+  if [ -z "$value" ] && [ -f .env ]; then
+    value=$(awk -F= -v k="$key" '$1==k{print substr($0, index($0, "=") + 1)}' .env | tail -n 1)
+    value="${value%\"}"
+    value="${value#\"}"
+    value="${value%\'}"
+    value="${value#\'}"
+  fi
+  if [ -z "$value" ]; then
+    value="$default_value"
+  fi
+  echo "$value"
+}
+
+project_ref="$(read_env_or_file SUPABASE_PROJECT_REF)"
 if [ -z "$project_ref" ]; then
   project_ref=$(awk -F= '$1=="SUPABASE_URL"{print $2}' .env | sed -E 's#https?://([^.]+)\..*#\1#')
 fi
@@ -29,23 +46,62 @@ if ! echo ",${allowed_refs}," | grep -q ",${project_ref},"; then
 fi
 
 if [ -n "$project_ref" ]; then
-  if [ -n "${SUPABASE_DB_PASSWORD:-}" ]; then
-    supabase link --project-ref "$project_ref" --password "$SUPABASE_DB_PASSWORD" --yes
+  db_password="$(read_env_or_file SUPABASE_DB_PASSWORD)"
+  if [ -n "$db_password" ]; then
+    supabase link --project-ref "$project_ref" --password "$db_password" --yes
   else
     supabase link --project-ref "$project_ref" --yes
   fi
 fi
 
-if [ -n "${SUPABASE_DB_PASSWORD:-}" ]; then
-  supabase db push --linked --include-all --password "$SUPABASE_DB_PASSWORD"
-  if ! supabase db dump --linked --schema public -f /tmp/starpath_schema.sql --password "$SUPABASE_DB_PASSWORD"; then
-    cp supabase/migrations/20260223170000_rebuild_all.sql /tmp/starpath_schema.sql
-    echo "fallback schema snapshot written from migration file"
+dump_remote_schema_with_pg_dump() {
+  local out_file="$1"
+  local db_password="$2"
+  local db_host="$3"
+  local db_port="$4"
+  local db_user="$5"
+  local db_name="$6"
+
+  if ! command -v pg_dump >/dev/null 2>&1; then
+    echo "pg_dump is not installed; skip remote schema dump" >&2
+    return 1
   fi
+
+  if [ -z "$db_password" ] || [ -z "$db_host" ] || [ -z "$db_user" ] || [ -z "$db_name" ]; then
+    echo "missing db connection fields for pg_dump; skip remote schema dump" >&2
+    return 1
+  fi
+
+  PGPASSWORD="$db_password" PGCONNECT_TIMEOUT="${PGCONNECT_TIMEOUT:-15}" pg_dump \
+    --host="$db_host" \
+    --port="$db_port" \
+    --username="$db_user" \
+    --dbname="$db_name" \
+    --schema=public \
+    --schema-only \
+    --no-owner \
+    --no-privileges \
+    --no-comments \
+    --file="$out_file" \
+    --no-password
+}
+
+db_password="$(read_env_or_file SUPABASE_DB_PASSWORD)"
+db_host="$(read_env_or_file SUPABASE_DB_HOST)"
+db_port="$(read_env_or_file SUPABASE_DB_PORT "5432")"
+db_user="$(read_env_or_file SUPABASE_DB_USER "postgres")"
+db_name="$(read_env_or_file SUPABASE_DB_NAME "postgres")"
+if [ -z "$db_host" ] && [ -n "$project_ref" ]; then
+  db_host="db.${project_ref}.supabase.co"
+fi
+
+if [ -n "$db_password" ]; then
+  supabase db push --linked --include-all --password "$db_password"
 else
   supabase db push --linked --include-all
-  if ! supabase db dump --linked --schema public -f /tmp/starpath_schema.sql; then
-    cp supabase/migrations/20260223170000_rebuild_all.sql /tmp/starpath_schema.sql
-    echo "fallback schema snapshot written from migration file"
-  fi
+fi
+
+if ! dump_remote_schema_with_pg_dump /tmp/starpath_schema.sql "$db_password" "$db_host" "$db_port" "$db_user" "$db_name"; then
+  cp supabase/migrations/20260223170000_rebuild_all.sql /tmp/starpath_schema.sql
+  echo "fallback schema snapshot written from migration file"
 fi
