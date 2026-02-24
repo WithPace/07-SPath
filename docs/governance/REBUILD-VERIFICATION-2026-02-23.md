@@ -15,7 +15,7 @@
 
 ## Command Evidence
 
-1. `bash scripts/db/rebuild_remote.sh` -> PASS (`supabase db push --linked --include-all` succeeded).
+1. `bash scripts/db/rebuild_remote.sh` -> PASS (`supabase db push --linked --include-all` + remote `pg_dump` snapshot succeeded).
 2. `bash tests/db/test_06_apply_rebuild.sh` -> PASS.
 3. `bash tests/functions/test_shared_modules.sh` -> PASS.
 4. `bash tests/functions/test_chain_files.sh` -> PASS.
@@ -25,26 +25,26 @@
 8. `bash tests/e2e/test_orchestrator_dashboard_live.sh` -> PASS.
 9. `bash scripts/ci/final_gate.sh` -> PASS (`governance + db + functions + e2e + ci` full sweep).
 10. Chat chain smoke output sample:
-   - `request_id=2fcd6527-645a-44f4-9b14-ca169ebe2b5b`
-   - `user_id=5abd075d-e21d-4f64-837d-b00cb65832a1`
-   - `child_id=9acc774f-7d44-4f6f-98bb-3c7774377cd4`
+   - `request_id=17d0d87f-570e-498e-af9a-73a06b94cdef`
+   - `user_id=9f35fce7-af65-49d9-ba06-85699314efc3`
+   - `child_id=5ab1117d-5eb4-4b2d-9d20-3e3a478d2760`
 11. Assessment-training smoke output sample:
-   - `assessment_request_id=b0b15ec3-2e17-49a9-864d-a8078ccd4342`
-   - `training_request_id=0c34f4f8-6826-4680-9a51-2b666a8a0056`
+   - `assessment_request_id=c7fd5a88-92c3-4de1-a4b8-56b756942502`
+   - `training_request_id=fe262c18-312c-4529-aa38-864f02d6a92e`
 12. Dashboard smoke output sample:
-   - `dashboard_request_id=f2c98cd3-68a4-43d8-b1a6-7b5e2b89a061`
+   - `dashboard_request_id=96298e24-3710-40e7-9ca7-e04c07d57274`
 13. Training-record smoke output sample:
-   - `training_record_request_id=90309d2b-0cb5-40aa-8333-f5bf57aceb50`
+   - `training_record_request_id=0adf115e-4bd5-4a6a-bc5f-7afdeab56285`
 14. Final sweep smoke output sample:
-   - `assessment_request_id=b0b15ec3-2e17-49a9-864d-a8078ccd4342`
-   - `training_request_id=0c34f4f8-6826-4680-9a51-2b666a8a0056`
-   - `chat_request_id=2fcd6527-645a-44f4-9b14-ca169ebe2b5b`
-   - `dashboard_request_id=f2c98cd3-68a4-43d8-b1a6-7b5e2b89a061`
-   - `training_record_request_id=90309d2b-0cb5-40aa-8333-f5bf57aceb50`
+   - `assessment_request_id=c7fd5a88-92c3-4de1-a4b8-56b756942502`
+   - `training_request_id=fe262c18-312c-4529-aa38-864f02d6a92e`
+   - `chat_request_id=17d0d87f-570e-498e-af9a-73a06b94cdef`
+   - `dashboard_request_id=96298e24-3710-40e7-9ca7-e04c07d57274`
+   - `training_record_request_id=0adf115e-4bd5-4a6a-bc5f-7afdeab56285`
 15. `bash tests/governance/test_build_idempotent.sh` -> PASS.
 16. `bash tests/ci/test_final_gate_script.sh` -> PASS.
 17. `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
-18. Latest verification timestamp (UTC): `2026-02-24T06:04:16Z`
+18. Latest verification timestamp (UTC): `2026-02-24T09:17:18Z`
 
 ## Assertions Confirmed
 
