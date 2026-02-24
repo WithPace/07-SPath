@@ -41,5 +41,5 @@
 
 ## Open Gaps
 
-- Three module contracts are defined (`orchestrator`, `assessment`, `training`); dashboard runtime chain is live, but dashboard-specific module contract is still pending and tracked in `docs/governance/GAP-REGISTER.md`.
+- Four module contracts are defined (`orchestrator`, `assessment`, `training`, `dashboard`); remaining future modules are tracked in `docs/governance/GAP-REGISTER.md`.
 - CI gate for DB rebuild + execution-chain smoke is active in `.github/workflows/db-rebuild-and-chain-smoke.yml`.

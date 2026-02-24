@@ -2,17 +2,18 @@
   "version": 1,
   "required_modules": [
     "assessment",
+    "dashboard",
     "orchestrator",
     "training"
   ],
-  "source_sha256": "1a6148022f2e82d106f9397d350f40655f218935381c7282a9f9b92e8116b4dd",
-  "module_source_sha256": "a3914b628e90056016c08bb7e303a095307584e06e9af9f211aaae9a77ed55a4",
-  "combined_source_sha256": "e0581c93f5e7b6a73432151662badef9a8bc7820fb668f5354d1583c63e64d49",
-  "generated_sha256": "988507ea87932dd4c658559a584476e63fd9bc28a372f373085d053522577aeb",
+  "source_sha256": "ad7ae0a6ab7213ee13899ce93bbe4e54e41659e570a07456286401a86e387623",
+  "module_source_sha256": "43cbf571693ecac535e822a178c593dbc98647692841abae537cc7c60dc3ef52",
+  "combined_source_sha256": "e35aae229f58b2f70cd8c3797bbffcd061e22e23c08107281848d5c5ec53a35a",
+  "generated_sha256": "2a0300a842c21e1f767af99845f2f6b2605657149fae03e54d152fbef49aab87",
   "files": [
     "AGENTS.generated.md",
     "CLAUDE.generated.md",
     "cursor.generated.mdc"
   ],
-  "generated_at_utc": "2026-02-23T15:45:27+00:00"
+  "generated_at_utc": "2026-02-24T07:19:45+00:00"
 }

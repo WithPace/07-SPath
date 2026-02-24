@@ -1,0 +1,16 @@
+module: dashboard
+description: "Parent dashboard analytics, insight generation, and cards payload consistency."
+scope:
+  - backend.dashboard
+workflow:
+  required_stages:
+    - audit
+    - optimize
+    - fill_gap
+quality_gates:
+  required_checks:
+    - cards_payload_verified
+    - insight_traceability_checked
+risk_focus:
+  - insight_drift
+  - cards_schema_regression

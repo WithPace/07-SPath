@@ -58,6 +58,7 @@ modules:
     - orchestrator
     - assessment
     - training
+    - dashboard
   base_path: governance/agent-contract/modules
 mapping:
   codex:
