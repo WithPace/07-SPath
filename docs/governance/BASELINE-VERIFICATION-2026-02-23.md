@@ -46,7 +46,9 @@
 33. `bash tests/e2e/test_orchestrator_training_live.sh` -> PASS (`training_request_id=5090a0cc-65b3-427a-b795-b203a47b3484`)
 34. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS (`training_record_request_id=fc5fe82f-7721-44c0-baf8-2605a7d20147`)
 35. `bash scripts/ci/final_gate.sh` -> PASS
-36. Latest verification timestamp (UTC): `2026-02-24T15:09:19Z`
+36. `bash tests/functions/test_affected_tables_contract.sh` -> PASS
+37. `bash scripts/ci/final_gate.sh` -> PASS
+38. Latest verification timestamp (UTC): `2026-02-24T15:37:10Z`
 
 ## Outputs
 
@@ -61,6 +63,7 @@
 - Training-advice/assessment writeback metadata validated with `affected_tables` including `chat_messages`
 - Training-record domain writes validated in `training_sessions`, `children_profiles`, with metadata including `chat_messages`
 - Dashboard writes validated in `chat_messages.cards_json` with `operation_logs(action_name=dashboard_generate)` and `affected_tables` including `chat_messages`
+- Static affected-tables contract gate validates action/table metadata for all 6 execution modules
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
 ## Current Status
