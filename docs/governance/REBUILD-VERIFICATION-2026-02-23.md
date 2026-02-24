@@ -66,7 +66,17 @@
    - `chat_request_id=ed9b137f-1e24-4bc4-94a1-5a1ad10c88ae`
    - `user_id=b9bb26ed-c07c-472d-b89f-703004fcf85b`
    - `child_id=15e18a22-cdb6-4fc6-884f-a7ccbfbdf92c`
-30. Latest verification timestamp (UTC): `2026-02-24T13:10:38Z`
+30. `supabase functions deploy training --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
+31. Training memory sync smoke output sample:
+   - `training_request_id=b9cd1f2a-eba6-4140-8446-193b559f0472`
+   - `user_id=0be023c7-3fe7-4906-bbde-7b034104ab3c`
+   - `child_id=c90aebb6-0ca6-4b45-87a3-92ed44b21c73`
+32. `bash scripts/ci/final_gate.sh` -> PASS.
+33. Final-gate training smoke output sample:
+   - `training_request_id=2f35fd8c-6b36-4eb2-8af0-d5b227ab02df`
+   - `user_id=bb641c68-d65d-4981-8d0b-bcaf0d3fbe69`
+   - `child_id=e003c4d5-baff-4680-a96a-3c39d9d6a28b`
+34. Latest verification timestamp (UTC): `2026-02-24T14:26:25Z`
 
 ## Assertions Confirmed
 
@@ -78,6 +88,7 @@
 - `operation_logs.affected_tables` for `assessment_generate` includes `children_profiles`.
 - `operation_logs.affected_tables` for `training_advice_generate` includes `children_memory`.
 - `operation_logs` contains `action_name=training_generate` for training module.
+- `operation_logs.affected_tables` for `training_generate` includes `children_memory`.
 - `operation_logs` contains `action_name=training_record_create` for training-record module.
 - `operation_logs.affected_tables` for `training_record_create` includes `children_profiles`.
 - `operation_logs` contains `action_name=dashboard_generate` for dashboard module.

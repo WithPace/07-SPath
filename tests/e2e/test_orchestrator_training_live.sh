@@ -178,6 +178,26 @@ if [ "$op_count" -lt 1 ]; then
   exit 1
 fi
 
+memory_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/children_memory?select=id,current_focus,child_id&child_id=eq.${child_id}&order=updated_at.desc&limit=1" \
+  -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+  -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
+memory_focus=$(echo "$memory_resp" | jq -r '.[0].current_focus // empty')
+if [ -z "$memory_focus" ]; then
+  echo "training children_memory side effects missing" >&2
+  echo "$memory_resp" >&2
+  exit 1
+fi
+
+op_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status,affected_tables&request_id=eq.${training_request_id}&action_name=eq.training_generate" \
+  -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+  -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
+has_memory_table=$(echo "$op_resp" | jq -r '.[0].affected_tables // [] | index("children_memory") != null')
+if [ "$has_memory_table" != "true" ]; then
+  echo "training operation_logs missing children_memory affected table" >&2
+  echo "$op_resp" >&2
+  exit 1
+fi
+
 event_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/snapshot_refresh_events?select=id,request_id,status&request_id=eq.${training_request_id}" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
