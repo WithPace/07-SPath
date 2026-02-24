@@ -26,11 +26,37 @@ read_env_or_file() {
   echo "$value"
 }
 
+resolve_pg_dump_bin() {
+  if [ -n "${PG_DUMP_BIN:-}" ] && [ -x "${PG_DUMP_BIN}" ]; then
+    echo "${PG_DUMP_BIN}"
+    return 0
+  fi
+
+  for candidate in \
+    /opt/homebrew/opt/postgresql@17/bin/pg_dump \
+    /usr/local/opt/postgresql@17/bin/pg_dump
+  do
+    if [ -x "$candidate" ]; then
+      echo "$candidate"
+      return 0
+    fi
+  done
+
+  if command -v pg_dump >/dev/null 2>&1; then
+    command -v pg_dump
+    return 0
+  fi
+
+  return 1
+}
+
 dump_remote_schema_with_pg_dump() {
   local out_file="$1"
   local project_ref db_password db_host db_port db_user db_name
+  local pg_dump_bin
 
-  if ! command -v pg_dump >/dev/null 2>&1; then
+  pg_dump_bin="$(resolve_pg_dump_bin || true)"
+  if [ -z "$pg_dump_bin" ]; then
     echo "pg_dump is not installed; skip remote schema dump" >&2
     return 1
   fi
@@ -54,7 +80,7 @@ dump_remote_schema_with_pg_dump() {
     return 1
   fi
 
-  PGPASSWORD="$db_password" PGCONNECT_TIMEOUT="${PGCONNECT_TIMEOUT:-15}" pg_dump \
+  PGPASSWORD="$db_password" PGCONNECT_TIMEOUT="${PGCONNECT_TIMEOUT:-15}" "$pg_dump_bin" \
     --host="$db_host" \
     --port="$db_port" \
     --username="$db_user" \
