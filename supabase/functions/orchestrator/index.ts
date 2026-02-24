@@ -6,13 +6,26 @@ type OrchestratorPayload = {
   message: string;
   conversation_id?: string;
   request_id?: string;
-  module?: "chat_casual" | "assessment" | "training_advice" | "training_record" | "dashboard" | string;
+  module?:
+    | "chat_casual"
+    | "assessment"
+    | "training"
+    | "training_advice"
+    | "training_record"
+    | "dashboard"
+    | string;
 };
 
 type RouteTarget = {
-  functionName: "chat-casual" | "assessment" | "training-advice" | "training-record" | "dashboard";
-  actionName: "chat_casual_reply" | "assessment_generate" | "training_advice_generate" | "training_record_create" | "dashboard_generate";
-  module: "chat_casual" | "assessment" | "training_advice" | "training_record" | "dashboard";
+  functionName: "chat-casual" | "assessment" | "training" | "training-advice" | "training-record" | "dashboard";
+  actionName:
+    | "chat_casual_reply"
+    | "assessment_generate"
+    | "training_generate"
+    | "training_advice_generate"
+    | "training_record_create"
+    | "dashboard_generate";
+  module: "chat_casual" | "assessment" | "training" | "training_advice" | "training_record" | "dashboard";
 };
 
 function getAuthHeader(req: Request): string {
@@ -38,7 +51,15 @@ function resolveRoute(moduleInput?: string): RouteTarget {
     };
   }
 
-  if (normalized === "training_advice" || normalized === "training") {
+  if (normalized === "training" || normalized === "train" || normalized === "training_plan") {
+    return {
+      functionName: "training",
+      actionName: "training_generate",
+      module: "training",
+    };
+  }
+
+  if (normalized === "training_advice" || normalized === "trainingadvice") {
     return {
       functionName: "training-advice",
       actionName: "training_advice_generate",
@@ -167,7 +188,7 @@ Deno.serve(async (req) => {
     if (!fnResp.ok || !fnResp.body) {
       const txt = await fnResp.text();
       return new Response(
-        sseError("INTERNAL_ERROR", `chat-casual forward failed: ${txt || fnResp.status}`, requestId),
+        sseError("INTERNAL_ERROR", `${route.functionName} forward failed: ${txt || fnResp.status}`, requestId),
         { status: 500, headers: SSE_HEADERS },
       );
     }

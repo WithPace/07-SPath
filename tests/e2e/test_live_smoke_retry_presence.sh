@@ -9,6 +9,7 @@ grep -q "1 << (attempt - 1)" "$helper"
 for f in \
   tests/e2e/test_orchestrator_chat_casual_live.sh \
   tests/e2e/test_orchestrator_assessment_training_live.sh \
+  tests/e2e/test_orchestrator_training_live.sh \
   tests/e2e/test_orchestrator_training_record_live.sh \
   tests/e2e/test_orchestrator_dashboard_live.sh
 do

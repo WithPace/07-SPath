@@ -3,7 +3,7 @@
 ## Scope
 
 - Supabase linked project destructive rebuild applied via migration.
-- Runtime chain verified: `orchestrator -> {chat-casual, assessment, training-advice, training-record, dashboard} -> finalize_writeback`.
+- Runtime chain verified: `orchestrator -> {chat-casual, assessment, training, training-advice, training-record, dashboard} -> finalize_writeback`.
 - Live assertions include `chat_messages` (with dashboard `cards_json`), `assessments`, `training_plans`, `training_sessions`, `operation_logs`, `snapshot_refresh_events`, and `conversations`.
 
 ## Environment Notes
@@ -44,7 +44,16 @@
 15. `bash tests/governance/test_build_idempotent.sh` -> PASS.
 16. `bash tests/ci/test_final_gate_script.sh` -> PASS.
 17. `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
-18. Latest verification timestamp (UTC): `2026-02-24T09:17:18Z`
+18. `supabase functions deploy orchestrator --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
+19. `supabase functions deploy training --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS.
+20. `bash tests/ci/test_workflow_presence.sh` -> PASS.
+21. `bash tests/e2e/test_orchestrator_training_live.sh` -> PASS.
+22. Training smoke output sample:
+   - `training_request_id=41af2bb5-ec9d-438f-879f-25cae83632d0`
+   - `user_id=3aa817b2-7583-4e4f-9b74-2b70df8a0e8c`
+   - `child_id=80646766-51a6-4a98-8730-ee7dca284932`
+23. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS.
+24. Latest verification timestamp (UTC): `2026-02-24T09:56:43Z`
 
 ## Assertions Confirmed
 
@@ -52,6 +61,7 @@
 - One or more `user` and `assistant` messages persisted for the same child/user.
 - `operation_logs` contains `action_name=chat_casual_reply` with same `request_id`.
 - `operation_logs` contains `action_name=assessment_generate` and `action_name=training_advice_generate` for new modules.
+- `operation_logs` contains `action_name=training_generate` for training module.
 - `operation_logs` contains `action_name=training_record_create` for training-record module.
 - `operation_logs` contains `action_name=dashboard_generate` for dashboard module.
 - `assessments`, `training_plans`, and `training_sessions` domain tables receive live writeback rows.

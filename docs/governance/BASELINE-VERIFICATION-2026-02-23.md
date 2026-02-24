@@ -28,7 +28,10 @@
 15. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS
 16. `bash tests/e2e/test_orchestrator_dashboard_live.sh` -> PASS
 17. `bash scripts/ci/final_gate.sh` -> PASS (`governance + db + functions + e2e + ci` full sweep)
-18. Latest verification timestamp (UTC): `2026-02-24T09:34:13Z`
+18. `bash tests/ci/test_workflow_presence.sh` -> PASS
+19. `bash tests/e2e/test_orchestrator_training_live.sh` -> PASS
+20. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS
+21. Latest verification timestamp (UTC): `2026-02-24T09:56:43Z`
 
 ## Outputs
 
@@ -38,6 +41,7 @@
 - `governance/agent-contract/contract.lock.json` generated
 - Live chain writes validated in `chat_messages`, `operation_logs`, `snapshot_refresh_events`
 - Assessment/training domain writes validated in `assessments`, `training_plans`
+- Training module writeback validated with `operation_logs(action_name=training_generate)`
 - Training-record domain writes validated in `training_sessions`
 - Dashboard writes validated in `chat_messages.cards_json` with `operation_logs(action_name=dashboard_generate)`
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
