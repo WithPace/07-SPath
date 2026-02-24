@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=tests/e2e/_shared/orchestrator_retry.sh
+source "${script_dir}/_shared/orchestrator_retry.sh"
+
 if [ ! -f .env ]; then
   echo "missing .env (worktree must have a local copy)" >&2
   exit 1
@@ -55,7 +59,6 @@ user_id=""
 child_id=""
 request_ids=()
 training_record_request_id=""
-last_request_id=""
 
 cleanup() {
   set +e
@@ -147,41 +150,12 @@ curl "${curl_common[@]}" -X POST "${SUPABASE_URL}/rest/v1/care_teams" \
   -H "Prefer: return=minimal" \
   -d "[{\"user_id\":\"${user_id}\",\"child_id\":\"${child_id}\",\"role\":\"parent\",\"permissions\":{},\"status\":\"active\"}]" >/dev/null
 
-call_orchestrator_module() {
-  local module="$1"
-  local prompt="$2"
-  local attempt resp rid
-  local max_attempts=3
-
-  for attempt in 1 2 3; do
-    rid=$(uid)
-    request_ids+=("$rid")
-    resp=$(curl "${curl_common[@]}" -N --max-time 180 -X POST "${SUPABASE_URL}/functions/v1/orchestrator" \
-      -H "apikey: ${SUPABASE_ANON_KEY}" \
-      -H "Authorization: Bearer ${access_token}" \
-      -H "Content-Type: application/json" \
-      -d "{\"child_id\":\"${child_id}\",\"message\":\"${prompt}\",\"module\":\"${module}\",\"request_id\":\"${rid}\"}")
-
-    if echo "$resp" | grep -q "event: done"; then
-      last_request_id="$rid"
-      return 0
-    fi
-
-    if [ "$attempt" -lt "$max_attempts" ] && echo "$resp" | grep -q "WORKER_LIMIT"; then
-      sleep "$attempt"
-      continue
-    fi
-
-    echo "orchestrator ${module} response missing done event" >&2
-    echo "$resp" >&2
-    return 1
-  done
-
-  return 1
-}
-
-call_orchestrator_module "training_record" "今天做了共同注意训练15分钟，完成率80%，配合较好"
-training_record_request_id="$last_request_id"
+if ! orchestrator_call_with_retry "training_record" "今天做了共同注意训练15分钟，完成率80%，配合较好"; then
+  echo "orchestrator training_record response missing done event" >&2
+  echo "$ORCH_LAST_RESPONSE" >&2
+  exit 1
+fi
+training_record_request_id="$ORCH_LAST_REQUEST_ID"
 
 session_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/training_sessions?select=id,target_skill,execution_summary,duration_minutes,recorded_by,child_id&child_id=eq.${child_id}&recorded_by=eq.${user_id}&order=created_at.desc&limit=5" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \

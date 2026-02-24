@@ -1,9 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-f="tests/e2e/test_orchestrator_chat_casual_live.sh"
-test -f "$f"
-grep -q "WORKER_LIMIT" "$f"
-grep -q "max_attempts" "$f"
-grep -q "for attempt in" "$f"
-echo "live smoke retry hooks present"
+helper="tests/e2e/_shared/orchestrator_retry.sh"
+test -f "$helper"
+grep -q "WORKER_LIMIT" "$helper"
+grep -q "1 << (attempt - 1)" "$helper"
+
+for f in \
+  tests/e2e/test_orchestrator_chat_casual_live.sh \
+  tests/e2e/test_orchestrator_assessment_training_live.sh \
+  tests/e2e/test_orchestrator_training_record_live.sh \
+  tests/e2e/test_orchestrator_dashboard_live.sh
+do
+  test -f "$f"
+  grep -q "_shared/orchestrator_retry.sh" "$f"
+  grep -q "orchestrator_call_with_retry" "$f"
+done
+
+echo "live smoke retry hooks present (shared)"

@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=tests/e2e/_shared/orchestrator_retry.sh
+source "${script_dir}/_shared/orchestrator_retry.sh"
+
 if [ ! -f .env ]; then
   echo "missing .env (worktree must have a local copy)" >&2
   exit 1
@@ -55,7 +59,6 @@ user_id=""
 child_id=""
 request_ids=()
 dashboard_request_id=""
-last_request_id=""
 
 cleanup() {
   set +e
@@ -178,46 +181,12 @@ curl "${curl_common[@]}" -X POST "${SUPABASE_URL}/rest/v1/training_sessions" \
   -H "Prefer: return=minimal" \
   -d "[{\"child_id\":\"${child_id}\",\"target_skill\":\"共同注意\",\"execution_summary\":\"训练顺利\",\"duration_minutes\":20,\"success_rate\":0.8,\"input_type\":\"text\",\"ai_structured\":{\"k\":\"v\"},\"feedback\":{},\"recorded_by\":\"${user_id}\",\"session_date\":\"${today}\"},{\"child_id\":\"${child_id}\",\"target_skill\":\"模仿发音\",\"execution_summary\":\"有进步\",\"duration_minutes\":15,\"success_rate\":0.7,\"input_type\":\"text\",\"ai_structured\":{\"k\":\"v2\"},\"feedback\":{},\"recorded_by\":\"${user_id}\",\"session_date\":\"${yesterday}\"}]" >/dev/null
 
-call_orchestrator_module() {
-  local module="$1"
-  local prompt="$2"
-  local attempt resp rid
-  local max_attempts=3
-
-  for attempt in 1 2 3; do
-    rid=$(uid)
-    request_ids+=("$rid")
-    resp=$(curl "${curl_common[@]}" -N --max-time 180 -X POST "${SUPABASE_URL}/functions/v1/orchestrator" \
-      -H "apikey: ${SUPABASE_ANON_KEY}" \
-      -H "Authorization: Bearer ${access_token}" \
-      -H "Content-Type: application/json" \
-      -d "{\"child_id\":\"${child_id}\",\"message\":\"${prompt}\",\"module\":\"${module}\",\"request_id\":\"${rid}\"}")
-
-    if echo "$resp" | grep -q "event: done"; then
-      if ! echo "$resp" | grep -q "\"cards\""; then
-        echo "dashboard response missing cards payload" >&2
-        echo "$resp" >&2
-        return 1
-      fi
-      last_request_id="$rid"
-      return 0
-    fi
-
-    if [ "$attempt" -lt "$max_attempts" ] && echo "$resp" | grep -q "WORKER_LIMIT"; then
-      sleep "$attempt"
-      continue
-    fi
-
-    echo "orchestrator ${module} response missing done event" >&2
-    echo "$resp" >&2
-    return 1
-  done
-
-  return 1
-}
-
-call_orchestrator_module "dashboard" "给我看本周训练看板并给出洞察"
-dashboard_request_id="$last_request_id"
+if ! orchestrator_call_with_retry "dashboard" "给我看本周训练看板并给出洞察" "1"; then
+  echo "orchestrator dashboard response missing done event" >&2
+  echo "$ORCH_LAST_RESPONSE" >&2
+  exit 1
+fi
+dashboard_request_id="$ORCH_LAST_REQUEST_ID"
 
 msg_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/chat_messages?select=id,role,cards_json,edge_function&child_id=eq.${child_id}&user_id=eq.${user_id}&edge_function=eq.dashboard&order=created_at.desc&limit=1" \
   -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \

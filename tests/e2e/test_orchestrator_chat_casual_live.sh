@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=tests/e2e/_shared/orchestrator_retry.sh
+source "${script_dir}/_shared/orchestrator_retry.sh"
+
 if [ ! -f .env ]; then
   echo "missing .env (worktree must have a local copy)" >&2
   exit 1
@@ -51,8 +55,8 @@ curl_common=(
 run_id=$(date +%s)
 email="codex.smoke.${run_id}@example.com"
 password="CodexSmoke#${run_id}"
-request_id=$(uid)
-request_ids=("$request_id")
+request_id=""
+request_ids=()
 user_id=""
 child_id=""
 
@@ -145,26 +149,18 @@ curl "${curl_common[@]}" -X POST "${SUPABASE_URL}/rest/v1/care_teams" \
   -H "Prefer: return=minimal" \
   -d "[{\"user_id\":\"${user_id}\",\"child_id\":\"${child_id}\",\"role\":\"parent\",\"permissions\":{},\"status\":\"active\"}]" >/dev/null
 
-orchestrator_resp=""
-max_attempts=3
-for attempt in 1 2 3; do
-  request_id=$(uid)
-  request_ids+=("$request_id")
-  orchestrator_resp=$(curl "${curl_common[@]}" -N --max-time 180 -X POST "${SUPABASE_URL}/functions/v1/orchestrator" \
-    -H "apikey: ${SUPABASE_ANON_KEY}" \
-    -H "Authorization: Bearer ${access_token}" \
-    -H "Content-Type: application/json" \
-    -d "{\"child_id\":\"${child_id}\",\"message\":\"请给我一个今天在家训练的小建议\",\"request_id\":\"${request_id}\"}")
-
-  if echo "$orchestrator_resp" | grep -q "event: done"; then
-    break
+if ! orchestrator_call_with_retry "" "请给我一个今天在家训练的小建议"; then
+  if echo "$ORCH_LAST_RESPONSE" | grep -q "event: error"; then
+    echo "orchestrator returned error event" >&2
+  else
+    echo "orchestrator response missing done event" >&2
   fi
+  echo "$ORCH_LAST_RESPONSE" >&2
+  exit 1
+fi
 
-  if [ "$attempt" -lt "$max_attempts" ] && echo "$orchestrator_resp" | grep -q "WORKER_LIMIT"; then
-    sleep "$attempt"
-    continue
-  fi
-done
+request_id="$ORCH_LAST_REQUEST_ID"
+orchestrator_resp="$ORCH_LAST_RESPONSE"
 
 if echo "$orchestrator_resp" | grep -q "event: error"; then
   echo "orchestrator returned error event" >&2
