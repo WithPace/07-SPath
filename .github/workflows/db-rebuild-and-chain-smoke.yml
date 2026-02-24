@@ -71,6 +71,11 @@ jobs:
           set -euo pipefail
           supabase functions deploy orchestrator --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
           supabase functions deploy chat-casual --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
+          supabase functions deploy assessment --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
+          supabase functions deploy training-advice --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
 
       - name: Live orchestrator chain smoke
         run: bash tests/e2e/test_orchestrator_chat_casual_live.sh
+
+      - name: Live assessment training chain smoke
+        run: bash tests/e2e/test_orchestrator_assessment_training_live.sh

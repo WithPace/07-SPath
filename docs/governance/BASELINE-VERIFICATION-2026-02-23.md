@@ -24,6 +24,7 @@
 11. `bash tests/functions/test_shared_modules.sh` -> PASS
 12. `bash tests/functions/test_chain_files.sh` -> PASS
 13. `bash tests/e2e/test_orchestrator_chat_casual_live.sh` -> PASS
+14. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS
 
 ## Outputs
 
@@ -32,8 +33,9 @@
 - `.cursor/rules/starpath-contract.mdc` generated and synced
 - `governance/agent-contract/contract.lock.json` generated
 - Live chain writes validated in `chat_messages`, `operation_logs`, `snapshot_refresh_events`
+- Assessment/training domain writes validated in `assessments`, `training_plans`
 
 ## Open Gaps
 
 - Three module contracts are defined (`orchestrator`, `assessment`, `training`); remaining future modules are tracked in `docs/governance/GAP-REGISTER.md`.
-- Dedicated CI gate for DB rebuild + execution-chain smoke is tracked as the next action.
+- CI gate for DB rebuild + execution-chain smoke is active in `.github/workflows/db-rebuild-and-chain-smoke.yml`.

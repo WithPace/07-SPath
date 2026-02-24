@@ -6,10 +6,47 @@ type OrchestratorPayload = {
   message: string;
   conversation_id?: string;
   request_id?: string;
+  module?: "chat_casual" | "assessment" | "training_advice" | string;
+};
+
+type RouteTarget = {
+  functionName: "chat-casual" | "assessment" | "training-advice";
+  actionName: "chat_casual_reply" | "assessment_generate" | "training_advice_generate";
+  module: "chat_casual" | "assessment" | "training_advice";
 };
 
 function getAuthHeader(req: Request): string {
   return req.headers.get("authorization") ?? req.headers.get("Authorization") ?? "";
+}
+
+function resolveRoute(moduleInput?: string): RouteTarget {
+  const normalized = (moduleInput ?? "chat_casual").toLowerCase().replace(/-/g, "_").trim();
+
+  if (normalized === "chat_casual" || normalized === "chat") {
+    return {
+      functionName: "chat-casual",
+      actionName: "chat_casual_reply",
+      module: "chat_casual",
+    };
+  }
+
+  if (normalized === "assessment") {
+    return {
+      functionName: "assessment",
+      actionName: "assessment_generate",
+      module: "assessment",
+    };
+  }
+
+  if (normalized === "training_advice" || normalized === "training") {
+    return {
+      functionName: "training-advice",
+      actionName: "training_advice_generate",
+      module: "training_advice",
+    };
+  }
+
+  throw new Error("BAD_REQUEST: unsupported module");
 }
 
 Deno.serve(async (req) => {
@@ -25,6 +62,7 @@ Deno.serve(async (req) => {
     const payload = (await req.json()) as OrchestratorPayload;
 
     requestId = payload.request_id?.trim() || requestId;
+    const route = resolveRoute(payload.module);
 
     if (!payload.child_id || !payload.message) {
       return new Response(
@@ -48,7 +86,7 @@ Deno.serve(async (req) => {
       .from("operation_logs")
       .select("id")
       .eq("request_id", requestId)
-      .eq("action_name", "chat_casual_reply")
+      .eq("action_name", route.actionName)
       .eq("final_status", "completed")
       .limit(1)
       .maybeSingle();
@@ -93,7 +131,7 @@ Deno.serve(async (req) => {
       throw new Error(`INTERNAL_ERROR: write user message failed: ${userInsert.error.message}`);
     }
 
-    const fnUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/chat-casual`;
+    const fnUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/${route.functionName}`;
     const fnResp = await fetch(fnUrl, {
       method: "POST",
       headers: {
@@ -105,6 +143,7 @@ Deno.serve(async (req) => {
         message: payload.message,
         conversation_id: conversationId,
         request_id: requestId,
+        module: route.module,
         orchestrator_latency_ms: Date.now() - startedAt,
       }),
     });
@@ -122,9 +161,11 @@ Deno.serve(async (req) => {
       headers: SSE_HEADERS,
     });
   } catch (err) {
+    const msg = err instanceof Error ? err.message : "unknown error";
+    const isBadRequest = typeof msg === "string" && msg.startsWith("BAD_REQUEST:");
     return new Response(
-      sseError("INTERNAL_ERROR", err instanceof Error ? err.message : "unknown error", requestId),
-      { status: 500, headers: SSE_HEADERS },
+      sseError(isBadRequest ? "BAD_REQUEST" : "INTERNAL_ERROR", msg, requestId),
+      { status: isBadRequest ? 400 : 500, headers: SSE_HEADERS },
     );
   }
 });
