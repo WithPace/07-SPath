@@ -41,5 +41,5 @@
 
 ## Open Gaps
 
-- Four module contracts are defined (`orchestrator`, `assessment`, `training`, `dashboard`); remaining future modules are tracked in `docs/governance/GAP-REGISTER.md`.
+- Seven module contracts are defined (`orchestrator`, `assessment`, `training`, `dashboard`, `chat-casual`, `training-advice`, `training-record`); future modules must be added before release and tracked in `docs/governance/GAP-REGISTER.md`.
 - CI gate for DB rebuild + execution-chain smoke is active in `.github/workflows/db-rebuild-and-chain-smoke.yml`.

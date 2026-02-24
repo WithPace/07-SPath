@@ -1,0 +1,16 @@
+module: chat-casual
+description: "Casual parent chat response quality, safe tone, and conversation continuity."
+scope:
+  - backend.chat_casual
+workflow:
+  required_stages:
+    - audit
+    - optimize
+    - fill_gap
+quality_gates:
+  required_checks:
+    - response_safety_verified
+    - conversation_writeback_verified
+risk_focus:
+  - unsafe_response_regression
+  - conversation_state_drift

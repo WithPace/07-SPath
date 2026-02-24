@@ -19,8 +19,11 @@ Version: `1`
 - `verify`
 - `report`
 
-## Module Contracts (4)
+## Module Contracts (7)
 - `orchestrator`: Entry orchestration, routing, and cross-module policy enforcement. (`governance/agent-contract/modules/orchestrator/contract.yaml`)
 - `assessment`: Assessment domain behavior, scoring flow, and evidence traceability. (`governance/agent-contract/modules/assessment/contract.yaml`)
 - `training`: Training plan/session behavior, progress consistency, and safe guidance. (`governance/agent-contract/modules/training/contract.yaml`)
 - `dashboard`: Parent dashboard analytics, insight generation, and cards payload consistency. (`governance/agent-contract/modules/dashboard/contract.yaml`)
+- `chat-casual`: Casual parent chat response quality, safe tone, and conversation continuity. (`governance/agent-contract/modules/chat-casual/contract.yaml`)
+- `training-advice`: Training advice generation quality, plan feasibility, and recommendation traceability. (`governance/agent-contract/modules/training-advice/contract.yaml`)
+- `training-record`: Training session record integrity, field completeness, and downstream snapshot consistency. (`governance/agent-contract/modules/training-record/contract.yaml`)

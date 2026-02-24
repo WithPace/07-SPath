@@ -59,6 +59,9 @@ modules:
     - assessment
     - training
     - dashboard
+    - chat-casual
+    - training-advice
+    - training-record
   base_path: governance/agent-contract/modules
 mapping:
   codex:
