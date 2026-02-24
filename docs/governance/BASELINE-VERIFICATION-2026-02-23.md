@@ -7,7 +7,7 @@
 - Required clauses verification
 - Runtime target sync
 - CI workflow presence
-- Rebuild execution-chain baseline linkage (including dashboard chain)
+- Rebuild execution-chain baseline linkage (full 7-module chain)
 
 ## Command Evidence
 
@@ -27,6 +27,8 @@
 14. `bash tests/e2e/test_orchestrator_assessment_training_live.sh` -> PASS
 15. `bash tests/e2e/test_orchestrator_training_record_live.sh` -> PASS
 16. `bash tests/e2e/test_orchestrator_dashboard_live.sh` -> PASS
+17. `bash scripts/ci/final_gate.sh` -> PASS (`governance + db + functions + e2e + ci` full sweep)
+18. Latest verification timestamp (UTC): `2026-02-24T09:34:13Z`
 
 ## Outputs
 
@@ -38,8 +40,10 @@
 - Assessment/training domain writes validated in `assessments`, `training_plans`
 - Training-record domain writes validated in `training_sessions`
 - Dashboard writes validated in `chat_messages.cards_json` with `operation_logs(action_name=dashboard_generate)`
+- Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
-## Open Gaps
+## Current Status
 
-- Seven module contracts are defined (`orchestrator`, `assessment`, `training`, `dashboard`, `chat-casual`, `training-advice`, `training-record`); future modules must be added before release and tracked in `docs/governance/GAP-REGISTER.md`.
+- Tracked baseline gaps (`GAP-0001` ~ `GAP-0003`) are currently marked `done` in `docs/governance/GAP-REGISTER.md`.
+- Future modules must be added to `governance/agent-contract/source/contract.yaml` required list before release.
 - CI gate for DB rebuild + execution-chain smoke is active in `.github/workflows/db-rebuild-and-chain-smoke.yml`.
