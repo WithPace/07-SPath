@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+ORCH_RETRY_REASON_WORKER_LIMIT="WORKER_LIMIT"
+ORCH_TERMINAL_REASON_WORKER_LIMIT_EXHAUSTED="worker_limit_exhausted"
+ORCH_TERMINAL_REASON_DONE_EVENT_MISSING="done_event_missing"
+
 orchestrator_build_payload() {
   local child_id="$1"
   local prompt="$2"
@@ -83,14 +87,14 @@ orchestrator_call_with_retry() {
 
     if [ "$attempt" -lt "$max_attempts" ] && echo "$response" | grep -q "WORKER_LIMIT"; then
       sleep_seconds=$((base_delay_seconds * (1 << (attempt - 1))))
-      echo "orchestrator retry: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} sleep_seconds=${sleep_seconds} reason=WORKER_LIMIT" >&2
+      echo "orchestrator retry: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} sleep_seconds=${sleep_seconds} reason=${ORCH_RETRY_REASON_WORKER_LIMIT}" >&2
       sleep "$sleep_seconds"
       continue
     fi
 
-    failure_reason="done_event_missing"
+    failure_reason="${ORCH_TERMINAL_REASON_DONE_EVENT_MISSING}"
     if echo "$response" | grep -q "WORKER_LIMIT"; then
-      failure_reason="worker_limit_exhausted"
+      failure_reason="${ORCH_TERMINAL_REASON_WORKER_LIMIT_EXHAUSTED}"
     fi
     echo "orchestrator terminal_failure: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} reason=${failure_reason}" >&2
     ORCH_LAST_REQUEST_ID="$request_id"
