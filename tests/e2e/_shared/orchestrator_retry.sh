@@ -60,6 +60,9 @@ orchestrator_call_with_retry() {
   module_label="${module:-chat_casual}"
   ORCH_LAST_REQUEST_ID=""
   ORCH_LAST_RESPONSE=""
+  ORCH_LAST_RESULT=""
+  ORCH_LAST_FAILURE_REASON=""
+  ORCH_LAST_ATTEMPT=""
 
   for ((attempt = 1; attempt <= max_attempts; attempt += 1)); do
     request_id=$(uid)
@@ -76,12 +79,18 @@ orchestrator_call_with_retry() {
       if [ "$require_cards" = "1" ] && ! echo "$response" | grep -q "\"cards\""; then
         ORCH_LAST_REQUEST_ID="$request_id"
         ORCH_LAST_RESPONSE="$response"
+        ORCH_LAST_RESULT="failure"
+        ORCH_LAST_FAILURE_REASON="${ORCH_TERMINAL_REASON_DONE_EVENT_MISSING}"
+        ORCH_LAST_ATTEMPT="${attempt}/${max_attempts}"
         echo "orchestrator ${module_label} response missing cards payload" >&2
         return 1
       fi
 
       ORCH_LAST_REQUEST_ID="$request_id"
       ORCH_LAST_RESPONSE="$response"
+      ORCH_LAST_RESULT="success"
+      ORCH_LAST_FAILURE_REASON=""
+      ORCH_LAST_ATTEMPT="${attempt}/${max_attempts}"
       return 0
     fi
 
@@ -99,6 +108,9 @@ orchestrator_call_with_retry() {
     echo "orchestrator terminal_failure: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} reason=${failure_reason}" >&2
     ORCH_LAST_REQUEST_ID="$request_id"
     ORCH_LAST_RESPONSE="$response"
+    ORCH_LAST_RESULT="failure"
+    ORCH_LAST_FAILURE_REASON="${failure_reason}"
+    ORCH_LAST_ATTEMPT="${attempt}/${max_attempts}"
     return 1
   done
 
