@@ -120,7 +120,14 @@
    - `training_advice_request_id=bd4b982a-f7db-4518-a6a4-ebd6019ac1eb`
    - `training_request_id=50d916bd-6157-4ede-b7f7-a14fcafd7865`
    - `training_record_request_id=87cbbc89-d552-4c84-9f14-5ad84171c572`
-56. Latest verification timestamp (UTC): `2026-02-25T00:24:47Z`
+56. `bash tests/functions/test_orchestrator_route_contract.sh` -> PASS.
+57. `bash scripts/ci/final_gate.sh` -> PASS.
+58. Final-gate route-contract smoke output sample:
+   - `assessment_request_id=fdd5a847-6caa-483c-bfa4-ee1e39e53b28`
+   - `training_advice_request_id=a53c206e-1a31-4ec7-bc98-e93c37ec4d75`
+   - `training_request_id=3284ff9e-ed8d-4819-a16e-e67c45f0d869`
+   - `training_record_request_id=b11c647a-f1ef-4bf2-89e4-f58110f4c9b6`
+59. Latest verification timestamp (UTC): `2026-02-25T00:31:18Z`
 
 ## Assertions Confirmed
 
@@ -139,6 +146,7 @@
 - `operation_logs.affected_tables` for `dashboard_generate` includes `chat_messages`.
 - Static contract gate `tests/functions/test_affected_tables_contract.sh` enforces action-to-table metadata coverage.
 - Static contract gate `tests/functions/test_writeback_metadata_contract.sh` enforces action-to-event/snapshot metadata semantics.
+- Static contract gate `tests/functions/test_orchestrator_route_contract.sh` enforces module alias routing and route tuple integrity.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.

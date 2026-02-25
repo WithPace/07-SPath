@@ -50,7 +50,9 @@
 37. `bash scripts/ci/final_gate.sh` -> PASS
 38. `bash tests/functions/test_writeback_metadata_contract.sh` -> PASS
 39. `bash scripts/ci/final_gate.sh` -> PASS
-40. Latest verification timestamp (UTC): `2026-02-25T00:24:47Z`
+40. `bash tests/functions/test_orchestrator_route_contract.sh` -> PASS
+41. `bash scripts/ci/final_gate.sh` -> PASS
+42. Latest verification timestamp (UTC): `2026-02-25T00:31:18Z`
 
 ## Outputs
 
@@ -67,6 +69,7 @@
 - Dashboard writes validated in `chat_messages.cards_json` with `operation_logs(action_name=dashboard_generate)` and `affected_tables` including `chat_messages`
 - Static affected-tables contract gate validates action/table metadata for all 6 execution modules
 - Static writeback-metadata contract gate validates action/event/snapshot metadata for all 6 execution modules
+- Static orchestrator-route contract gate validates alias/function/action/module route tuples
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
 ## Current Status
