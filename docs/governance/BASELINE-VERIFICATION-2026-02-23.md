@@ -60,7 +60,9 @@
 47. `bash scripts/ci/final_gate.sh` -> PASS
 48. `bash tests/e2e/test_live_smoke_retry_limits_contract.sh` -> PASS
 49. `bash scripts/ci/final_gate.sh` -> PASS
-50. Latest verification timestamp (UTC): `2026-02-25T01:51:12Z`
+50. `bash tests/e2e/test_live_smoke_retry_observability_contract.sh` -> PASS
+51. `bash scripts/ci/final_gate.sh` -> PASS
+52. Latest verification timestamp (UTC): `2026-02-25T02:17:33Z`
 
 ## Outputs
 
@@ -81,6 +83,7 @@
 - Static live-smoke cleanup contract gate validates cleanup hooks in all live orchestrator scripts
 - Static live-smoke retry contract gate validates helper retry semantics and all live-script retry defaults
 - Static live-smoke retry-limits contract gate validates bounded retry env parameters for stable live-smoke behavior
+- Static live-smoke retry-observability contract gate validates helper retry/failure log fields for debugging stability
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 

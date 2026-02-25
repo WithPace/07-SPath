@@ -48,7 +48,7 @@ orchestrator_call_with_retry() {
   local require_cards="${3:-0}"
   local max_attempts
   local base_delay_seconds
-  local attempt request_id response payload sleep_seconds module_label
+  local attempt request_id response payload sleep_seconds module_label failure_reason
 
   max_attempts=$(orchestrator_sanitize_positive_int "${ORCH_MAX_ATTEMPTS:-4}" "4" "2" "6")
   base_delay_seconds=$(orchestrator_sanitize_positive_int "${ORCH_RETRY_BASE_DELAY_SECONDS:-1}" "1" "1" "5")
@@ -83,11 +83,16 @@ orchestrator_call_with_retry() {
 
     if [ "$attempt" -lt "$max_attempts" ] && echo "$response" | grep -q "WORKER_LIMIT"; then
       sleep_seconds=$((base_delay_seconds * (1 << (attempt - 1))))
-      echo "orchestrator ${module_label} retry on WORKER_LIMIT: attempt ${attempt}/${max_attempts}, sleep=${sleep_seconds}s" >&2
+      echo "orchestrator retry: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} sleep_seconds=${sleep_seconds} reason=WORKER_LIMIT" >&2
       sleep "$sleep_seconds"
       continue
     fi
 
+    failure_reason="done_event_missing"
+    if echo "$response" | grep -q "WORKER_LIMIT"; then
+      failure_reason="worker_limit_exhausted"
+    fi
+    echo "orchestrator terminal_failure: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} reason=${failure_reason}" >&2
     ORCH_LAST_REQUEST_ID="$request_id"
     ORCH_LAST_RESPONSE="$response"
     return 1
