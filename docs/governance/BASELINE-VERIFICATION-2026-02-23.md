@@ -56,7 +56,9 @@
 43. `bash scripts/ci/final_gate.sh` -> PASS
 44. `bash tests/e2e/test_live_smoke_cleanup_contract.sh` -> PASS
 45. `bash scripts/ci/final_gate.sh` -> PASS
-46. Latest verification timestamp (UTC): `2026-02-25T01:19:13Z`
+46. `bash tests/e2e/test_live_smoke_retry_contract.sh` -> PASS
+47. `bash scripts/ci/final_gate.sh` -> PASS
+48. Latest verification timestamp (UTC): `2026-02-25T01:31:21Z`
 
 ## Outputs
 
@@ -75,6 +77,7 @@
 - Static writeback-metadata contract gate validates action/event/snapshot metadata for all 6 execution modules
 - Static orchestrator-route contract gate validates alias/function/action/module route tuples
 - Static live-smoke cleanup contract gate validates cleanup hooks in all live orchestrator scripts
+- Static live-smoke retry contract gate validates helper retry semantics and all live-script retry defaults
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 

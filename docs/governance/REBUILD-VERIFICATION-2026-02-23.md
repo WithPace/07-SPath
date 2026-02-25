@@ -145,7 +145,17 @@
    - `idempotency_request_id=49681c19-75bb-4660-b55a-a154eba02d82`
    - `training_request_id=d43ef379-767d-49bf-b8cd-14484e7de24e`
    - `training_record_request_id=5b8df105-78d2-424e-8d06-4900c0bf1a78`
-65. Latest verification timestamp (UTC): `2026-02-25T01:19:13Z`
+65. `bash tests/e2e/test_live_smoke_retry_contract.sh` -> PASS.
+66. `bash scripts/ci/final_gate.sh` -> PASS.
+67. Final-gate retry-contract smoke output sample:
+   - `assessment_request_id=6f64fcf8-9664-4091-85d9-87e37dc15274`
+   - `training_advice_request_id=cf8d5323-dd25-4bd4-b1fd-eee0a2c7a089`
+   - `chat_request_id=201fa6ae-b0b7-42d3-b00f-4f30e0a76e3e`
+   - `dashboard_request_id=58cba1af-3e4f-4729-829b-7017e91e4141`
+   - `idempotency_request_id=02cb1b0b-8d6a-427a-b081-c58a5c27ecd1`
+   - `training_request_id=a645b3fd-0a6b-455d-81d4-1a9d20be76eb`
+   - `training_record_request_id=d72ab155-b1c7-4fed-8f93-6d2fd276bc27`
+68. Latest verification timestamp (UTC): `2026-02-25T01:31:21Z`
 
 ## Assertions Confirmed
 
@@ -167,6 +177,7 @@
 - Static contract gate `tests/functions/test_orchestrator_route_contract.sh` enforces module alias routing and route tuple integrity.
 - Live gate `tests/e2e/test_orchestrator_idempotency_live.sh` enforces duplicate `request_id` short-circuit (`idempotent=true`) and single completion log semantics.
 - Live gate `tests/e2e/test_live_smoke_cleanup_contract.sh` enforces cleanup hooks (`cleanup()`, `trap cleanup EXIT`, admin user delete path, delete method) across all live smoke scripts.
+- Live gate `tests/e2e/test_live_smoke_retry_contract.sh` enforces retry helper semantics (`WORKER_LIMIT` retry + exponential backoff + trace writeback) and all-script retry defaults.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
