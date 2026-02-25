@@ -54,7 +54,9 @@
 41. `bash scripts/ci/final_gate.sh` -> PASS
 42. `bash tests/e2e/test_orchestrator_idempotency_live.sh` -> PASS (`request_id=c890ad51-e749-4e7e-a25e-e40feca78484`)
 43. `bash scripts/ci/final_gate.sh` -> PASS
-44. Latest verification timestamp (UTC): `2026-02-25T01:00:52Z`
+44. `bash tests/e2e/test_live_smoke_cleanup_contract.sh` -> PASS
+45. `bash scripts/ci/final_gate.sh` -> PASS
+46. Latest verification timestamp (UTC): `2026-02-25T01:19:13Z`
 
 ## Outputs
 
@@ -72,6 +74,7 @@
 - Static affected-tables contract gate validates action/table metadata for all 6 execution modules
 - Static writeback-metadata contract gate validates action/event/snapshot metadata for all 6 execution modules
 - Static orchestrator-route contract gate validates alias/function/action/module route tuples
+- Static live-smoke cleanup contract gate validates cleanup hooks in all live orchestrator scripts
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 

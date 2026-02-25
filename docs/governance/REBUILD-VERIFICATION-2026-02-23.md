@@ -135,7 +135,17 @@
    - `training_advice_request_id=a12fc981-fe70-4682-8a25-54a9bde1dd83`
    - `training_request_id=929f9408-ab55-4730-ba77-b95d273e6954`
    - `training_record_request_id=7c4ed8e1-1806-4abd-bf88-dba07cf60c20`
-62. Latest verification timestamp (UTC): `2026-02-25T01:00:52Z`
+62. `bash tests/e2e/test_live_smoke_cleanup_contract.sh` -> PASS.
+63. `bash scripts/ci/final_gate.sh` -> PASS.
+64. Final-gate cleanup-contract smoke output sample:
+   - `assessment_request_id=32188ac6-9de9-4e73-bb0d-a3eb486c81e2`
+   - `training_advice_request_id=1b0ca920-42d5-4220-a9cd-8ea5bfdea14b`
+   - `chat_request_id=930f38a5-c340-4f0a-9436-441140b5d155`
+   - `dashboard_request_id=81ef96e6-d117-4334-830a-6004cd801bca`
+   - `idempotency_request_id=49681c19-75bb-4660-b55a-a154eba02d82`
+   - `training_request_id=d43ef379-767d-49bf-b8cd-14484e7de24e`
+   - `training_record_request_id=5b8df105-78d2-424e-8d06-4900c0bf1a78`
+65. Latest verification timestamp (UTC): `2026-02-25T01:19:13Z`
 
 ## Assertions Confirmed
 
@@ -156,6 +166,7 @@
 - Static contract gate `tests/functions/test_writeback_metadata_contract.sh` enforces action-to-event/snapshot metadata semantics.
 - Static contract gate `tests/functions/test_orchestrator_route_contract.sh` enforces module alias routing and route tuple integrity.
 - Live gate `tests/e2e/test_orchestrator_idempotency_live.sh` enforces duplicate `request_id` short-circuit (`idempotent=true`) and single completion log semantics.
+- Live gate `tests/e2e/test_live_smoke_cleanup_contract.sh` enforces cleanup hooks (`cleanup()`, `trap cleanup EXIT`, admin user delete path, delete method) across all live smoke scripts.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
