@@ -3,6 +3,7 @@
 ORCH_RETRY_REASON_WORKER_LIMIT="WORKER_LIMIT"
 ORCH_TERMINAL_REASON_WORKER_LIMIT_EXHAUSTED="worker_limit_exhausted"
 ORCH_TERMINAL_REASON_DONE_EVENT_MISSING="done_event_missing"
+ORCH_TERMINAL_REASON_CARDS_PAYLOAD_MISSING="cards_payload_missing"
 
 orchestrator_build_payload() {
   local child_id="$1"
@@ -78,12 +79,13 @@ orchestrator_call_with_retry() {
 
     if echo "$response" | grep -q "event: done"; then
       if [ "$require_cards" = "1" ] && ! echo "$response" | grep -q "\"cards\""; then
+        failure_reason="${ORCH_TERMINAL_REASON_CARDS_PAYLOAD_MISSING}"
+        echo "orchestrator terminal_failure: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} reason=${failure_reason}" >&2
         ORCH_LAST_REQUEST_ID="$request_id"
         ORCH_LAST_RESPONSE="$response"
         ORCH_LAST_RESULT="failure"
-        ORCH_LAST_FAILURE_REASON="${ORCH_TERMINAL_REASON_DONE_EVENT_MISSING}"
+        ORCH_LAST_FAILURE_REASON="${failure_reason}"
         ORCH_LAST_ATTEMPT="${attempt}/${max_attempts}"
-        echo "orchestrator ${module_label} response missing cards payload" >&2
         return 1
       fi
 

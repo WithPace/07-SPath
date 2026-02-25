@@ -13,6 +13,7 @@ grep -q 'continue' "$helper"
 # Terminal reasons must map to terminal action path.
 grep -q 'failure_reason="\${ORCH_TERMINAL_REASON_DONE_EVENT_MISSING}"' "$helper"
 grep -q 'failure_reason="\${ORCH_TERMINAL_REASON_WORKER_LIMIT_EXHAUSTED}"' "$helper"
+grep -q 'failure_reason="\${ORCH_TERMINAL_REASON_CARDS_PAYLOAD_MISSING}"' "$helper"
 grep -q 'orchestrator terminal_failure: module=\${module_label} request_id=\${request_id} attempt=\${attempt}/\${max_attempts} reason=\${failure_reason}' "$helper"
 grep -q 'ORCH_LAST_REQUEST_ID="\$request_id"' "$helper"
 grep -q 'ORCH_LAST_RESPONSE="\$response"' "$helper"

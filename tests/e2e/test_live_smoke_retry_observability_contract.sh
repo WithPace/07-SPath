@@ -13,5 +13,6 @@ grep -q 'orchestrator terminal_failure: module=' "$helper"
 grep -q 'reason=${failure_reason}' "$helper"
 grep -q 'failure_reason="${ORCH_TERMINAL_REASON_WORKER_LIMIT_EXHAUSTED}"' "$helper"
 grep -q 'failure_reason="${ORCH_TERMINAL_REASON_DONE_EVENT_MISSING}"' "$helper"
+grep -q 'failure_reason="${ORCH_TERMINAL_REASON_CARDS_PAYLOAD_MISSING}"' "$helper"
 
 echo "live smoke retry observability contract present"

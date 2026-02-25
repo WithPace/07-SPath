@@ -215,7 +215,28 @@
    - `idempotency_request_id=281f3476-4f28-417a-9806-2cb99cd76516`
    - `training_request_id=68067608-583a-40eb-826e-1acdb7aea706`
    - `training_record_request_id=b7946658-fabc-49c1-a2a4-702fccc16c22`
-91. Latest verification timestamp (UTC): `2026-02-25T10:47:29Z`
+92. `bash tests/e2e/test_live_smoke_retry_cards_contract.sh` -> PASS.
+93. `bash scripts/ci/final_gate.sh` -> PASS.
+94. Final-gate retry-cards smoke output sample:
+   - `assessment_request_id=01912d35-b2cf-4c34-8c52-89e4fcf429d8`
+   - `training_advice_request_id=9910dd1b-d9d7-4d5b-8217-3f5be2aba4ec`
+   - `chat_request_id=5033f766-30d5-4490-bd3b-eccd6328ee5d`
+   - `dashboard_request_id=af770abd-373e-4462-a22e-5740c347e798`
+   - `idempotency_request_id=b0c66857-ef61-41ae-9cac-5acb11b61cc7`
+   - `training_request_id=39887090-dff5-4297-b5d9-a0ddebe80a5e`
+   - `training_record_request_id=a9fe84f2-2aa1-480e-a22e-5f3f09c56fb5`
+95. Latest verification timestamp (UTC): `2026-02-25T13:25:40Z`
+96. `bash scripts/ci/final_gate.sh` -> PASS (rerun after transient Supabase API TLS timeout).
+97. Final-gate retry-cards smoke output sample:
+   - `assessment_request_id=fd38e488-ca58-481f-971c-6088fc71a65d`
+   - `chat_request_id=c8d71917-6c80-45f6-96fd-0d117247f3e2`
+   - `dashboard_request_id=1a375e81-1822-4cfa-b86d-a11613af9732`
+   - `idempotency_request_id=352c8213-d124-4b3c-9bbd-6f02bca214b5`
+   - `training_request_id=5c6298ee-9811-4148-ad51-19e10400b07d`
+   - `training_record_request_id=c6385fab-5c82-482f-97f3-2cd90986a43f`
+98. `bash tests/governance/test_docs_presence.sh` -> PASS.
+99. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+100. Latest verification timestamp (UTC): `2026-02-25T13:40:46Z`
 
 ## Assertions Confirmed
 
@@ -244,6 +265,7 @@
 - Live gate `tests/e2e/test_live_smoke_retry_reason_action_contract.sh` enforces reason-to-action mapping (`WORKER_LIMIT` -> retry/backoff/continue, terminal reasons -> terminal log + failure return).
 - Live gate `tests/e2e/test_live_smoke_retry_outcome_state_contract.sh` enforces helper outcome state writeback (`ORCH_LAST_RESULT`, `ORCH_LAST_FAILURE_REASON`, `ORCH_LAST_ATTEMPT`) across success and failure branches.
 - Live gate `tests/e2e/test_live_smoke_retry_state_reset_contract.sh` enforces per-call state reset and retry counter correctness (`ORCH_LAST_RETRY_COUNT`) to prevent stale diagnostics.
+- Live gate `tests/e2e/test_live_smoke_retry_cards_contract.sh` enforces `require_cards` terminal semantics via dedicated reason `cards_payload_missing` and canonical terminal-failure logging.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
