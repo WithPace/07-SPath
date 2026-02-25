@@ -113,7 +113,14 @@
    - `training_advice_request_id=dd5113af-9421-492f-8386-a179d203aa6d`
    - `training_request_id=abf1f171-3ba7-4647-9bf9-835f1298f001`
    - `training_record_request_id=d6c6da08-1876-4253-8850-d15781accbdd`
-53. Latest verification timestamp (UTC): `2026-02-24T15:37:10Z`
+53. `bash tests/functions/test_writeback_metadata_contract.sh` -> PASS.
+54. `bash scripts/ci/final_gate.sh` -> PASS.
+55. Final-gate writeback-metadata smoke output sample:
+   - `assessment_request_id=48e6564b-471b-450b-834f-0285ce544e89`
+   - `training_advice_request_id=bd4b982a-f7db-4518-a6a4-ebd6019ac1eb`
+   - `training_request_id=50d916bd-6157-4ede-b7f7-a14fcafd7865`
+   - `training_record_request_id=87cbbc89-d552-4c84-9f14-5ad84171c572`
+56. Latest verification timestamp (UTC): `2026-02-25T00:24:47Z`
 
 ## Assertions Confirmed
 
@@ -131,6 +138,7 @@
 - `operation_logs` contains `action_name=dashboard_generate` for dashboard module.
 - `operation_logs.affected_tables` for `dashboard_generate` includes `chat_messages`.
 - Static contract gate `tests/functions/test_affected_tables_contract.sh` enforces action-to-table metadata coverage.
+- Static contract gate `tests/functions/test_writeback_metadata_contract.sh` enforces action-to-event/snapshot metadata semantics.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
