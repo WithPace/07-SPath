@@ -85,7 +85,7 @@ orchestrator_call_with_retry() {
       return 0
     fi
 
-    if [ "$attempt" -lt "$max_attempts" ] && echo "$response" | grep -q "WORKER_LIMIT"; then
+    if [ "$attempt" -lt "$max_attempts" ] && echo "$response" | grep -q "${ORCH_RETRY_REASON_WORKER_LIMIT}"; then
       sleep_seconds=$((base_delay_seconds * (1 << (attempt - 1))))
       echo "orchestrator retry: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} sleep_seconds=${sleep_seconds} reason=${ORCH_RETRY_REASON_WORKER_LIMIT}" >&2
       sleep "$sleep_seconds"

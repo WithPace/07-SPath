@@ -185,7 +185,17 @@
    - `idempotency_request_id=6684ec5e-2fc6-48d1-930c-99a9e3e5f223`
    - `training_request_id=5be06a50-1a27-426c-88ec-7feb85ab2c0c`
    - `training_record_request_id=9a58f12d-650e-485d-b07b-ee33a5a6b680`
-79. Latest verification timestamp (UTC): `2026-02-25T03:10:56Z`
+80. `bash tests/e2e/test_live_smoke_retry_reason_action_contract.sh` -> PASS.
+81. `bash scripts/ci/final_gate.sh` -> PASS.
+82. Final-gate retry-reason-action smoke output sample:
+   - `assessment_request_id=29cfa3f4-91c6-4a35-8d50-088ab0a952db`
+   - `training_advice_request_id=30543f11-5746-46da-8fb6-55da0874190c`
+   - `chat_request_id=b86ad209-cf78-481e-8bf6-725e182937d1`
+   - `dashboard_request_id=18f0f73b-8d58-4148-8131-5d80aa2a6abf`
+   - `idempotency_request_id=21859939-1521-42ef-a3cf-8c94b68597dc`
+   - `training_request_id=02ebdc39-2100-4467-8dd1-49ee38b899da`
+   - `training_record_request_id=c63bf275-8b8a-41d1-bb04-587c75756c2c`
+83. Latest verification timestamp (UTC): `2026-02-25T03:30:30Z`
 
 ## Assertions Confirmed
 
@@ -211,6 +221,7 @@
 - Live gate `tests/e2e/test_live_smoke_retry_limits_contract.sh` enforces bounded retry env values (`ORCH_MAX_ATTEMPTS` in `[2,6]`, `ORCH_RETRY_BASE_DELAY_SECONDS` in `[1,5]`) to prevent parameter drift.
 - Live gate `tests/e2e/test_live_smoke_retry_observability_contract.sh` enforces retry/terminal-failure log field contract (`module`, `request_id`, `attempt`, `sleep_seconds`/`reason`) for helper observability stability.
 - Live gate `tests/e2e/test_live_smoke_retry_reason_contract.sh` enforces retry reason taxonomy constants and canonical usage (`WORKER_LIMIT`, `worker_limit_exhausted`, `done_event_missing`).
+- Live gate `tests/e2e/test_live_smoke_retry_reason_action_contract.sh` enforces reason-to-action mapping (`WORKER_LIMIT` -> retry/backoff/continue, terminal reasons -> terminal log + failure return).
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
