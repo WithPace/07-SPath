@@ -127,7 +127,15 @@
    - `training_advice_request_id=a53c206e-1a31-4ec7-bc98-e93c37ec4d75`
    - `training_request_id=3284ff9e-ed8d-4819-a16e-e67c45f0d869`
    - `training_record_request_id=b11c647a-f1ef-4bf2-89e4-f58110f4c9b6`
-59. Latest verification timestamp (UTC): `2026-02-25T00:31:18Z`
+59. `bash tests/e2e/test_orchestrator_idempotency_live.sh` -> PASS.
+60. `bash scripts/ci/final_gate.sh` -> PASS.
+61. Final-gate idempotency smoke output sample:
+   - `request_id=fbf26faa-9518-46be-b9e2-7c61115f8215`
+   - `assessment_request_id=16830849-8e62-40a0-b763-34383caeaf1a`
+   - `training_advice_request_id=a12fc981-fe70-4682-8a25-54a9bde1dd83`
+   - `training_request_id=929f9408-ab55-4730-ba77-b95d273e6954`
+   - `training_record_request_id=7c4ed8e1-1806-4abd-bf88-dba07cf60c20`
+62. Latest verification timestamp (UTC): `2026-02-25T01:00:52Z`
 
 ## Assertions Confirmed
 
@@ -147,6 +155,7 @@
 - Static contract gate `tests/functions/test_affected_tables_contract.sh` enforces action-to-table metadata coverage.
 - Static contract gate `tests/functions/test_writeback_metadata_contract.sh` enforces action-to-event/snapshot metadata semantics.
 - Static contract gate `tests/functions/test_orchestrator_route_contract.sh` enforces module alias routing and route tuple integrity.
+- Live gate `tests/e2e/test_orchestrator_idempotency_live.sh` enforces duplicate `request_id` short-circuit (`idempotent=true`) and single completion log semantics.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.

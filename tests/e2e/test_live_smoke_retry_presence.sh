@@ -11,7 +11,8 @@ for f in \
   tests/e2e/test_orchestrator_assessment_training_live.sh \
   tests/e2e/test_orchestrator_training_live.sh \
   tests/e2e/test_orchestrator_training_record_live.sh \
-  tests/e2e/test_orchestrator_dashboard_live.sh
+  tests/e2e/test_orchestrator_dashboard_live.sh \
+  tests/e2e/test_orchestrator_idempotency_live.sh
 do
   test -f "$f"
   grep -q "_shared/orchestrator_retry.sh" "$f"
