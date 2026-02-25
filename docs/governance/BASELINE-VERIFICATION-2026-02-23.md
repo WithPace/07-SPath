@@ -58,7 +58,9 @@
 45. `bash scripts/ci/final_gate.sh` -> PASS
 46. `bash tests/e2e/test_live_smoke_retry_contract.sh` -> PASS
 47. `bash scripts/ci/final_gate.sh` -> PASS
-48. Latest verification timestamp (UTC): `2026-02-25T01:31:21Z`
+48. `bash tests/e2e/test_live_smoke_retry_limits_contract.sh` -> PASS
+49. `bash scripts/ci/final_gate.sh` -> PASS
+50. Latest verification timestamp (UTC): `2026-02-25T01:51:12Z`
 
 ## Outputs
 
@@ -78,6 +80,7 @@
 - Static orchestrator-route contract gate validates alias/function/action/module route tuples
 - Static live-smoke cleanup contract gate validates cleanup hooks in all live orchestrator scripts
 - Static live-smoke retry contract gate validates helper retry semantics and all live-script retry defaults
+- Static live-smoke retry-limits contract gate validates bounded retry env parameters for stable live-smoke behavior
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 

@@ -155,7 +155,17 @@
    - `idempotency_request_id=02cb1b0b-8d6a-427a-b081-c58a5c27ecd1`
    - `training_request_id=a645b3fd-0a6b-455d-81d4-1a9d20be76eb`
    - `training_record_request_id=d72ab155-b1c7-4fed-8f93-6d2fd276bc27`
-68. Latest verification timestamp (UTC): `2026-02-25T01:31:21Z`
+68. `bash tests/e2e/test_live_smoke_retry_limits_contract.sh` -> PASS.
+69. `bash scripts/ci/final_gate.sh` -> PASS.
+70. Final-gate retry-limits smoke output sample:
+   - `assessment_request_id=479863e8-c385-43e0-afa3-597ad0fa3924`
+   - `training_advice_request_id=66b6df31-067b-4f39-8b94-72ca0d0448dd`
+   - `chat_request_id=a1bdc9b0-c100-4e5c-93a2-3b1f61b2922b`
+   - `dashboard_request_id=4afeb36b-b09b-4af2-a382-6c8cd1d29ff4`
+   - `idempotency_request_id=e9b32963-2dfe-4362-8590-9212df6f611c`
+   - `training_request_id=e07741ad-34d1-4c7a-ae05-706fe8eb460b`
+   - `training_record_request_id=7aaac883-7e6f-4a91-a93a-6813f0f1d6b9`
+71. Latest verification timestamp (UTC): `2026-02-25T01:51:12Z`
 
 ## Assertions Confirmed
 
@@ -178,6 +188,7 @@
 - Live gate `tests/e2e/test_orchestrator_idempotency_live.sh` enforces duplicate `request_id` short-circuit (`idempotent=true`) and single completion log semantics.
 - Live gate `tests/e2e/test_live_smoke_cleanup_contract.sh` enforces cleanup hooks (`cleanup()`, `trap cleanup EXIT`, admin user delete path, delete method) across all live smoke scripts.
 - Live gate `tests/e2e/test_live_smoke_retry_contract.sh` enforces retry helper semantics (`WORKER_LIMIT` retry + exponential backoff + trace writeback) and all-script retry defaults.
+- Live gate `tests/e2e/test_live_smoke_retry_limits_contract.sh` enforces bounded retry env values (`ORCH_MAX_ATTEMPTS` in `[2,6]`, `ORCH_RETRY_BASE_DELAY_SECONDS` in `[1,5]`) to prevent parameter drift.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.

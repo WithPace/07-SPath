@@ -23,13 +23,35 @@ orchestrator_build_payload() {
     '{child_id:$child_id,message:$message,request_id:$request_id}'
 }
 
+orchestrator_sanitize_positive_int() {
+  local value="$1"
+  local default_value="$2"
+  local min_value="$3"
+  local max_value="$4"
+
+  if ! [[ "$value" =~ ^[0-9]+$ ]]; then
+    echo "$default_value"
+    return
+  fi
+
+  if [ "$value" -lt "$min_value" ] || [ "$value" -gt "$max_value" ]; then
+    echo "$default_value"
+    return
+  fi
+
+  echo "$value"
+}
+
 orchestrator_call_with_retry() {
   local module="$1"
   local prompt="$2"
   local require_cards="${3:-0}"
-  local max_attempts="${ORCH_MAX_ATTEMPTS:-4}"
-  local base_delay_seconds="${ORCH_RETRY_BASE_DELAY_SECONDS:-1}"
+  local max_attempts
+  local base_delay_seconds
   local attempt request_id response payload sleep_seconds module_label
+
+  max_attempts=$(orchestrator_sanitize_positive_int "${ORCH_MAX_ATTEMPTS:-4}" "4" "2" "6")
+  base_delay_seconds=$(orchestrator_sanitize_positive_int "${ORCH_RETRY_BASE_DELAY_SECONDS:-1}" "1" "1" "5")
 
   module_label="${module:-chat_casual}"
   ORCH_LAST_REQUEST_ID=""
