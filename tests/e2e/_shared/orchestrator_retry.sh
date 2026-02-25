@@ -63,6 +63,7 @@ orchestrator_call_with_retry() {
   ORCH_LAST_RESULT=""
   ORCH_LAST_FAILURE_REASON=""
   ORCH_LAST_ATTEMPT=""
+  ORCH_LAST_RETRY_COUNT="0"
 
   for ((attempt = 1; attempt <= max_attempts; attempt += 1)); do
     request_id=$(uid)
@@ -95,6 +96,7 @@ orchestrator_call_with_retry() {
     fi
 
     if [ "$attempt" -lt "$max_attempts" ] && echo "$response" | grep -q "${ORCH_RETRY_REASON_WORKER_LIMIT}"; then
+      ORCH_LAST_RETRY_COUNT=$((ORCH_LAST_RETRY_COUNT + 1))
       sleep_seconds=$((base_delay_seconds * (1 << (attempt - 1))))
       echo "orchestrator retry: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} sleep_seconds=${sleep_seconds} reason=${ORCH_RETRY_REASON_WORKER_LIMIT}" >&2
       sleep "$sleep_seconds"

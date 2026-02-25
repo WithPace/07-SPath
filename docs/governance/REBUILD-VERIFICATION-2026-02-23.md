@@ -205,7 +205,17 @@
    - `idempotency_request_id=e18a5f07-2ae5-433e-a33d-ae14bb16fa04`
    - `training_request_id=e1e287ab-9253-42be-a817-88e0f894a4fc`
    - `training_record_request_id=f98e39ce-0bef-4ab3-bcce-61acfea76bf7`
-87. Latest verification timestamp (UTC): `2026-02-25T09:58:03Z`
+88. `bash tests/e2e/test_live_smoke_retry_state_reset_contract.sh` -> PASS.
+89. `bash scripts/ci/final_gate.sh` -> PASS.
+90. Final-gate retry-state-reset smoke output sample:
+   - `assessment_request_id=c9539a59-ac27-4912-80a4-de28c9ca894f`
+   - `training_advice_request_id=8a992eac-49a8-4f7a-8e78-38eb40709b8e`
+   - `chat_request_id=a8b50660-5c33-40a7-9eb3-8ff9313e356c`
+   - `dashboard_request_id=4fd9b11e-958e-4c02-8533-f98af4806fb7`
+   - `idempotency_request_id=281f3476-4f28-417a-9806-2cb99cd76516`
+   - `training_request_id=68067608-583a-40eb-826e-1acdb7aea706`
+   - `training_record_request_id=b7946658-fabc-49c1-a2a4-702fccc16c22`
+91. Latest verification timestamp (UTC): `2026-02-25T10:47:29Z`
 
 ## Assertions Confirmed
 
@@ -233,6 +243,7 @@
 - Live gate `tests/e2e/test_live_smoke_retry_reason_contract.sh` enforces retry reason taxonomy constants and canonical usage (`WORKER_LIMIT`, `worker_limit_exhausted`, `done_event_missing`).
 - Live gate `tests/e2e/test_live_smoke_retry_reason_action_contract.sh` enforces reason-to-action mapping (`WORKER_LIMIT` -> retry/backoff/continue, terminal reasons -> terminal log + failure return).
 - Live gate `tests/e2e/test_live_smoke_retry_outcome_state_contract.sh` enforces helper outcome state writeback (`ORCH_LAST_RESULT`, `ORCH_LAST_FAILURE_REASON`, `ORCH_LAST_ATTEMPT`) across success and failure branches.
+- Live gate `tests/e2e/test_live_smoke_retry_state_reset_contract.sh` enforces per-call state reset and retry counter correctness (`ORCH_LAST_RETRY_COUNT`) to prevent stale diagnostics.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
