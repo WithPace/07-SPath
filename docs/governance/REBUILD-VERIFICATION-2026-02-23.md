@@ -237,6 +237,19 @@
 98. `bash tests/governance/test_docs_presence.sh` -> PASS.
 99. `bash tests/governance/test_e2e_governance.sh` -> PASS.
 100. Latest verification timestamp (UTC): `2026-02-25T13:40:46Z`
+101. `bash tests/e2e/test_live_smoke_retry_request_id_trace_contract.sh` -> PASS.
+102. `bash scripts/ci/final_gate.sh` -> PASS.
+103. Final-gate retry-request-id-trace smoke output sample:
+   - `assessment_request_id=ee8607e5-42f1-4873-9ca4-8c0610405c72`
+   - `training_advice_request_id=3c6b8958-53b3-4936-997f-af4fdbb74b46`
+   - `chat_request_id=049e070e-0493-49d1-97fd-887ad8ec5590`
+   - `dashboard_request_id=64816a19-aa14-4802-b9e2-c41d70cc14d1`
+   - `idempotency_request_id=8326c5df-3cb1-44f5-bf68-ad09f6b40239`
+   - `training_request_id=9763998a-31c0-4a14-8bcd-6fa2e76ebbb9`
+   - `training_record_request_id=e6565377-2743-45dc-80b1-a3ab46b30694`
+104. `bash tests/governance/test_docs_presence.sh` -> PASS.
+105. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+106. Latest verification timestamp (UTC): `2026-02-26T00:43:11Z`
 
 ## Assertions Confirmed
 
@@ -266,6 +279,7 @@
 - Live gate `tests/e2e/test_live_smoke_retry_outcome_state_contract.sh` enforces helper outcome state writeback (`ORCH_LAST_RESULT`, `ORCH_LAST_FAILURE_REASON`, `ORCH_LAST_ATTEMPT`) across success and failure branches.
 - Live gate `tests/e2e/test_live_smoke_retry_state_reset_contract.sh` enforces per-call state reset and retry counter correctness (`ORCH_LAST_RETRY_COUNT`) to prevent stale diagnostics.
 - Live gate `tests/e2e/test_live_smoke_retry_cards_contract.sh` enforces `require_cards` terminal semantics via dedicated reason `cards_payload_missing` and canonical terminal-failure logging.
+- Live gate `tests/e2e/test_live_smoke_retry_request_id_trace_contract.sh` enforces per-attempt `request_ids` trace lineage and terminal `ORCH_LAST_REQUEST_ID` pointer correctness.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
