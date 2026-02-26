@@ -362,6 +362,18 @@
 158. `bash tests/governance/test_docs_presence.sh` -> PASS.
 159. `bash tests/governance/test_e2e_governance.sh` -> PASS.
 160. Latest verification timestamp (UTC): `2026-02-26T11:09:21Z`
+161. `bash tests/functions/test_error_response_contract.sh` -> PASS.
+162. `bash scripts/ci/final_gate.sh` -> PASS.
+163. Final-gate error-response-contract smoke output sample:
+   - `assessment_request_id=4f627be6-bb3a-4dd5-89bb-9ec984d76821`
+   - `chat_request_id=c2c1f55d-ab00-4537-b298-a64d1e446b1c`
+   - `dashboard_request_id=c4b97ee5-f7ea-42e5-a036-6e9aa03d9332`
+   - `idempotency_request_id=146a2766-d498-4dee-bfea-3f8974191047`
+   - `training_request_id=e92d88cb-856a-40fb-b749-e51ef5b13ea2`
+   - `training_record_request_id=3fa54c23-fc84-4e57-9b0e-86d7d522ae57`
+164. `bash tests/governance/test_docs_presence.sh` -> PASS.
+165. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+166. Latest verification timestamp (UTC): `2026-02-26T12:09:45Z`
 
 ## Assertions Confirmed
 
@@ -383,6 +395,7 @@
 - Static contract gate `tests/functions/test_orchestrator_forwarding_contract.sh` enforces downstream forwarding URL/auth/payload semantics, idempotency query constraints, and SSE proxy response behavior.
 - Static contract gate `tests/functions/test_shared_reliability_contract.sh` enforces shared service-client singleton reuse and RPC-only finalize writeback path (`finalize_writeback`).
 - Static contract gate `tests/functions/test_model_router_resilience_contract.sh` enforces provider-pick semantics, dual-provider fallback structure, non-streaming completion config, and doubao model guard behavior.
+- Static contract gate `tests/functions/test_error_response_contract.sh` enforces BAD_REQUEST/AUTH_FORBIDDEN/INTERNAL_ERROR SSE semantics and canonical HTTP status mapping across execution-chain functions.
 - Static contract gate `tests/functions/test_writeback_metadata_contract.sh` enforces action-to-event/snapshot metadata semantics.
 - Static contract gate `tests/functions/test_orchestrator_route_contract.sh` enforces module alias routing and route tuple integrity.
 - Live gate `tests/e2e/test_orchestrator_idempotency_live.sh` enforces duplicate `request_id` short-circuit (`idempotent=true`) and single completion log semantics.
