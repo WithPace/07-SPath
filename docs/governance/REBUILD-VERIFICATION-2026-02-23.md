@@ -250,6 +250,19 @@
 104. `bash tests/governance/test_docs_presence.sh` -> PASS.
 105. `bash tests/governance/test_e2e_governance.sh` -> PASS.
 106. Latest verification timestamp (UTC): `2026-02-26T00:43:11Z`
+107. `bash tests/e2e/test_live_smoke_retry_runtime_sanitization_contract.sh` -> PASS.
+108. `bash scripts/ci/final_gate.sh` -> PASS.
+109. Final-gate retry-runtime-sanitization smoke output sample:
+   - `assessment_request_id=512ed86b-577c-440d-94d9-bfb95bef931e`
+   - `training_advice_request_id=5c648f16-90d9-4c47-ab69-aa11e40ffcca`
+   - `chat_request_id=d6a00723-6537-4376-b3f6-ad1bb8893ecc`
+   - `dashboard_request_id=d3798b43-0b36-4de6-83a0-241b74934d7b`
+   - `idempotency_request_id=5fde7389-679d-46f5-aa58-c5e122e7bc8e`
+   - `training_request_id=8d15c58c-59f4-4703-9d9e-b7aa840d8c4d`
+   - `training_record_request_id=3d21ca1c-8bad-4982-ae35-52b0c4393750`
+110. `bash tests/governance/test_docs_presence.sh` -> PASS.
+111. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+112. Latest verification timestamp (UTC): `2026-02-26T02:29:45Z`
 
 ## Assertions Confirmed
 
@@ -280,6 +293,7 @@
 - Live gate `tests/e2e/test_live_smoke_retry_state_reset_contract.sh` enforces per-call state reset and retry counter correctness (`ORCH_LAST_RETRY_COUNT`) to prevent stale diagnostics.
 - Live gate `tests/e2e/test_live_smoke_retry_cards_contract.sh` enforces `require_cards` terminal semantics via dedicated reason `cards_payload_missing` and canonical terminal-failure logging.
 - Live gate `tests/e2e/test_live_smoke_retry_request_id_trace_contract.sh` enforces per-attempt `request_ids` trace lineage and terminal `ORCH_LAST_REQUEST_ID` pointer correctness.
+- Live gate `tests/e2e/test_live_smoke_retry_runtime_sanitization_contract.sh` enforces runtime fallback defaults for invalid retry env values (`ORCH_MAX_ATTEMPTS`, `ORCH_RETRY_BASE_DELAY_SECONDS`).
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.

@@ -74,9 +74,11 @@
 61. `bash scripts/ci/final_gate.sh` -> PASS
 62. `bash tests/e2e/test_live_smoke_retry_request_id_trace_contract.sh` -> PASS
 63. `bash scripts/ci/final_gate.sh` -> PASS
-64. `bash tests/governance/test_docs_presence.sh` -> PASS
-65. `bash tests/governance/test_e2e_governance.sh` -> PASS
-66. Latest verification timestamp (UTC): `2026-02-26T00:43:11Z`
+64. `bash tests/e2e/test_live_smoke_retry_runtime_sanitization_contract.sh` -> PASS
+65. `bash scripts/ci/final_gate.sh` -> PASS
+66. `bash tests/governance/test_docs_presence.sh` -> PASS
+67. `bash tests/governance/test_e2e_governance.sh` -> PASS
+68. Latest verification timestamp (UTC): `2026-02-26T02:29:45Z`
 
 ## Outputs
 
@@ -104,6 +106,7 @@
 - Static live-smoke retry-state-reset contract gate validates per-call reset behavior and retry count state against stale carry-over
 - Static live-smoke retry-cards contract gate validates cards-required terminal reason taxonomy and logging semantics
 - Static live-smoke retry-request-id-trace contract gate validates per-attempt `request_ids` lineage and terminal `ORCH_LAST_REQUEST_ID` pointer semantics
+- Static live-smoke retry-runtime-sanitization contract gate validates runtime fallback to default retry limits/backoff when env values are invalid
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
