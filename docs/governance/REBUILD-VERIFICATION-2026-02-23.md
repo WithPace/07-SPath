@@ -446,6 +446,37 @@
 200. `bash tests/governance/test_docs_presence.sh` -> PASS.
 201. `bash tests/governance/test_e2e_governance.sh` -> PASS.
 202. Latest verification timestamp (UTC): `2026-02-26T14:16:54Z`
+203. `bash tests/governance/test_phase2_release_artifacts.sh` -> PASS.
+204. `bash scripts/ci/final_gate.sh` -> PASS.
+205. `bash tests/governance/test_docs_presence.sh` -> PASS.
+206. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+207. Final-gate Phase 2 weekly journey smoke output sample:
+   - `assessment_request_id=5efea2fa-ceac-4794-adaa-1be7ba9d9eb3`
+   - `training_advice_request_id=5c3c5127-2e92-4e7c-8dff-1568bb48b8cf`
+   - `training_request_id=de0f24c4-cb4c-45ed-a62a-f648b62391c4`
+   - `training_record_request_id=c30ae7c0-0004-43f9-98e6-a20846d3714d`
+   - `dashboard_request_id=ddc2b57d-d802-46d0-894f-77a9d118b378`
+208. Phase 2 dashboard followup smoke output sample:
+   - `training_request_id=2a75c851-d515-4f54-b84f-99924d08ee44`
+   - `training_record_request_id=c1a5cef4-d9f4-4046-a665-bee8a0882e66`
+   - `dashboard_request_id=4589d2f0-3f52-4471-a8db-9610af7ac791`
+209. `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` -> PASS.
+210. `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` -> PASS.
+211. Latest verification timestamp (UTC): `2026-02-26T15:31:06Z`
+212. `bash scripts/ci/final_gate.sh` -> PASS.
+213. `bash tests/governance/test_docs_presence.sh` -> PASS.
+214. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+215. Final-gate Phase 2 weekly journey smoke output sample:
+   - `assessment_request_id=1936d0a5-3aad-4bbf-ae26-10bcbc589245`
+   - `training_advice_request_id=d061ba55-3471-41e2-b96f-97cc4e0f6bf5`
+   - `training_request_id=64200afb-1f60-49e9-b90b-cfcb392d2cf6`
+   - `training_record_request_id=4c7ccc29-c08d-4557-a72d-a09e30a7585e`
+   - `dashboard_request_id=3a24d315-b582-42c7-ac21-c3917a576439`
+216. Phase 2 dashboard followup smoke output sample:
+   - `training_request_id=c7fde7fd-3ed0-4742-bb12-2b7e472d44fb`
+   - `training_record_request_id=a55c296e-6317-40ca-8977-97b5dffe9cd3`
+   - `dashboard_request_id=b707c3df-d8df-4531-ab62-5a5c4dba95f3`
+217. Latest verification timestamp (UTC): `2026-02-26T15:48:56Z`
 
 ## Assertions Confirmed
 
@@ -492,6 +523,9 @@
 - Live gate `tests/e2e/test_live_smoke_retry_transport_failure_contract.sh` enforces `set -e` safe transport retry flow and transport terminal reason `transport_error_exhausted`.
 - Live gate `tests/e2e/test_live_smoke_retry_transport_observability_contract.sh` enforces runtime transport retry/terminal stderr log semantics with resolved request_id/attempt/reason fields.
 - Live gate `tests/e2e/test_live_smoke_retry_transport_exit_code_contract.sh` enforces transport retry/terminal diagnostics include `exit_code` and terminal `ORCH_LAST_RESPONSE` marker `transport_error_exit_code=<n>`.
+- Live gate `tests/e2e/test_phase2_parent_weekly_journey_live.sh` enforces end-to-end parent weekly journey sequencing (`assessment -> training-advice -> training -> training-record -> dashboard`) and request-id lineage.
+- Live gate `tests/e2e/test_phase2_parent_dashboard_followup_live.sh` enforces dashboard follow-up consistency from training/training-record context, including `affected_tables` and `snapshot_refresh_events` trace closure.
+- Phase 2 follow-up run validated transient `WORKER_LIMIT` recovery through shared retry helper and completed PASS without manual intervention.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.

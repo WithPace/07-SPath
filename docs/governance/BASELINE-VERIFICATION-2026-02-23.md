@@ -157,6 +157,20 @@
 144. `bash tests/governance/test_e2e_governance.sh` -> PASS
 145. Final-gate writeback-before-done-contract smoke sample (`assessment_request_id=40d64bd8-80f3-4fd6-9d67-96c1f217310f`, `training_request_id=7272ce84-9646-41bf-9aeb-3ca8c8bfa272`, `chat_request_id=04c9ccc4-ae85-4195-86f4-f6f1f7a164de`)
 146. Latest verification timestamp (UTC): `2026-02-26T14:16:54Z`
+147. `bash tests/governance/test_phase2_release_artifacts.sh` -> PASS
+148. `bash scripts/ci/final_gate.sh` -> PASS
+149. `bash tests/governance/test_docs_presence.sh` -> PASS
+150. `bash tests/governance/test_e2e_governance.sh` -> PASS
+151. Final-gate Phase 2 weekly journey smoke sample (`assessment_request_id=5efea2fa-ceac-4794-adaa-1be7ba9d9eb3`, `training_advice_request_id=5c3c5127-2e92-4e7c-8dff-1568bb48b8cf`, `training_request_id=de0f24c4-cb4c-45ed-a62a-f648b62391c4`, `training_record_request_id=c30ae7c0-0004-43f9-98e6-a20846d3714d`, `dashboard_request_id=ddc2b57d-d802-46d0-894f-77a9d118b378`)
+152. Phase 2 dashboard followup smoke sample (`training_request_id=2a75c851-d515-4f54-b84f-99924d08ee44`, `training_record_request_id=c1a5cef4-d9f4-4046-a665-bee8a0882e66`, `dashboard_request_id=4589d2f0-3f52-4471-a8db-9610af7ac791`)
+153. `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` -> PASS
+154. Latest verification timestamp (UTC): `2026-02-26T15:31:06Z`
+155. `bash scripts/ci/final_gate.sh` -> PASS
+156. `bash tests/governance/test_docs_presence.sh` -> PASS
+157. `bash tests/governance/test_e2e_governance.sh` -> PASS
+158. Final-gate Phase 2 weekly journey smoke sample (`assessment_request_id=1936d0a5-3aad-4bbf-ae26-10bcbc589245`, `training_advice_request_id=d061ba55-3471-41e2-b96f-97cc4e0f6bf5`, `training_request_id=64200afb-1f60-49e9-b90b-cfcb392d2cf6`, `training_record_request_id=4c7ccc29-c08d-4557-a72d-a09e30a7585e`, `dashboard_request_id=3a24d315-b582-42c7-ac21-c3917a576439`)
+159. Phase 2 dashboard followup smoke sample (`training_request_id=c7fde7fd-3ed0-4742-bb12-2b7e472d44fb`, `training_record_request_id=a55c296e-6317-40ca-8977-97b5dffe9cd3`, `dashboard_request_id=b707c3df-d8df-4531-ab62-5a5c4dba95f3`)
+160. Latest verification timestamp (UTC): `2026-02-26T15:48:56Z`
 
 ## Outputs
 
@@ -200,6 +214,8 @@
 - Static options preflight contract gate validates canonical `OPTIONS` guard and null preflight SSE-header response semantics across 7 execution-chain entry files
 - Static SSE framing contract gate validates `stream_start -> delta -> done` event presence and lexical order across 6 execution modules
 - Static writeback-before-done contract gate validates `finalizeWriteback` executes before terminal SSE `done` across 6 execution modules
+- Governance release artifact gate validates Phase 2 release checklist and rollback drill log presence/required clauses
+- Phase 2 live scenario gates validate weekly parent journey and dashboard follow-up request-id trace + writeback consistency
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
