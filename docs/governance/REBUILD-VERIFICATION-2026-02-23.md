@@ -302,6 +302,18 @@
 128. `bash tests/governance/test_docs_presence.sh` -> PASS.
 129. `bash tests/governance/test_e2e_governance.sh` -> PASS.
 130. Latest verification timestamp (UTC): `2026-02-26T07:01:10Z`
+131. `bash tests/e2e/test_live_smoke_retry_transport_exit_code_contract.sh` -> PASS.
+132. `bash scripts/ci/final_gate.sh` -> PASS.
+133. Final-gate retry-transport-exit-code smoke output sample:
+   - `assessment_request_id=b655bed7-9add-4a43-8123-c4b477adab2d`
+   - `chat_request_id=4a073791-fa32-4305-8818-11345b110301`
+   - `dashboard_request_id=b58120cf-57e1-4fa1-b43a-789bca6caf17`
+   - `idempotency_request_id=eb9dbbf5-2cab-4795-ba6a-10b4d57add0a`
+   - `training_request_id=b769aef9-fde3-4626-ac84-cf5e3fc06188`
+   - `training_record_request_id=abd586eb-c20d-4307-b876-ca390eda9b1e`
+134. `bash tests/governance/test_docs_presence.sh` -> PASS.
+135. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+136. Latest verification timestamp (UTC): `2026-02-26T07:31:20Z`
 
 ## Assertions Confirmed
 
@@ -336,6 +348,7 @@
 - Live gate `tests/e2e/test_live_smoke_retry_backoff_timing_contract.sh` enforces exponential backoff sleep sequencing and terminal no-sleep boundaries.
 - Live gate `tests/e2e/test_live_smoke_retry_transport_failure_contract.sh` enforces `set -e` safe transport retry flow and transport terminal reason `transport_error_exhausted`.
 - Live gate `tests/e2e/test_live_smoke_retry_transport_observability_contract.sh` enforces runtime transport retry/terminal stderr log semantics with resolved request_id/attempt/reason fields.
+- Live gate `tests/e2e/test_live_smoke_retry_transport_exit_code_contract.sh` enforces transport retry/terminal diagnostics include `exit_code` and terminal `ORCH_LAST_RESPONSE` marker `transport_error_exit_code=<n>`.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.

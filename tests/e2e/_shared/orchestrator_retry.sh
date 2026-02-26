@@ -84,15 +84,15 @@ orchestrator_call_with_retry() {
       if [ "$attempt" -lt "$max_attempts" ]; then
         ORCH_LAST_RETRY_COUNT=$((ORCH_LAST_RETRY_COUNT + 1))
         sleep_seconds=$((base_delay_seconds * (1 << (attempt - 1))))
-        echo "orchestrator retry: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} sleep_seconds=${sleep_seconds} reason=${ORCH_RETRY_REASON_TRANSPORT_ERROR}" >&2
+        echo "orchestrator retry: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} sleep_seconds=${sleep_seconds} reason=${ORCH_RETRY_REASON_TRANSPORT_ERROR} exit_code=${curl_exit}" >&2
         sleep "$sleep_seconds"
         continue
       fi
 
       failure_reason="${ORCH_TERMINAL_REASON_TRANSPORT_ERROR_EXHAUSTED}"
-      echo "orchestrator terminal_failure: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} reason=${failure_reason}" >&2
+      echo "orchestrator terminal_failure: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} reason=${failure_reason} exit_code=${curl_exit}" >&2
       ORCH_LAST_REQUEST_ID="$request_id"
-      ORCH_LAST_RESPONSE="$response"
+      ORCH_LAST_RESPONSE="transport_error_exit_code=${curl_exit}${response:+ ${response}}"
       ORCH_LAST_RESULT="failure"
       ORCH_LAST_FAILURE_REASON="${failure_reason}"
       ORCH_LAST_ATTEMPT="${attempt}/${max_attempts}"
