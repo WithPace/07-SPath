@@ -263,6 +263,19 @@
 110. `bash tests/governance/test_docs_presence.sh` -> PASS.
 111. `bash tests/governance/test_e2e_governance.sh` -> PASS.
 112. Latest verification timestamp (UTC): `2026-02-26T02:29:45Z`
+113. `bash tests/e2e/test_live_smoke_retry_backoff_timing_contract.sh` -> PASS.
+114. `bash scripts/ci/final_gate.sh` -> PASS.
+115. Final-gate retry-backoff-timing smoke output sample:
+   - `assessment_request_id=c470dc39-e545-4790-b9ce-e773e82bd17a`
+   - `training_advice_request_id=1735c352-7a79-40f6-898e-8a1dfc4d1da1`
+   - `chat_request_id=a7dd90f3-a19f-4e7a-afa7-3706bbeb1ea7`
+   - `dashboard_request_id=97470017-677e-48a5-a2cb-c645c114aaf6`
+   - `idempotency_request_id=78d10388-f84f-4635-81d8-1380af90ef93`
+   - `training_request_id=6cbb3d61-00a2-48e1-8c8c-cf90adafb821`
+   - `training_record_request_id=3d32d91a-c3e9-42c8-9897-3c5b026fbfe6`
+116. `bash tests/governance/test_docs_presence.sh` -> PASS.
+117. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+118. Latest verification timestamp (UTC): `2026-02-26T02:50:18Z`
 
 ## Assertions Confirmed
 
@@ -294,6 +307,7 @@
 - Live gate `tests/e2e/test_live_smoke_retry_cards_contract.sh` enforces `require_cards` terminal semantics via dedicated reason `cards_payload_missing` and canonical terminal-failure logging.
 - Live gate `tests/e2e/test_live_smoke_retry_request_id_trace_contract.sh` enforces per-attempt `request_ids` trace lineage and terminal `ORCH_LAST_REQUEST_ID` pointer correctness.
 - Live gate `tests/e2e/test_live_smoke_retry_runtime_sanitization_contract.sh` enforces runtime fallback defaults for invalid retry env values (`ORCH_MAX_ATTEMPTS`, `ORCH_RETRY_BASE_DELAY_SECONDS`).
+- Live gate `tests/e2e/test_live_smoke_retry_backoff_timing_contract.sh` enforces exponential backoff sleep sequencing and terminal no-sleep boundaries.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
