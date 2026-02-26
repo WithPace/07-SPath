@@ -91,6 +91,12 @@
 78. `bash tests/governance/test_e2e_governance.sh` -> PASS
 79. Final-gate retry-transport-exit-code smoke sample (`assessment_request_id=b655bed7-9add-4a43-8123-c4b477adab2d`, `training_request_id=b769aef9-fde3-4626-ac84-cf5e3fc06188`, `chat_request_id=4a073791-fa32-4305-8818-11345b110301`)
 80. Latest verification timestamp (UTC): `2026-02-26T07:31:20Z`
+81. `bash tests/functions/test_auth_and_body_parse_contract.sh` -> PASS
+82. `bash scripts/ci/final_gate.sh` -> PASS
+83. `bash tests/governance/test_docs_presence.sh` -> PASS
+84. `bash tests/governance/test_e2e_governance.sh` -> PASS
+85. Final-gate auth-body-parse-contract smoke sample (`assessment_request_id=0d23cbaa-f1ea-446d-9a2b-96c6468c49f3`, `training_request_id=7baeb2df-fa1e-493a-9206-1047970b7aa3`, `chat_request_id=28ba0b53-a1d1-4549-b912-594f54bcd60e`)
+86. Latest verification timestamp (UTC): `2026-02-26T07:54:28Z`
 
 ## Outputs
 
@@ -123,6 +129,7 @@
 - Static live-smoke retry-transport-failure contract gate validates `set -e` safe curl-exit handling, transport retry semantics, and transport terminal reason writeback
 - Static live-smoke retry-transport-observability contract gate validates runtime transport retry/terminal stderr log field semantics
 - Static live-smoke retry-transport-exit-code contract gate validates transport retry/terminal `exit_code` diagnostics and terminal `ORCH_LAST_RESPONSE` marker writeback
+- Static functions auth/body-parse contract gate validates request authentication, child-access guard, and single-pass `req.json()` consumption across 7 execution-chain entry files
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 

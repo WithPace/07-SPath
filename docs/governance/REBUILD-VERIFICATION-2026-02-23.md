@@ -314,6 +314,18 @@
 134. `bash tests/governance/test_docs_presence.sh` -> PASS.
 135. `bash tests/governance/test_e2e_governance.sh` -> PASS.
 136. Latest verification timestamp (UTC): `2026-02-26T07:31:20Z`
+137. `bash tests/functions/test_auth_and_body_parse_contract.sh` -> PASS.
+138. `bash scripts/ci/final_gate.sh` -> PASS.
+139. Final-gate auth-body-parse-contract smoke output sample:
+   - `assessment_request_id=0d23cbaa-f1ea-446d-9a2b-96c6468c49f3`
+   - `chat_request_id=28ba0b53-a1d1-4549-b912-594f54bcd60e`
+   - `dashboard_request_id=3b177a19-3575-423e-a3a8-929077889b7b`
+   - `idempotency_request_id=814acfba-1709-4000-8de8-dd4de41c953f`
+   - `training_request_id=7baeb2df-fa1e-493a-9206-1047970b7aa3`
+   - `training_record_request_id=3fa38f24-5b6e-46cb-8a7d-912200632942`
+140. `bash tests/governance/test_docs_presence.sh` -> PASS.
+141. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+142. Latest verification timestamp (UTC): `2026-02-26T07:54:28Z`
 
 ## Assertions Confirmed
 
@@ -331,6 +343,7 @@
 - `operation_logs` contains `action_name=dashboard_generate` for dashboard module.
 - `operation_logs.affected_tables` for `dashboard_generate` includes `chat_messages`.
 - Static contract gate `tests/functions/test_affected_tables_contract.sh` enforces action-to-table metadata coverage.
+- Static contract gate `tests/functions/test_auth_and_body_parse_contract.sh` enforces request authentication, child-access guard, and single-pass `req.json()` body consumption across execution-chain entrypoints.
 - Static contract gate `tests/functions/test_writeback_metadata_contract.sh` enforces action-to-event/snapshot metadata semantics.
 - Static contract gate `tests/functions/test_orchestrator_route_contract.sh` enforces module alias routing and route tuple integrity.
 - Live gate `tests/e2e/test_orchestrator_idempotency_live.sh` enforces duplicate `request_id` short-circuit (`idempotent=true`) and single completion log semantics.
