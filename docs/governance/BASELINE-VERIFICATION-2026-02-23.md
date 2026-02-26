@@ -127,6 +127,12 @@
 114. `bash tests/governance/test_e2e_governance.sh` -> PASS
 115. Final-gate orchestrator-conversation-bootstrap-contract smoke sample (`assessment_request_id=76c5d31a-687e-4632-b91b-9696b98579d8`, `training_request_id=22039cdd-42fd-4337-a639-854150e9ae24`, `chat_request_id=1161570f-8f23-4c06-a430-ba988b229239`)
 116. Latest verification timestamp (UTC): `2026-02-26T12:34:14Z`
+117. `bash tests/functions/test_model_router_temperature_contract.sh` -> PASS
+118. `bash scripts/ci/final_gate.sh` -> PASS
+119. `bash tests/governance/test_docs_presence.sh` -> PASS
+120. `bash tests/governance/test_e2e_governance.sh` -> PASS
+121. Final-gate model-router-temperature-contract smoke sample (`assessment_request_id=58dacdae-6481-4a15-94a2-a6582360b5ae`, `training_request_id=0b74af3c-e932-42fd-a621-a1447f79df1d`, `chat_request_id=e470c62d-3e07-4b71-9335-191195e7fa4a`)
+122. Latest verification timestamp (UTC): `2026-02-26T12:44:39Z`
 
 ## Outputs
 
@@ -165,6 +171,7 @@
 - Static model-router resilience contract gate validates provider-pick semantics, dual-provider fallback structure, non-streaming completion config, and doubao model guard behavior
 - Static error-response contract gate validates BAD_REQUEST/AUTH_FORBIDDEN/INTERNAL_ERROR SSE semantics and canonical HTTP status mapping across execution-chain functions
 - Static orchestrator conversation bootstrap contract gate validates conversation auto-create defaults and ingress user-message persistence semantics in orchestrator
+- Static model-router temperature contract gate validates caller-provided temperature semantics in model-router (`options.temperature` honored in Kimi and Doubao paths)
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 

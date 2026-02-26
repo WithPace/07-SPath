@@ -21,7 +21,7 @@ async function callKimi(messages: ChatMessage[], options: ModelCallOptions): Pro
   const apiKey = mustEnv("KIMI_API_KEY");
   const baseUrl = Deno.env.get("KIMI_BASE_URL") ?? "https://api.moonshot.cn/v1";
   const model = Deno.env.get("KIMI_MODEL") ?? "moonshot-v1-8k";
-  const temperature = 1;
+  const temperature = options.temperature ?? 1;
 
   const res = await fetch(`${baseUrl}/chat/completions`, {
     method: "POST",
