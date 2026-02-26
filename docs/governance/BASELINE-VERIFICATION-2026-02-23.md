@@ -121,6 +121,12 @@
 108. `bash tests/governance/test_e2e_governance.sh` -> PASS
 109. Final-gate error-response-contract smoke sample (`assessment_request_id=4f627be6-bb3a-4dd5-89bb-9ec984d76821`, `training_request_id=e92d88cb-856a-40fb-b749-e51ef5b13ea2`, `chat_request_id=c2c1f55d-ab00-4537-b298-a64d1e446b1c`)
 110. Latest verification timestamp (UTC): `2026-02-26T12:09:45Z`
+111. `bash tests/functions/test_orchestrator_conversation_bootstrap_contract.sh` -> PASS
+112. `bash scripts/ci/final_gate.sh` -> PASS
+113. `bash tests/governance/test_docs_presence.sh` -> PASS
+114. `bash tests/governance/test_e2e_governance.sh` -> PASS
+115. Final-gate orchestrator-conversation-bootstrap-contract smoke sample (`assessment_request_id=76c5d31a-687e-4632-b91b-9696b98579d8`, `training_request_id=22039cdd-42fd-4337-a639-854150e9ae24`, `chat_request_id=1161570f-8f23-4c06-a430-ba988b229239`)
+116. Latest verification timestamp (UTC): `2026-02-26T12:34:14Z`
 
 ## Outputs
 
@@ -158,6 +164,7 @@
 - Static orchestrator forwarding contract gate validates downstream forwarding URL/auth/payload semantics, idempotency query constraints, and SSE proxy response behavior
 - Static model-router resilience contract gate validates provider-pick semantics, dual-provider fallback structure, non-streaming completion config, and doubao model guard behavior
 - Static error-response contract gate validates BAD_REQUEST/AUTH_FORBIDDEN/INTERNAL_ERROR SSE semantics and canonical HTTP status mapping across execution-chain functions
+- Static orchestrator conversation bootstrap contract gate validates conversation auto-create defaults and ingress user-message persistence semantics in orchestrator
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
