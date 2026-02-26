@@ -410,6 +410,18 @@
 182. `bash tests/governance/test_docs_presence.sh` -> PASS.
 183. `bash tests/governance/test_e2e_governance.sh` -> PASS.
 184. Latest verification timestamp (UTC): `2026-02-26T13:02:15Z`
+185. `bash tests/functions/test_options_preflight_contract.sh` -> PASS.
+186. `bash scripts/ci/final_gate.sh` -> PASS.
+187. Final-gate options-preflight-contract smoke output sample:
+   - `assessment_request_id=1931ba96-fa48-4a07-aa37-cc353cd9a7b9`
+   - `chat_request_id=b3d65f3d-2bef-4c2f-a9ba-7d10e96ff37b`
+   - `dashboard_request_id=9af0d217-9cc2-40f4-b435-16a53f947a9b`
+   - `idempotency_request_id=272a9df1-28e8-4823-b9ed-8a7b2b8878e1`
+   - `training_request_id=65a8c2ff-dc7f-4a16-8dcd-52405dd8c264`
+   - `training_record_request_id=f4d6de6d-b7bb-40b1-ab43-f19a895e6db5`
+188. `bash tests/governance/test_docs_presence.sh` -> PASS.
+189. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+190. Latest verification timestamp (UTC): `2026-02-26T13:27:22Z`
 
 ## Assertions Confirmed
 
@@ -435,6 +447,7 @@
 - Static contract gate `tests/functions/test_orchestrator_conversation_bootstrap_contract.sh` enforces conversation auto-create defaults and ingress user-message persistence semantics in orchestrator.
 - Static contract gate `tests/functions/test_model_router_temperature_contract.sh` enforces caller-provided temperature semantics in model-router (`options.temperature` honored in Kimi and Doubao paths).
 - Static contract gate `tests/functions/test_request_id_lifecycle_contract.sh` enforces module-level request_id inheritance, finalizeWriteback passthrough, and done-event request_id echo semantics.
+- Static contract gate `tests/functions/test_options_preflight_contract.sh` enforces canonical `OPTIONS` guard and null preflight SSE-header response semantics across execution-chain functions.
 - Static contract gate `tests/functions/test_writeback_metadata_contract.sh` enforces action-to-event/snapshot metadata semantics.
 - Static contract gate `tests/functions/test_orchestrator_route_contract.sh` enforces module alias routing and route tuple integrity.
 - Live gate `tests/e2e/test_orchestrator_idempotency_live.sh` enforces duplicate `request_id` short-circuit (`idempotent=true`) and single completion log semantics.
