@@ -178,12 +178,30 @@ PR workflow `contract-governance-check`:
 4. Gap register is active and traceable by owner/SLA
 5. Rollback works from lock baseline and passes verification
 
-## 9. Current Constraints and Notes
+## 9. Phase 2 Deliverables and Acceptance (Business Capability Delivery)
 
-- This workspace is not a Git repository root at current path, so commit operations cannot be executed here yet.
-- Implementation phase should begin by creating governance scaffolding files and CI workflow before business module work.
+### 9.1 Deliverables
 
-## 10. References
+1. Business output contract catalog for all active execution modules
+2. Golden scenario acceptance harness for parent-centric workflows
+3. Scenario-linked writeback/data consistency assertions
+4. Phase 2 release checklist and rollback drill log
+5. CI-integrated Phase 2 gate evidence in governance verification docs
+
+### 9.2 Acceptance Criteria
+
+1. Each active module has explicit output contract checks and passing validation gates.
+2. Golden scenario suites pass with deterministic acceptance assertions.
+3. Data consistency checks pass for scenario outputs and writeback metadata.
+4. Release checklist and rollback drill artifacts are complete and verified.
+5. No blocking Phase 2 gaps remain open in `docs/governance/GAP-REGISTER.md`.
+
+## 10. Current Constraints and Notes
+
+- Governance-first controls remain mandatory for all phase changes.
+- Phase 2 may add capability tests and artifacts, but cannot bypass Phase 1 verification gates.
+
+## 11. References
 
 - OpenAI: Introducing harness engineering  
   https://openai.com/index/introducing-harness-engineering/
