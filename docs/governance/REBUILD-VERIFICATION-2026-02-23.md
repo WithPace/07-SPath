@@ -326,6 +326,18 @@
 140. `bash tests/governance/test_docs_presence.sh` -> PASS.
 141. `bash tests/governance/test_e2e_governance.sh` -> PASS.
 142. Latest verification timestamp (UTC): `2026-02-26T07:54:28Z`
+143. `bash tests/functions/test_shared_reliability_contract.sh` -> PASS.
+144. `bash scripts/ci/final_gate.sh` -> PASS.
+145. Final-gate shared-reliability-contract smoke output sample:
+   - `assessment_request_id=1c44fb6f-8d9a-4260-9f3b-059eea3cfd53`
+   - `chat_request_id=63621fca-5954-47b1-b5c6-d1dd6686d48c`
+   - `dashboard_request_id=a871497b-5f30-47a2-a59b-02301fc4a00f`
+   - `idempotency_request_id=c6a4118c-ab10-4b7e-be41-e7380b51f854`
+   - `training_request_id=8aef9f4c-51a9-4fdf-b867-939eb50f75cd`
+   - `training_record_request_id=b1b622f1-faf7-49b8-9c4f-bc521859daad`
+146. `bash tests/governance/test_docs_presence.sh` -> PASS.
+147. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+148. Latest verification timestamp (UTC): `2026-02-26T09:37:00Z`
 
 ## Assertions Confirmed
 
@@ -344,6 +356,7 @@
 - `operation_logs.affected_tables` for `dashboard_generate` includes `chat_messages`.
 - Static contract gate `tests/functions/test_affected_tables_contract.sh` enforces action-to-table metadata coverage.
 - Static contract gate `tests/functions/test_auth_and_body_parse_contract.sh` enforces request authentication, child-access guard, and single-pass `req.json()` body consumption across execution-chain entrypoints.
+- Static contract gate `tests/functions/test_shared_reliability_contract.sh` enforces shared service-client singleton reuse and RPC-only finalize writeback path (`finalize_writeback`).
 - Static contract gate `tests/functions/test_writeback_metadata_contract.sh` enforces action-to-event/snapshot metadata semantics.
 - Static contract gate `tests/functions/test_orchestrator_route_contract.sh` enforces module alias routing and route tuple integrity.
 - Live gate `tests/e2e/test_orchestrator_idempotency_live.sh` enforces duplicate `request_id` short-circuit (`idempotent=true`) and single completion log semantics.
