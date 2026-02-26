@@ -151,6 +151,12 @@
 138. `bash tests/governance/test_e2e_governance.sh` -> PASS
 139. Final-gate sse-framing-contract smoke sample (`assessment_request_id=6c1744b5-e8d5-4fa1-86e4-4541f6bd2a8c`, `training_request_id=f64b6f02-58b6-4f14-8798-2152c1191c8d`, `chat_request_id=e422d1d7-4bd5-4e8d-a83c-2b1cfe5aa713`)
 140. Latest verification timestamp (UTC): `2026-02-26T13:52:47Z`
+141. `bash tests/functions/test_writeback_before_done_contract.sh` -> PASS
+142. `bash scripts/ci/final_gate.sh` -> PASS
+143. `bash tests/governance/test_docs_presence.sh` -> PASS
+144. `bash tests/governance/test_e2e_governance.sh` -> PASS
+145. Final-gate writeback-before-done-contract smoke sample (`assessment_request_id=40d64bd8-80f3-4fd6-9d67-96c1f217310f`, `training_request_id=7272ce84-9646-41bf-9aeb-3ca8c8bfa272`, `chat_request_id=04c9ccc4-ae85-4195-86f4-f6f1f7a164de`)
+146. Latest verification timestamp (UTC): `2026-02-26T14:16:54Z`
 
 ## Outputs
 
@@ -193,6 +199,7 @@
 - Static request-id lifecycle contract gate validates module-level request_id inheritance, finalizeWriteback passthrough, and done-event request_id echo semantics
 - Static options preflight contract gate validates canonical `OPTIONS` guard and null preflight SSE-header response semantics across 7 execution-chain entry files
 - Static SSE framing contract gate validates `stream_start -> delta -> done` event presence and lexical order across 6 execution modules
+- Static writeback-before-done contract gate validates `finalizeWriteback` executes before terminal SSE `done` across 6 execution modules
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
