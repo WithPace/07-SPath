@@ -338,6 +338,18 @@
 146. `bash tests/governance/test_docs_presence.sh` -> PASS.
 147. `bash tests/governance/test_e2e_governance.sh` -> PASS.
 148. Latest verification timestamp (UTC): `2026-02-26T09:37:00Z`
+149. `bash tests/functions/test_orchestrator_forwarding_contract.sh` -> PASS.
+150. `bash scripts/ci/final_gate.sh` -> PASS.
+151. Final-gate orchestrator-forwarding-contract smoke output sample:
+   - `assessment_request_id=d6bc537d-a47f-431a-9fa5-f7f1e2e8fd76`
+   - `chat_request_id=fe8f4f58-1fca-482b-88c8-496d9819436b`
+   - `dashboard_request_id=bd50fb8e-0732-4f54-813b-e7161a85c5ec`
+   - `idempotency_request_id=1c95b5dd-abea-45bf-972e-b4dcc6245d0c`
+   - `training_request_id=8034464d-ac8e-4b57-9b10-cd53c24c9004`
+   - `training_record_request_id=6a421b17-7fb3-42ed-a21d-0adf50d0a955`
+152. `bash tests/governance/test_docs_presence.sh` -> PASS.
+153. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+154. Latest verification timestamp (UTC): `2026-02-26T11:00:50Z`
 
 ## Assertions Confirmed
 
@@ -356,6 +368,7 @@
 - `operation_logs.affected_tables` for `dashboard_generate` includes `chat_messages`.
 - Static contract gate `tests/functions/test_affected_tables_contract.sh` enforces action-to-table metadata coverage.
 - Static contract gate `tests/functions/test_auth_and_body_parse_contract.sh` enforces request authentication, child-access guard, and single-pass `req.json()` body consumption across execution-chain entrypoints.
+- Static contract gate `tests/functions/test_orchestrator_forwarding_contract.sh` enforces downstream forwarding URL/auth/payload semantics, idempotency query constraints, and SSE proxy response behavior.
 - Static contract gate `tests/functions/test_shared_reliability_contract.sh` enforces shared service-client singleton reuse and RPC-only finalize writeback path (`finalize_writeback`).
 - Static contract gate `tests/functions/test_writeback_metadata_contract.sh` enforces action-to-event/snapshot metadata semantics.
 - Static contract gate `tests/functions/test_orchestrator_route_contract.sh` enforces module alias routing and route tuple integrity.

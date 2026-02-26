@@ -103,6 +103,12 @@
 90. `bash tests/governance/test_e2e_governance.sh` -> PASS
 91. Final-gate shared-reliability-contract smoke sample (`assessment_request_id=1c44fb6f-8d9a-4260-9f3b-059eea3cfd53`, `training_request_id=8aef9f4c-51a9-4fdf-b867-939eb50f75cd`, `chat_request_id=63621fca-5954-47b1-b5c6-d1dd6686d48c`)
 92. Latest verification timestamp (UTC): `2026-02-26T09:37:00Z`
+93. `bash tests/functions/test_orchestrator_forwarding_contract.sh` -> PASS
+94. `bash scripts/ci/final_gate.sh` -> PASS
+95. `bash tests/governance/test_docs_presence.sh` -> PASS
+96. `bash tests/governance/test_e2e_governance.sh` -> PASS
+97. Final-gate orchestrator-forwarding-contract smoke sample (`assessment_request_id=d6bc537d-a47f-431a-9fa5-f7f1e2e8fd76`, `training_request_id=8034464d-ac8e-4b57-9b10-cd53c24c9004`, `chat_request_id=fe8f4f58-1fca-482b-88c8-496d9819436b`)
+98. Latest verification timestamp (UTC): `2026-02-26T11:00:50Z`
 
 ## Outputs
 
@@ -137,6 +143,7 @@
 - Static live-smoke retry-transport-exit-code contract gate validates transport retry/terminal `exit_code` diagnostics and terminal `ORCH_LAST_RESPONSE` marker writeback
 - Static functions auth/body-parse contract gate validates request authentication, child-access guard, and single-pass `req.json()` consumption across 7 execution-chain entry files
 - Static shared reliability contract gate validates shared service-client singleton reuse and RPC-only finalize writeback path (`finalize_writeback`)
+- Static orchestrator forwarding contract gate validates downstream forwarding URL/auth/payload semantics, idempotency query constraints, and SSE proxy response behavior
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
