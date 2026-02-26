@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
 ORCH_RETRY_REASON_WORKER_LIMIT="WORKER_LIMIT"
+ORCH_RETRY_REASON_TRANSPORT_ERROR="transport_error"
 ORCH_TERMINAL_REASON_WORKER_LIMIT_EXHAUSTED="worker_limit_exhausted"
 ORCH_TERMINAL_REASON_DONE_EVENT_MISSING="done_event_missing"
 ORCH_TERMINAL_REASON_CARDS_PAYLOAD_MISSING="cards_payload_missing"
+ORCH_TERMINAL_REASON_TRANSPORT_ERROR_EXHAUSTED="transport_error_exhausted"
 
 orchestrator_build_payload() {
   local child_id="$1"
@@ -53,7 +55,7 @@ orchestrator_call_with_retry() {
   local require_cards="${3:-0}"
   local max_attempts
   local base_delay_seconds
-  local attempt request_id response payload sleep_seconds module_label failure_reason
+  local attempt request_id response payload sleep_seconds module_label failure_reason curl_exit
 
   max_attempts=$(orchestrator_sanitize_positive_int "${ORCH_MAX_ATTEMPTS:-4}" "4" "2" "6")
   base_delay_seconds=$(orchestrator_sanitize_positive_int "${ORCH_RETRY_BASE_DELAY_SECONDS:-1}" "1" "1" "5")
@@ -71,11 +73,31 @@ orchestrator_call_with_retry() {
     request_ids+=("$request_id")
 
     payload=$(orchestrator_build_payload "$child_id" "$prompt" "$module" "$request_id")
+    curl_exit=0
     response=$(curl "${curl_common[@]}" -N --max-time 180 -X POST "${SUPABASE_URL}/functions/v1/orchestrator" \
       -H "apikey: ${SUPABASE_ANON_KEY}" \
       -H "Authorization: Bearer ${access_token}" \
       -H "Content-Type: application/json" \
-      -d "$payload")
+      -d "$payload") || curl_exit=$?
+
+    if [ "$curl_exit" -ne 0 ]; then
+      if [ "$attempt" -lt "$max_attempts" ]; then
+        ORCH_LAST_RETRY_COUNT=$((ORCH_LAST_RETRY_COUNT + 1))
+        sleep_seconds=$((base_delay_seconds * (1 << (attempt - 1))))
+        echo "orchestrator retry: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} sleep_seconds=${sleep_seconds} reason=${ORCH_RETRY_REASON_TRANSPORT_ERROR}" >&2
+        sleep "$sleep_seconds"
+        continue
+      fi
+
+      failure_reason="${ORCH_TERMINAL_REASON_TRANSPORT_ERROR_EXHAUSTED}"
+      echo "orchestrator terminal_failure: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} reason=${failure_reason}" >&2
+      ORCH_LAST_REQUEST_ID="$request_id"
+      ORCH_LAST_RESPONSE="$response"
+      ORCH_LAST_RESULT="failure"
+      ORCH_LAST_FAILURE_REASON="${failure_reason}"
+      ORCH_LAST_ATTEMPT="${attempt}/${max_attempts}"
+      return 1
+    fi
 
     if echo "$response" | grep -q "event: done"; then
       if [ "$require_cards" = "1" ] && ! echo "$response" | grep -q "\"cards\""; then
