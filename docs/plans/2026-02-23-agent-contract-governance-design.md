@@ -196,12 +196,32 @@ PR workflow `contract-governance-check`:
 4. Release checklist and rollback drill artifacts are complete and verified.
 5. No blocking Phase 2 gaps remain open in `docs/governance/GAP-REGISTER.md`.
 
-## 10. Current Constraints and Notes
+## 10. Phase 3 Deliverables and Acceptance (Production Operations and Scale)
+
+### 10.1 Deliverables
+
+1. SLO/SLI baseline and incident operations runbook
+2. Security operations baseline and secrets rotation controls
+3. Cost/capacity guardrail policy with CI-verifiable checks
+4. Release automation policy with canary and rollback gates
+5. Operational drill evidence integrated into governance verification docs
+
+### 10.2 Acceptance Criteria
+
+1. SLO/SLI targets and incident response controls are documented and validated.
+2. Security operations checklist and key rotation controls are complete and auditable.
+3. Cost/capacity guardrails are defined and enforced through governance checks.
+4. Release automation and rollback criteria are documented and verified.
+5. No blocking Phase 3 operations gaps remain in `docs/governance/GAP-REGISTER.md`.
+
+## 11. Current Constraints and Notes
 
 - Governance-first controls remain mandatory for all phase changes.
 - Phase 2 may add capability tests and artifacts, but cannot bypass Phase 1 verification gates.
+- Production operations controls must remain auditable and evidence-backed.
+- Phase 3 may add operational automation, but cannot weaken Phase 1/Phase 2 quality gates.
 
-## 11. References
+## 12. References
 
 - OpenAI: Introducing harness engineering  
   https://openai.com/index/introducing-harness-engineering/
