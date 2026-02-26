@@ -109,6 +109,12 @@
 96. `bash tests/governance/test_e2e_governance.sh` -> PASS
 97. Final-gate orchestrator-forwarding-contract smoke sample (`assessment_request_id=d6bc537d-a47f-431a-9fa5-f7f1e2e8fd76`, `training_request_id=8034464d-ac8e-4b57-9b10-cd53c24c9004`, `chat_request_id=fe8f4f58-1fca-482b-88c8-496d9819436b`)
 98. Latest verification timestamp (UTC): `2026-02-26T11:00:50Z`
+99. `bash tests/functions/test_model_router_resilience_contract.sh` -> PASS
+100. `bash scripts/ci/final_gate.sh` -> PASS
+101. `bash tests/governance/test_docs_presence.sh` -> PASS
+102. `bash tests/governance/test_e2e_governance.sh` -> PASS
+103. Final-gate model-router-resilience-contract smoke sample (`assessment_request_id=0e3a603d-4d49-49a0-a076-d34db94031d7`, `training_request_id=2a022476-af0c-461a-951a-596da21c3b73`, `chat_request_id=061dc71a-b75a-4ca8-9a95-8ae0419a688c`)
+104. Latest verification timestamp (UTC): `2026-02-26T11:09:21Z`
 
 ## Outputs
 
@@ -144,6 +150,7 @@
 - Static functions auth/body-parse contract gate validates request authentication, child-access guard, and single-pass `req.json()` consumption across 7 execution-chain entry files
 - Static shared reliability contract gate validates shared service-client singleton reuse and RPC-only finalize writeback path (`finalize_writeback`)
 - Static orchestrator forwarding contract gate validates downstream forwarding URL/auth/payload semantics, idempotency query constraints, and SSE proxy response behavior
+- Static model-router resilience contract gate validates provider-pick semantics, dual-provider fallback structure, non-streaming completion config, and doubao model guard behavior
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
