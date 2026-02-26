@@ -145,6 +145,12 @@
 132. `bash tests/governance/test_e2e_governance.sh` -> PASS
 133. Final-gate options-preflight-contract smoke sample (`assessment_request_id=1931ba96-fa48-4a07-aa37-cc353cd9a7b9`, `training_request_id=65a8c2ff-dc7f-4a16-8dcd-52405dd8c264`, `chat_request_id=b3d65f3d-2bef-4c2f-a9ba-7d10e96ff37b`)
 134. Latest verification timestamp (UTC): `2026-02-26T13:27:22Z`
+135. `bash tests/functions/test_sse_framing_contract.sh` -> PASS
+136. `bash scripts/ci/final_gate.sh` -> PASS
+137. `bash tests/governance/test_docs_presence.sh` -> PASS
+138. `bash tests/governance/test_e2e_governance.sh` -> PASS
+139. Final-gate sse-framing-contract smoke sample (`assessment_request_id=6c1744b5-e8d5-4fa1-86e4-4541f6bd2a8c`, `training_request_id=f64b6f02-58b6-4f14-8798-2152c1191c8d`, `chat_request_id=e422d1d7-4bd5-4e8d-a83c-2b1cfe5aa713`)
+140. Latest verification timestamp (UTC): `2026-02-26T13:52:47Z`
 
 ## Outputs
 
@@ -186,6 +192,7 @@
 - Static model-router temperature contract gate validates caller-provided temperature semantics in model-router (`options.temperature` honored in Kimi and Doubao paths)
 - Static request-id lifecycle contract gate validates module-level request_id inheritance, finalizeWriteback passthrough, and done-event request_id echo semantics
 - Static options preflight contract gate validates canonical `OPTIONS` guard and null preflight SSE-header response semantics across 7 execution-chain entry files
+- Static SSE framing contract gate validates `stream_start -> delta -> done` event presence and lexical order across 6 execution modules
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
