@@ -80,9 +80,11 @@
 67. `bash scripts/ci/final_gate.sh` -> PASS
 68. `bash tests/e2e/test_live_smoke_retry_transport_failure_contract.sh` -> PASS
 69. `bash scripts/ci/final_gate.sh` -> PASS
-70. `bash tests/governance/test_docs_presence.sh` -> PASS
-71. `bash tests/governance/test_e2e_governance.sh` -> PASS
-72. Latest verification timestamp (UTC): `2026-02-26T03:13:46Z`
+70. `bash tests/e2e/test_live_smoke_retry_transport_observability_contract.sh` -> PASS
+71. `bash scripts/ci/final_gate.sh` -> PASS
+72. `bash tests/governance/test_docs_presence.sh` -> PASS
+73. `bash tests/governance/test_e2e_governance.sh` -> PASS
+74. Latest verification timestamp (UTC): `2026-02-26T07:01:10Z`
 
 ## Outputs
 
@@ -113,6 +115,7 @@
 - Static live-smoke retry-runtime-sanitization contract gate validates runtime fallback to default retry limits/backoff when env values are invalid
 - Static live-smoke retry-backoff-timing contract gate validates exponential delay sequence and no-terminal/non-retriable sleep semantics
 - Static live-smoke retry-transport-failure contract gate validates `set -e` safe curl-exit handling, transport retry semantics, and transport terminal reason writeback
+- Static live-smoke retry-transport-observability contract gate validates runtime transport retry/terminal stderr log field semantics
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 

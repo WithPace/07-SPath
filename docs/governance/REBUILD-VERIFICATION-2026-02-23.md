@@ -289,6 +289,19 @@
 122. `bash tests/governance/test_docs_presence.sh` -> PASS.
 123. `bash tests/governance/test_e2e_governance.sh` -> PASS.
 124. Latest verification timestamp (UTC): `2026-02-26T03:13:46Z`
+125. `bash tests/e2e/test_live_smoke_retry_transport_observability_contract.sh` -> PASS.
+126. `bash scripts/ci/final_gate.sh` -> PASS.
+127. Final-gate retry-transport-observability smoke output sample:
+   - `assessment_request_id=91b0e0be-6cd5-4c6e-bd8f-82f2c6dd12e1`
+   - `training_advice_request_id=7a2efd5d-1abd-48b2-bd2a-4d2414fc8df6`
+   - `chat_request_id=1cfce24c-a4ef-4fa9-8ec0-c023be0475da`
+   - `dashboard_request_id=d6be33cb-0ba8-4c48-b5c8-db066514f1bc`
+   - `idempotency_request_id=56fe7064-c41a-4441-9296-3f00f9588286`
+   - `training_request_id=84bec54f-701c-4416-b958-0741688261ce`
+   - `training_record_request_id=94fde17f-e41e-4d67-a3aa-33020b621277`
+128. `bash tests/governance/test_docs_presence.sh` -> PASS.
+129. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+130. Latest verification timestamp (UTC): `2026-02-26T07:01:10Z`
 
 ## Assertions Confirmed
 
@@ -322,6 +335,7 @@
 - Live gate `tests/e2e/test_live_smoke_retry_runtime_sanitization_contract.sh` enforces runtime fallback defaults for invalid retry env values (`ORCH_MAX_ATTEMPTS`, `ORCH_RETRY_BASE_DELAY_SECONDS`).
 - Live gate `tests/e2e/test_live_smoke_retry_backoff_timing_contract.sh` enforces exponential backoff sleep sequencing and terminal no-sleep boundaries.
 - Live gate `tests/e2e/test_live_smoke_retry_transport_failure_contract.sh` enforces `set -e` safe transport retry flow and transport terminal reason `transport_error_exhausted`.
+- Live gate `tests/e2e/test_live_smoke_retry_transport_observability_contract.sh` enforces runtime transport retry/terminal stderr log semantics with resolved request_id/attempt/reason fields.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
