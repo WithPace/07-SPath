@@ -41,11 +41,10 @@
 ## Rollback Plan
 
 1. Identify failing module/function and last known good deployment revision.
-2. Redeploy last known good function set to linked Supabase project.
-3. Re-run:
-   - `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh`
-   - `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh`
-   - `bash scripts/ci/final_gate.sh`
+2. Execute rollback drill script:
+   - `DRY_RUN=0 ROLLBACK_MODULE=<module> bash scripts/ops/run_phase2_rollback_drill.sh`
+3. If network instability blocks `final_gate`, run controlled fallback:
+   - `DRY_RUN=0 ROLLBACK_MODULE=<module> ROLLBACK_DRILL_RUN_FINAL_GATE=0 bash scripts/ops/run_phase2_rollback_drill.sh`
 4. Record rollback evidence in `docs/governance/PHASE-2-ROLLBACK-DRILL-LOG.md`.
 
 ## Sign-off
