@@ -477,6 +477,35 @@
    - `training_record_request_id=a55c296e-6317-40ca-8977-97b5dffe9cd3`
    - `dashboard_request_id=b707c3df-d8df-4531-ab62-5a5c4dba95f3`
 217. Latest verification timestamp (UTC): `2026-02-26T15:48:56Z`
+218. `bash tests/governance/test_phase3_slo_runbook_presence.sh` -> PASS.
+219. `bash tests/governance/test_phase3_security_ops_presence.sh` -> PASS.
+220. `bash tests/governance/test_phase3_cost_guardrails_presence.sh` -> PASS.
+221. `bash tests/governance/test_phase3_release_automation_presence.sh` -> PASS.
+222. `bash scripts/ci/final_gate.sh` -> PASS.
+223. `bash tests/governance/test_docs_presence.sh` -> PASS.
+224. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+225. Final-gate Phase 3 chain smoke output sample:
+   - `assessment_request_id=c156d60b-968f-4f6f-80a4-86f811a861bd`
+   - `chat_request_id=4611950e-f524-417f-8ebb-8f2488789fb4`
+   - `dashboard_request_id=4c7b335b-b311-4595-9f0a-6c1e50aa5b05`
+   - `idempotency_request_id=b47d5501-cf0d-4705-8287-0f44443c16bc`
+   - `training_request_id=c79c70d6-cdc6-4eed-a598-1baa91e50347`
+   - `training_record_request_id=359641cd-235d-45f8-8da0-b1fc08b97739`
+226. Final-gate Phase 2 weekly journey smoke output sample:
+   - `assessment_request_id=facc4ab4-a59a-40d3-9944-6faed33cdd69`
+   - `training_advice_request_id=b13248bd-c0f2-4dd1-996b-9d13db99637e`
+   - `training_request_id=80286104-8c07-44a8-b2ac-be868a3f5304`
+   - `training_record_request_id=198d05bf-76d7-40c9-afc9-26e6e02dbd91`
+   - `dashboard_request_id=b2562c29-2f50-4e6a-9a26-7e2da4be6fcc`
+227. Phase 2 dashboard followup smoke output sample:
+   - `training_request_id=47f0cc0b-5f5a-41fe-90cd-0949e3b5e5f7`
+   - `training_record_request_id=ff425007-1034-4851-8ec0-12def25b4305`
+   - `dashboard_request_id=d4187c25-387d-4313-b2c4-a047eaa2b513`
+228. Final-gate retry recovery sample:
+   - `module=assessment`
+   - `request_id=c600d981-9dec-48fe-94db-1c8d3e0ef21a`
+   - `reason=WORKER_LIMIT`
+229. Latest verification timestamp (UTC): `2026-02-27T01:00:20Z`
 
 ## Assertions Confirmed
 
@@ -526,6 +555,10 @@
 - Live gate `tests/e2e/test_phase2_parent_weekly_journey_live.sh` enforces end-to-end parent weekly journey sequencing (`assessment -> training-advice -> training -> training-record -> dashboard`) and request-id lineage.
 - Live gate `tests/e2e/test_phase2_parent_dashboard_followup_live.sh` enforces dashboard follow-up consistency from training/training-record context, including `affected_tables` and `snapshot_refresh_events` trace closure.
 - Phase 2 follow-up run validated transient `WORKER_LIMIT` recovery through shared retry helper and completed PASS without manual intervention.
+- Governance gate `tests/governance/test_phase3_slo_runbook_presence.sh` enforces presence of SLO targets, SLI measurements, alert thresholds, ownership, and operations runbook incident workflow baseline.
+- Governance gate `tests/governance/test_phase3_security_ops_presence.sh` enforces secrets rotation, privileged action controls, access review cadence, and security incident response baseline.
+- Governance gate `tests/governance/test_phase3_cost_guardrails_presence.sh` enforces budget thresholds, anomaly response, capacity ceilings, and CI enforcement baseline.
+- Governance gate `tests/governance/test_phase3_release_automation_presence.sh` enforces canary policy, rollback trigger matrix, approval gates, and automated release verification sequence baseline.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.
@@ -534,4 +567,4 @@
 ## Remaining Gaps
 
 - No blocking gaps for rebuild + execution chain baseline.
-- Remaining reliability/tooling gaps are tracked in `docs/governance/GAP-REGISTER.md`.
+- Operational governance gaps through Phase 3 are tracked as `done` in `docs/governance/GAP-REGISTER.md`.

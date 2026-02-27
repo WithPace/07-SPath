@@ -171,6 +171,17 @@
 158. Final-gate Phase 2 weekly journey smoke sample (`assessment_request_id=1936d0a5-3aad-4bbf-ae26-10bcbc589245`, `training_advice_request_id=d061ba55-3471-41e2-b96f-97cc4e0f6bf5`, `training_request_id=64200afb-1f60-49e9-b90b-cfcb392d2cf6`, `training_record_request_id=4c7ccc29-c08d-4557-a72d-a09e30a7585e`, `dashboard_request_id=3a24d315-b582-42c7-ac21-c3917a576439`)
 159. Phase 2 dashboard followup smoke sample (`training_request_id=c7fde7fd-3ed0-4742-bb12-2b7e472d44fb`, `training_record_request_id=a55c296e-6317-40ca-8977-97b5dffe9cd3`, `dashboard_request_id=b707c3df-d8df-4531-ab62-5a5c4dba95f3`)
 160. Latest verification timestamp (UTC): `2026-02-26T15:48:56Z`
+161. `bash tests/governance/test_phase3_slo_runbook_presence.sh` -> PASS
+162. `bash tests/governance/test_phase3_security_ops_presence.sh` -> PASS
+163. `bash tests/governance/test_phase3_cost_guardrails_presence.sh` -> PASS
+164. `bash tests/governance/test_phase3_release_automation_presence.sh` -> PASS
+165. `bash scripts/ci/final_gate.sh` -> PASS
+166. `bash tests/governance/test_docs_presence.sh` -> PASS
+167. `bash tests/governance/test_e2e_governance.sh` -> PASS
+168. Final-gate Phase 3 chain smoke sample (`assessment_request_id=c156d60b-968f-4f6f-80a4-86f811a861bd`, `training_request_id=c79c70d6-cdc6-4eed-a598-1baa91e50347`, `chat_request_id=4611950e-f524-417f-8ebb-8f2488789fb4`, `dashboard_request_id=4c7b335b-b311-4595-9f0a-6c1e50aa5b05`, `idempotency_request_id=b47d5501-cf0d-4705-8287-0f44443c16bc`)
+169. Final-gate Phase 2 weekly journey smoke sample (`assessment_request_id=facc4ab4-a59a-40d3-9944-6faed33cdd69`, `training_advice_request_id=b13248bd-c0f2-4dd1-996b-9d13db99637e`, `training_request_id=80286104-8c07-44a8-b2ac-be868a3f5304`, `training_record_request_id=198d05bf-76d7-40c9-afc9-26e6e02dbd91`, `dashboard_request_id=b2562c29-2f50-4e6a-9a26-7e2da4be6fcc`)
+170. Phase 2 dashboard followup smoke sample (`training_request_id=47f0cc0b-5f5a-41fe-90cd-0949e3b5e5f7`, `training_record_request_id=ff425007-1034-4851-8ec0-12def25b4305`, `dashboard_request_id=d4187c25-387d-4313-b2c4-a047eaa2b513`)
+171. Latest verification timestamp (UTC): `2026-02-27T01:00:20Z`
 
 ## Outputs
 
@@ -216,11 +227,12 @@
 - Static writeback-before-done contract gate validates `finalizeWriteback` executes before terminal SSE `done` across 6 execution modules
 - Governance release artifact gate validates Phase 2 release checklist and rollback drill log presence/required clauses
 - Phase 2 live scenario gates validate weekly parent journey and dashboard follow-up request-id trace + writeback consistency
+- Phase 3 governance gates validate SLO/SLI baseline, operations runbook, security operations, cost guardrails, and release automation policy artifacts
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 
 ## Current Status
 
-- Tracked baseline gaps (`GAP-0001` ~ `GAP-0003`) are currently marked `done` in `docs/governance/GAP-REGISTER.md`.
+- Tracked baseline/phase gaps (`GAP-0001` ~ `GAP-0005`) are currently marked `done` in `docs/governance/GAP-REGISTER.md`.
 - Future modules must be added to `governance/agent-contract/source/contract.yaml` required list before release.
 - CI gate for DB rebuild + execution-chain smoke is active in `.github/workflows/db-rebuild-and-chain-smoke.yml`.

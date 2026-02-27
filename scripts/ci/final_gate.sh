@@ -4,7 +4,7 @@ set -euo pipefail
 bash governance/agent-contract/scripts/build-contract.sh
 bash governance/agent-contract/scripts/verify-contract.sh
 
-for t in tests/governance/test_phase2_*.sh; do
+for t in tests/governance/test_phase*_*.sh; do
   [ -f "$t" ] || continue
   echo "running $t"
   bash "$t"
