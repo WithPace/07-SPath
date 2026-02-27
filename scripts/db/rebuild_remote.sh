@@ -86,6 +86,7 @@ dump_remote_schema_with_pg_dump() {
   local db_user="$5"
   local db_name="$6"
   local pg_dump_bin
+  local max_attempts base_delay attempt sleep_seconds
 
   pg_dump_bin="$(resolve_pg_dump_bin || true)"
   if [ -z "$pg_dump_bin" ]; then
@@ -98,18 +99,39 @@ dump_remote_schema_with_pg_dump() {
     return 1
   fi
 
-  PGPASSWORD="$db_password" PGCONNECT_TIMEOUT="${PGCONNECT_TIMEOUT:-15}" "$pg_dump_bin" \
-    --host="$db_host" \
-    --port="$db_port" \
-    --username="$db_user" \
-    --dbname="$db_name" \
-    --schema=public \
-    --schema-only \
-    --no-owner \
-    --no-privileges \
-    --no-comments \
-    --file="$out_file" \
-    --no-password
+  max_attempts="${PG_DUMP_MAX_ATTEMPTS:-3}"
+  base_delay="${PG_DUMP_RETRY_BASE_DELAY_SECONDS:-2}"
+  if ! [[ "$max_attempts" =~ ^[0-9]+$ ]] || [ "$max_attempts" -lt 1 ]; then
+    max_attempts=3
+  fi
+  if ! [[ "$base_delay" =~ ^[0-9]+$ ]] || [ "$base_delay" -lt 1 ]; then
+    base_delay=2
+  fi
+
+  for attempt in $(seq 1 "$max_attempts"); do
+    if PGPASSWORD="$db_password" PGCONNECT_TIMEOUT="${PGCONNECT_TIMEOUT:-15}" "$pg_dump_bin" \
+      --host="$db_host" \
+      --port="$db_port" \
+      --username="$db_user" \
+      --dbname="$db_name" \
+      --schema=public \
+      --schema-only \
+      --no-owner \
+      --no-privileges \
+      --no-comments \
+      --file="$out_file" \
+      --no-password; then
+      return 0
+    fi
+
+    if [ "$attempt" -lt "$max_attempts" ]; then
+      sleep_seconds=$((base_delay * attempt))
+      echo "pg_dump retry: attempt=${attempt}/${max_attempts} sleep_seconds=${sleep_seconds}" >&2
+      sleep "$sleep_seconds"
+    fi
+  done
+
+  return 1
 }
 
 db_password="$(read_env_or_file SUPABASE_DB_PASSWORD)"

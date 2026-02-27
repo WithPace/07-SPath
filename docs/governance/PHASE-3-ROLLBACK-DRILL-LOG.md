@@ -46,3 +46,85 @@
 | engineering | TBD | TBD | pending |
 | operations | TBD | TBD | pending |
 | release manager | TBD | TBD | pending |
+
+## Execution Record: phase3-rollback-drill-001-2026-02-27T01:43:36Z
+
+| field | value |
+|---|---|
+| drill_id | phase3-rollback-drill-001 |
+| started_at_utc | 2026-02-27T01:43:36Z |
+| dry_run | 0 |
+
+### Command Results
+
+| command | result |
+|---|---|
+| `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` | PASS |
+| `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` | PASS |
+| `bash scripts/ci/final_gate.sh` | FAIL |
+
+## Execution Record: phase3-rollback-drill-001-2026-02-27T10:14:44Z
+
+| field | value |
+|---|---|
+| drill_id | phase3-rollback-drill-001 |
+| started_at_utc | 2026-02-27T10:14:44Z |
+| dry_run | 0 |
+
+### Command Results
+
+| command | result |
+|---|---|
+| `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` | PASS |
+| `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` | PASS |
+| `bash scripts/ci/final_gate.sh` | FAIL |
+
+## Execution Record: phase3-rollback-drill-001-2026-02-27T10:23:45Z
+
+| field | value |
+|---|---|
+| drill_id | phase3-rollback-drill-001 |
+| started_at_utc | 2026-02-27T10:23:45Z |
+| dry_run | 0 |
+
+### Command Results
+
+| command | result |
+|---|---|
+| `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` | PASS |
+| `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` | PASS |
+| `bash scripts/ci/final_gate.sh` | FAIL |
+
+## Execution Record: phase3-rollback-drill-001-2026-02-27T10:34:45Z
+
+| field | value |
+|---|---|
+| drill_id | phase3-rollback-drill-001 |
+| started_at_utc | 2026-02-27T10:34:45Z |
+| dry_run | 0 |
+
+### Command Results
+
+| command | result |
+|---|---|
+| `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` | PASS |
+| `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` | PASS |
+| `bash scripts/ci/final_gate.sh` | FAIL |
+
+## Execution Record: phase3-rollback-drill-001-2026-02-27T12:09:48Z
+
+| field | value |
+|---|---|
+| drill_id | phase3-rollback-drill-001 |
+| started_at_utc | 2026-02-27T12:09:48Z |
+| dry_run | 0 |
+
+### Command Results
+
+| command | result |
+|---|---|
+| `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` | PASS |
+| `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` | PASS |
+| `bash scripts/ci/final_gate.sh` | PASS |
+| `bash tests/governance/test_docs_presence.sh` | PASS |
+| `bash tests/governance/test_e2e_governance.sh` | PASS |

@@ -35,6 +35,9 @@ rg -q 'tests/governance/test_docs_presence.sh' "$incident_script" || fail "incid
 rg -q 'tests/governance/test_e2e_governance.sh' "$incident_script" || fail "incident drill missing e2e governance check"
 rg -q 'scripts/ci/final_gate.sh' "$rollback_script" || fail "rollback drill missing final gate check"
 rg -q 'tests/e2e/test_phase2_parent_weekly_journey_live.sh' "$rollback_script" || fail "rollback drill missing phase2 weekly scenario check"
+rg -q 'ROLLBACK_DRILL_FINAL_GATE_MAX_ATTEMPTS' "$rollback_script" || fail "rollback drill missing final gate retry attempts config"
+rg -q 'ROLLBACK_DRILL_FINAL_GATE_RETRY_DELAY_SECONDS' "$rollback_script" || fail "rollback drill missing final gate retry delay config"
+rg -q 'final_gate retry:' "$rollback_script" || fail "rollback drill missing final gate retry log"
 
 rg -q 'scripts/ops/run_phase3_incident_drill.sh' "$runbook" || fail "runbook missing incident drill script reference"
 rg -q 'scripts/ops/run_phase3_rollback_drill.sh' "$runbook" || fail "runbook missing rollback drill script reference"
