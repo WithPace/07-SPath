@@ -182,6 +182,15 @@
 169. Final-gate Phase 2 weekly journey smoke sample (`assessment_request_id=facc4ab4-a59a-40d3-9944-6faed33cdd69`, `training_advice_request_id=b13248bd-c0f2-4dd1-996b-9d13db99637e`, `training_request_id=80286104-8c07-44a8-b2ac-be868a3f5304`, `training_record_request_id=198d05bf-76d7-40c9-afc9-26e6e02dbd91`, `dashboard_request_id=b2562c29-2f50-4e6a-9a26-7e2da4be6fcc`)
 170. Phase 2 dashboard followup smoke sample (`training_request_id=47f0cc0b-5f5a-41fe-90cd-0949e3b5e5f7`, `training_record_request_id=ff425007-1034-4851-8ec0-12def25b4305`, `dashboard_request_id=d4187c25-387d-4313-b2c4-a047eaa2b513`)
 171. Latest verification timestamp (UTC): `2026-02-27T01:00:20Z`
+172. `bash tests/governance/test_phase3_drill_assets_presence.sh` -> PASS
+173. `bash scripts/ci/final_gate.sh` -> PASS
+174. `bash tests/governance/test_docs_presence.sh` -> PASS
+175. `bash tests/governance/test_e2e_governance.sh` -> PASS
+176. Final-gate Phase 3 chain smoke sample (`assessment_request_id=78c61f66-4f77-4b8d-98d0-b425d6cccc1f`, `training_request_id=1e58ee1f-2463-4361-ad35-cf0f7bf25b4b`, `chat_request_id=ded6c3a3-c1db-4c11-a789-76639a731e2a`, `dashboard_request_id=f2e2e9df-7aa7-464f-8615-12c437503890`, `idempotency_request_id=94af8c31-fb4d-4124-8f53-0124a332180a`)
+177. Final-gate Phase 2 weekly journey smoke sample (`assessment_request_id=73c4c492-1ead-4814-8c38-99c2d40c93ef`, `training_advice_request_id=33e46daa-889d-4676-a43c-cc35305908cd`, `training_request_id=a12ce95c-b492-4cae-84bf-4d6fb2c16317`, `training_record_request_id=78a8b144-6258-4822-a144-71f79ed7269b`, `dashboard_request_id=78a11041-bdc7-41a1-9914-fbdaecd64fcb`)
+178. Phase 2 dashboard followup smoke sample (`training_request_id=9f409a47-2c2c-46ef-8a2a-a3e617b51b3b`, `training_record_request_id=85d3dd73-0c64-4b2f-b02d-05c29440a631`, `dashboard_request_id=e35b6338-4d58-4b52-88bf-8c316b30de63`)
+179. Final-gate retry recovery sample (`module=assessment`, `request_id=5b0580a3-b7b9-4c8f-bde7-38bf83f07cec`, `reason=WORKER_LIMIT`)
+180. Latest verification timestamp (UTC): `2026-02-27T01:23:32Z`
 
 ## Outputs
 
@@ -228,6 +237,7 @@
 - Governance release artifact gate validates Phase 2 release checklist and rollback drill log presence/required clauses
 - Phase 2 live scenario gates validate weekly parent journey and dashboard follow-up request-id trace + writeback consistency
 - Phase 3 governance gates validate SLO/SLI baseline, operations runbook, security operations, cost guardrails, and release automation policy artifacts
+- Phase 3 drill assets gate validates executable incident/rollback drill scripts and drill log forms
 - Live idempotency gate validates duplicate request short-circuit and single completion operation log behavior
 - Contract generation confirms `Module Contracts (7)` for current execution-chain modules
 

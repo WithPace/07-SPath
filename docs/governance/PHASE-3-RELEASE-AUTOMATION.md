@@ -56,3 +56,5 @@ For each release, record:
 Evidence location:
 - `docs/governance/BASELINE-VERIFICATION-2026-02-23.md`
 - `docs/governance/REBUILD-VERIFICATION-2026-02-23.md`
+- `docs/governance/PHASE-3-INCIDENT-DRILL-LOG.md`
+- `docs/governance/PHASE-3-ROLLBACK-DRILL-LOG.md`

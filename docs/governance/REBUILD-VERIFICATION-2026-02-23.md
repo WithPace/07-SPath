@@ -506,6 +506,32 @@
    - `request_id=c600d981-9dec-48fe-94db-1c8d3e0ef21a`
    - `reason=WORKER_LIMIT`
 229. Latest verification timestamp (UTC): `2026-02-27T01:00:20Z`
+230. `bash tests/governance/test_phase3_drill_assets_presence.sh` -> PASS.
+231. `bash scripts/ci/final_gate.sh` -> PASS.
+232. `bash tests/governance/test_docs_presence.sh` -> PASS.
+233. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+234. Final-gate Phase 3 chain smoke output sample:
+   - `assessment_request_id=78c61f66-4f77-4b8d-98d0-b425d6cccc1f`
+   - `chat_request_id=ded6c3a3-c1db-4c11-a789-76639a731e2a`
+   - `dashboard_request_id=f2e2e9df-7aa7-464f-8615-12c437503890`
+   - `idempotency_request_id=94af8c31-fb4d-4124-8f53-0124a332180a`
+   - `training_request_id=1e58ee1f-2463-4361-ad35-cf0f7bf25b4b`
+   - `training_record_request_id=8ff022d5-022a-468e-bc3c-8cbc49b905c6`
+235. Final-gate Phase 2 weekly journey smoke output sample:
+   - `assessment_request_id=73c4c492-1ead-4814-8c38-99c2d40c93ef`
+   - `training_advice_request_id=33e46daa-889d-4676-a43c-cc35305908cd`
+   - `training_request_id=a12ce95c-b492-4cae-84bf-4d6fb2c16317`
+   - `training_record_request_id=78a8b144-6258-4822-a144-71f79ed7269b`
+   - `dashboard_request_id=78a11041-bdc7-41a1-9914-fbdaecd64fcb`
+236. Phase 2 dashboard followup smoke output sample:
+   - `training_request_id=9f409a47-2c2c-46ef-8a2a-a3e617b51b3b`
+   - `training_record_request_id=85d3dd73-0c64-4b2f-b02d-05c29440a631`
+   - `dashboard_request_id=e35b6338-4d58-4b52-88bf-8c316b30de63`
+237. Final-gate retry recovery sample:
+   - `module=assessment`
+   - `request_id=5b0580a3-b7b9-4c8f-bde7-38bf83f07cec`
+   - `reason=WORKER_LIMIT`
+238. Latest verification timestamp (UTC): `2026-02-27T01:23:32Z`
 
 ## Assertions Confirmed
 
@@ -559,6 +585,7 @@
 - Governance gate `tests/governance/test_phase3_security_ops_presence.sh` enforces secrets rotation, privileged action controls, access review cadence, and security incident response baseline.
 - Governance gate `tests/governance/test_phase3_cost_guardrails_presence.sh` enforces budget thresholds, anomaly response, capacity ceilings, and CI enforcement baseline.
 - Governance gate `tests/governance/test_phase3_release_automation_presence.sh` enforces canary policy, rollback trigger matrix, approval gates, and automated release verification sequence baseline.
+- Governance gate `tests/governance/test_phase3_drill_assets_presence.sh` enforces executable incident/rollback drill scripts, structured drill forms, and cross-doc references.
 - `assessments`, `training_plans`, `training_sessions`, `children_profiles`, and `children_memory` domain tables receive live writeback rows.
 - Dashboard writeback stores assistant `cards_json` and links trace by same `request_id`.
 - `snapshot_refresh_events` contains row for same `request_id`.

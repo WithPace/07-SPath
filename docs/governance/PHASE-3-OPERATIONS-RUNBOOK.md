@@ -53,6 +53,16 @@
 | rollback drill | monthly | rollback commands + gate pass evidence |
 | paging drill | quarterly | escalation timestamp trail |
 
+- Drill execution scripts:
+  - `scripts/ops/run_phase3_incident_drill.sh`
+  - `scripts/ops/run_phase3_rollback_drill.sh`
+- Drill log forms:
+  - `docs/governance/PHASE-3-INCIDENT-DRILL-LOG.md`
+  - `docs/governance/PHASE-3-ROLLBACK-DRILL-LOG.md`
+- Execution example:
+  - `DRY_RUN=1 bash scripts/ops/run_phase3_incident_drill.sh`
+  - `DRY_RUN=1 bash scripts/ops/run_phase3_rollback_drill.sh`
+
 - Evidence references:
   - `docs/governance/BASELINE-VERIFICATION-2026-02-23.md`
   - `docs/governance/REBUILD-VERIFICATION-2026-02-23.md`
