@@ -6,7 +6,7 @@
 |---|---|
 | phase | Phase 2 |
 | drill_id | phase2-rollback-drill-001 |
-| executed_at_utc | 2026-02-27T23:32:04Z |
+| executed_at_utc | 2026-02-27T23:39:40Z |
 | owner | engineering |
 | environment | linked supabase project |
 | scenario | parent weekly journey + dashboard follow-up |
@@ -22,9 +22,9 @@
    - `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` -> PASS
    - `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` -> PASS
 2. Rollback command:
-   - `supabase functions deploy <module> --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> SKIP (no module provided)
+   - `supabase functions deploy orchestrator --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` -> PASS
 3. Post-rollback validation:
-   - `bash scripts/ci/final_gate.sh` -> SKIP (`ROLLBACK_DRILL_RUN_FINAL_GATE=0`)
+   - `bash scripts/ci/final_gate.sh` -> PASS
    - `bash tests/governance/test_docs_presence.sh` -> PASS
    - `bash tests/governance/test_e2e_governance.sh` -> PASS
 
@@ -34,10 +34,10 @@
 |---|---|---|
 | rollback_started_within | 10m | TBD |
 | rollback_completed_within | 30m | TBD |
-| phase2_gates_after_rollback | PASS | PASS (docs + e2e governance) |
+| phase2_gates_after_rollback | PASS | PASS (full final_gate + governance checks) |
 
-- Drill result: completed_with_followup
-- Follow-up actions: run one full drill with `ROLLBACK_MODULE=<module>` and `ROLLBACK_DRILL_RUN_FINAL_GATE=1` in a low-latency window.
+- Drill result: completed
+- Follow-up actions: none
 
 ## Sign-off
 
@@ -81,5 +81,25 @@
 | `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` | PASS |
 | `supabase functions deploy <module> --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` | SKIP |
 | `bash scripts/ci/final_gate.sh` | SKIP |
+| `bash tests/governance/test_docs_presence.sh` | PASS |
+| `bash tests/governance/test_e2e_governance.sh` | PASS |
+
+## Execution Record: phase2-rollback-drill-001-2026-02-27T23:39:40Z
+
+| field | value |
+|---|---|
+| drill_id | phase2-rollback-drill-001 |
+| started_at_utc | 2026-02-27T23:39:40Z |
+| dry_run | 0 |
+| rollback_module | orchestrator |
+
+### Command Results
+
+| command | result |
+|---|---|
+| `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` | PASS |
+| `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` | PASS |
+| `supabase functions deploy orchestrator --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` | PASS |
+| `bash scripts/ci/final_gate.sh` | PASS |
 | `bash tests/governance/test_docs_presence.sh` | PASS |
 | `bash tests/governance/test_e2e_governance.sh` | PASS |
