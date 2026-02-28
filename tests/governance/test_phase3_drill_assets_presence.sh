@@ -41,6 +41,10 @@ rollback_executed_at=$(awk -F'|' '/\| executed_at_utc \|/{gsub(/ /,"",$3); print
 
 rg -q 'DRY_RUN' "$incident_script" || fail "incident drill script missing DRY_RUN support"
 rg -q 'DRY_RUN' "$rollback_script" || fail "rollback drill script missing DRY_RUN support"
+rg -q '\| ended_at_utc \|' "$incident_script" || fail "incident drill script missing ended_at_utc evidence field"
+rg -q '\| elapsed_seconds \|' "$incident_script" || fail "incident drill script missing elapsed_seconds evidence field"
+rg -q '\| ended_at_utc \|' "$rollback_script" || fail "rollback drill script missing ended_at_utc evidence field"
+rg -q '\| elapsed_seconds \|' "$rollback_script" || fail "rollback drill script missing elapsed_seconds evidence field"
 rg -q 'tests/governance/test_docs_presence.sh' "$incident_script" || fail "incident drill missing docs gate check"
 rg -q 'tests/governance/test_e2e_governance.sh' "$incident_script" || fail "incident drill missing e2e governance check"
 rg -q 'scripts/ci/final_gate.sh' "$rollback_script" || fail "rollback drill missing final gate check"

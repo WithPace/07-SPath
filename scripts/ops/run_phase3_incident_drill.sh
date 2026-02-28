@@ -5,6 +5,7 @@ DRY_RUN="${DRY_RUN:-1}"
 LOG_FILE="${LOG_FILE:-docs/governance/PHASE-3-INCIDENT-DRILL-LOG.md}"
 DRILL_ID="${DRILL_ID:-phase3-incident-drill-001}"
 STARTED_AT_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+STARTED_AT_EPOCH="$(date -u +%s)"
 
 run_cmd() {
   local cmd="$1"
@@ -40,6 +41,13 @@ for cmd in "${commands[@]}"; do
   fi
 done
 
+ENDED_AT_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+ENDED_AT_EPOCH="$(date -u +%s)"
+ELAPSED_SECONDS=$((ENDED_AT_EPOCH - STARTED_AT_EPOCH))
+if [ "$ELAPSED_SECONDS" -lt 0 ]; then
+  ELAPSED_SECONDS=0
+fi
+
 {
   echo ""
   echo "## Execution Record: ${DRILL_ID}-${STARTED_AT_UTC}"
@@ -48,6 +56,8 @@ done
   echo "|---|---|"
   echo "| drill_id | ${DRILL_ID} |"
   echo "| started_at_utc | ${STARTED_AT_UTC} |"
+  echo "| ended_at_utc | ${ENDED_AT_UTC} |"
+  echo "| elapsed_seconds | ${ELAPSED_SECONDS} |"
   echo "| dry_run | ${DRY_RUN} |"
   echo ""
   echo "### Command Results"

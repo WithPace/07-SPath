@@ -41,6 +41,10 @@ rg -q 'scripts/ci/final_gate.sh' "$drill_script" \
   || fail "phase2 rollback drill missing final gate command"
 rg -q 'ROLLBACK_DRILL_RUN_FINAL_GATE' "$drill_script" \
   || fail "phase2 rollback drill missing final gate mode switch"
+rg -q '\| ended_at_utc \|' "$drill_script" \
+  || fail "phase2 rollback drill missing ended_at_utc evidence field"
+rg -q '\| elapsed_seconds \|' "$drill_script" \
+  || fail "phase2 rollback drill missing elapsed_seconds evidence field"
 rg -q 'tests/governance/test_docs_presence.sh' "$drill_script" \
   || fail "phase2 rollback drill missing docs presence check"
 rg -q 'tests/governance/test_e2e_governance.sh' "$drill_script" \
