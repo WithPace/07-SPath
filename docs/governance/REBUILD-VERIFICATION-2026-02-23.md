@@ -532,6 +532,26 @@
    - `request_id=5b0580a3-b7b9-4c8f-bde7-38bf83f07cec`
    - `reason=WORKER_LIMIT`
 238. Latest verification timestamp (UTC): `2026-02-27T01:23:32Z`
+239. `bash tests/governance/test_phase2_release_artifacts.sh` -> PASS.
+240. `DRY_RUN=0 ROLLBACK_MODULE=orchestrator ROLLBACK_DRILL_RUN_FINAL_GATE=1 ROLLBACK_DRILL_FINAL_GATE_MAX_ATTEMPTS=1 bash scripts/ops/run_phase2_rollback_drill.sh` -> PASS.
+241. Phase 2 rollback drill execution record: `docs/governance/PHASE-2-ROLLBACK-DRILL-LOG.md` -> `phase2-rollback-drill-001-2026-02-27T23:39:40Z`.
+242. Phase 2 rollback drill weekly journey sample:
+   - `assessment_request_id=778f585f-107c-466e-b532-5fde7c801a47`
+   - `training_advice_request_id=ccf6f01f-af21-4c73-bfc8-233eb00a23ca`
+   - `training_request_id=80f36956-2cf8-4ef3-b59b-00bf0dbebc4e`
+   - `training_record_request_id=444388c4-498b-46ad-8c9a-7eef19e441a1`
+   - `dashboard_request_id=48f70d16-504c-4e0d-8253-8c83611775d5`
+243. Phase 2 rollback drill dashboard followup sample:
+   - `training_request_id=bd26bf35-9068-4762-b7da-97f7c401cd81`
+   - `training_record_request_id=a4b9d8af-dc41-4721-9ea1-48e97beef4ca`
+   - `dashboard_request_id=01efed98-8855-4fe9-80cb-52404e08f6d1`
+244. `bash tests/governance/test_phase3_drill_assets_presence.sh` -> PASS.
+245. `bash tests/governance/test_docs_presence.sh` -> PASS.
+246. `bash tests/governance/test_e2e_governance.sh` -> PASS.
+247. Phase 3 drill log metadata synced to executed evidence:
+   - `docs/governance/PHASE-3-INCIDENT-DRILL-LOG.md` executed_at set to `2026-02-27T01:43:31Z`
+   - `docs/governance/PHASE-3-ROLLBACK-DRILL-LOG.md` executed_at set to `2026-02-27T12:09:48Z`
+248. Latest verification timestamp (UTC): `2026-02-27T23:39:40Z`
 
 ## Assertions Confirmed
 
