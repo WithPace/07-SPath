@@ -33,8 +33,8 @@
 
 | metric | target | observed |
 |---|---|---|
-| incident_acknowledged_within | 10m | TBD |
-| mitigation_started_within | 20m | TBD |
+| incident_acknowledged_within | 10m | 0s (PASS, drill simulation) |
+| mitigation_started_within | 20m | 0s (PASS, drill simulation) |
 | post-checks_passed | PASS | PASS |
 
 - Drill result: completed

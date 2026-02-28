@@ -103,3 +103,25 @@
 | `bash scripts/ci/final_gate.sh` | PASS |
 | `bash tests/governance/test_docs_presence.sh` | PASS |
 | `bash tests/governance/test_e2e_governance.sh` | PASS |
+
+## Execution Record: phase2-rollback-drill-001-2026-02-28T00:23:52Z
+
+| field | value |
+|---|---|
+| drill_id | phase2-rollback-drill-001 |
+| started_at_utc | 2026-02-28T00:23:52Z |
+| ended_at_utc | 2026-02-28T00:27:25Z |
+| elapsed_seconds | 213 |
+| dry_run | 0 |
+| rollback_module | orchestrator |
+
+### Command Results
+
+| command | result |
+|---|---|
+| `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` | PASS |
+| `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` | PASS |
+| `supabase functions deploy orchestrator --project-ref innaguwdmdfugrbcoxng --use-api --no-verify-jwt` | PASS |
+| `bash scripts/ci/final_gate.sh` | SKIP |
+| `bash tests/governance/test_docs_presence.sh` | PASS |
+| `bash tests/governance/test_e2e_governance.sh` | PASS |
