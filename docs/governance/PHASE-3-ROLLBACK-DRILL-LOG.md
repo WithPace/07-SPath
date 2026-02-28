@@ -6,7 +6,7 @@
 |---|---|
 | phase | Phase 3 |
 | drill_id | phase3-rollback-drill-001 |
-| executed_at_utc | TBD |
+| executed_at_utc | 2026-02-27T12:09:48Z |
 | owner | engineering |
 | environment | linked supabase project |
 | drill_scope | canary rollback + gate recovery |
@@ -22,11 +22,11 @@
 
 | command | result | note |
 |---|---|---|
-| `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` | TBD | |
-| `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` | TBD | |
-| `bash scripts/ci/final_gate.sh` | TBD | |
-| `bash tests/governance/test_docs_presence.sh` | TBD | |
-| `bash tests/governance/test_e2e_governance.sh` | TBD | |
+| `bash tests/e2e/test_phase2_parent_weekly_journey_live.sh` | PASS | |
+| `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` | PASS | |
+| `bash scripts/ci/final_gate.sh` | PASS | |
+| `bash tests/governance/test_docs_presence.sh` | PASS | |
+| `bash tests/governance/test_e2e_governance.sh` | PASS | |
 
 ## Outcome
 
@@ -34,9 +34,9 @@
 |---|---|---|
 | rollback_started_within | 10m | TBD |
 | rollback_completed_within | 30m | TBD |
-| post_rollback_gates | PASS | TBD |
+| post_rollback_gates | PASS | PASS |
 
-- Drill result: pending
+- Drill result: completed_with_retries
 - Follow-up actions: none
 
 ## Sign-off

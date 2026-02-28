@@ -6,7 +6,7 @@
 |---|---|
 | phase | Phase 3 |
 | drill_id | phase3-incident-drill-001 |
-| executed_at_utc | TBD |
+| executed_at_utc | 2026-02-27T01:43:31Z |
 | owner | engineering |
 | environment | linked supabase project |
 | drill_scope | incident response workflow |
@@ -22,12 +22,12 @@
 
 | command | result | note |
 |---|---|---|
-| `bash tests/governance/test_phase3_slo_runbook_presence.sh` | TBD | |
-| `bash tests/governance/test_phase3_security_ops_presence.sh` | TBD | |
-| `bash tests/governance/test_phase3_cost_guardrails_presence.sh` | TBD | |
-| `bash tests/governance/test_phase3_release_automation_presence.sh` | TBD | |
-| `bash tests/governance/test_docs_presence.sh` | TBD | |
-| `bash tests/governance/test_e2e_governance.sh` | TBD | |
+| `bash tests/governance/test_phase3_slo_runbook_presence.sh` | PASS | |
+| `bash tests/governance/test_phase3_security_ops_presence.sh` | PASS | |
+| `bash tests/governance/test_phase3_cost_guardrails_presence.sh` | PASS | |
+| `bash tests/governance/test_phase3_release_automation_presence.sh` | PASS | |
+| `bash tests/governance/test_docs_presence.sh` | PASS | |
+| `bash tests/governance/test_e2e_governance.sh` | PASS | |
 
 ## Outcome
 
@@ -35,9 +35,9 @@
 |---|---|---|
 | incident_acknowledged_within | 10m | TBD |
 | mitigation_started_within | 20m | TBD |
-| post-checks_passed | PASS | TBD |
+| post-checks_passed | PASS | PASS |
 
-- Drill result: pending
+- Drill result: completed
 - Follow-up actions: none
 
 ## Sign-off

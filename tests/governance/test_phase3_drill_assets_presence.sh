@@ -29,6 +29,16 @@ for f in "$incident_form" "$rollback_form"; do
   rg -q '^## Sign-off$' "$f" || fail "missing Sign-off in $f"
 done
 
+rg -q '^## Execution Record: phase3-incident-drill-001-' "$incident_form" \
+  || fail "missing phase3 incident execution record evidence"
+rg -q '^## Execution Record: phase3-rollback-drill-001-' "$rollback_form" \
+  || fail "missing phase3 rollback execution record evidence"
+
+incident_executed_at=$(awk -F'|' '/\| executed_at_utc \|/{gsub(/ /,"",$3); print $3; exit}' "$incident_form")
+rollback_executed_at=$(awk -F'|' '/\| executed_at_utc \|/{gsub(/ /,"",$3); print $3; exit}' "$rollback_form")
+[ "${incident_executed_at:-}" != "TBD" ] || fail "incident drill executed_at_utc must not be TBD"
+[ "${rollback_executed_at:-}" != "TBD" ] || fail "rollback drill executed_at_utc must not be TBD"
+
 rg -q 'DRY_RUN' "$incident_script" || fail "incident drill script missing DRY_RUN support"
 rg -q 'DRY_RUN' "$rollback_script" || fail "rollback drill script missing DRY_RUN support"
 rg -q 'tests/governance/test_docs_presence.sh' "$incident_script" || fail "incident drill missing docs gate check"
