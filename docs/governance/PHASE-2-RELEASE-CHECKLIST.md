@@ -7,7 +7,7 @@
 | phase | Phase 2 (Business Capability Delivery) |
 | environment | Supabase linked project (`innaguwdmdfugrbcoxng`) |
 | release_owner | engineering |
-| planned_window_utc | 2026-02-27T23:39:40Z (verification window) |
+| planned_window_utc | 2026-02-28T15:45:25Z (verification window) |
 | status | ready_for_signoff |
 
 ## Entry Criteria
