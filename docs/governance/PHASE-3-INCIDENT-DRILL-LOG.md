@@ -6,7 +6,7 @@
 |---|---|
 | phase | Phase 3 |
 | drill_id | phase3-incident-drill-001 |
-| executed_at_utc | 2026-02-27T01:43:31Z |
+| executed_at_utc | 2026-02-28T00:09:04Z |
 | owner | engineering |
 | environment | linked supabase project |
 | drill_scope | incident response workflow |
@@ -54,6 +54,27 @@
 |---|---|
 | drill_id | phase3-incident-drill-001 |
 | started_at_utc | 2026-02-27T01:43:31Z |
+| dry_run | 0 |
+
+### Command Results
+
+| command | result |
+|---|---|
+| `bash tests/governance/test_phase3_slo_runbook_presence.sh` | PASS |
+| `bash tests/governance/test_phase3_security_ops_presence.sh` | PASS |
+| `bash tests/governance/test_phase3_cost_guardrails_presence.sh` | PASS |
+| `bash tests/governance/test_phase3_release_automation_presence.sh` | PASS |
+| `bash tests/governance/test_docs_presence.sh` | PASS |
+| `bash tests/governance/test_e2e_governance.sh` | PASS |
+
+## Execution Record: phase3-incident-drill-001-2026-02-28T00:09:04Z
+
+| field | value |
+|---|---|
+| drill_id | phase3-incident-drill-001 |
+| started_at_utc | 2026-02-28T00:09:04Z |
+| ended_at_utc | 2026-02-28T00:09:04Z |
+| elapsed_seconds | 0 |
 | dry_run | 0 |
 
 ### Command Results
