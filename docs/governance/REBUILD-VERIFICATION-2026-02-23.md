@@ -946,3 +946,21 @@
   - `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
   - `bash tests/governance/test_e2e_governance.sh` -> PASS.
 - Latest verification timestamp (UTC): `2026-03-01T14:34:32Z`
+
+## 2026-03-01 CI Governance Consolidation Final Gate Evidence
+
+- Ran full gate after CI governance consolidation commits (`be1bec5`, `845e41b`, `481bfbd`):
+  - `bash scripts/ci/final_gate.sh` -> PASS (exit code 0).
+- CI gate segment confirmation from final-gate run:
+  - `tests/ci/test_deploy_release_scripts_presence.sh` -> PASS
+  - `tests/ci/test_final_gate_script.sh` -> PASS
+  - `tests/ci/test_supabase_cli_check_script.sh` -> PASS
+  - `tests/ci/test_supabase_cli_version_pinned.sh` -> PASS
+  - `tests/ci/test_workflow_presence.sh` -> PASS
+- Final-gate weekly journey smoke sample:
+  - `assessment_request_id=bab4a31a-ec84-4841-bf7a-7ffca0786bbc`
+  - `training_advice_request_id=4ae97f46-bff0-4fb1-aa5a-c99f30b9ccb8`
+  - `training_request_id=feb78d11-7f51-413c-b8c3-9e3e3449eee3`
+  - `training_record_request_id=cc6af49c-c084-449b-8775-47ca5444371e`
+  - `dashboard_request_id=f66dfa10-bef1-4563-84e0-698020b39f16`
+- Latest verification timestamp (UTC): `2026-03-01T14:44:29Z`
