@@ -30,6 +30,7 @@ Expected:
 
 ```bash
 DRY_RUN=1 bash scripts/governance/check_phase2_signoff_gate.sh
+DRY_RUN=1 bash scripts/governance/check_phase3_drill_signoff_gate.sh
 DRY_RUN=1 bash scripts/ci/deploy_functions.sh
 DRY_RUN=1 bash scripts/ci/release_go_live.sh
 ```
@@ -60,10 +61,12 @@ bash scripts/ci/release_go_live.sh
 ```
 
 This executes:
-1. `bash scripts/ci/deploy_functions.sh`
-2. `bash scripts/ci/final_gate.sh`
-3. `bash tests/governance/test_docs_presence.sh`
-4. `bash tests/governance/test_e2e_governance.sh`
+1. `bash scripts/governance/check_phase2_signoff_gate.sh`
+2. `bash scripts/governance/check_phase3_drill_signoff_gate.sh`
+3. `bash scripts/ci/deploy_functions.sh`
+4. `bash scripts/ci/final_gate.sh`
+5. `bash tests/governance/test_docs_presence.sh`
+6. `bash tests/governance/test_e2e_governance.sh`
 
 To hard-block release unless all sign-offs are approved:
 

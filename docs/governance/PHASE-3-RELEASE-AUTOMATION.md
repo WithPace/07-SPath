@@ -35,14 +35,15 @@
 
 1. `DRY_RUN=1 bash scripts/ci/deploy_functions.sh`
 2. `DRY_RUN=1 bash scripts/governance/check_phase2_signoff_gate.sh`
-3. `DRY_RUN=1 bash scripts/ci/release_go_live.sh`
-4. `bash tests/governance/test_phase3_slo_runbook_presence.sh`
-5. `bash tests/governance/test_phase3_security_ops_presence.sh`
-6. `bash tests/governance/test_phase3_cost_guardrails_presence.sh`
-7. `bash tests/governance/test_phase3_release_automation_presence.sh`
-8. `bash scripts/ci/final_gate.sh`
-9. `bash tests/governance/test_docs_presence.sh`
-10. `bash tests/governance/test_e2e_governance.sh`
+3. `DRY_RUN=1 bash scripts/governance/check_phase3_drill_signoff_gate.sh`
+4. `DRY_RUN=1 bash scripts/ci/release_go_live.sh`
+5. `bash tests/governance/test_phase3_slo_runbook_presence.sh`
+6. `bash tests/governance/test_phase3_security_ops_presence.sh`
+7. `bash tests/governance/test_phase3_cost_guardrails_presence.sh`
+8. `bash tests/governance/test_phase3_release_automation_presence.sh`
+9. `bash scripts/ci/final_gate.sh`
+10. `bash tests/governance/test_docs_presence.sh`
+11. `bash tests/governance/test_e2e_governance.sh`
 
 Any failure in this sequence blocks release promotion.
 

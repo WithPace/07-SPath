@@ -14,5 +14,7 @@ rg -q '^## Rollback Trigger Matrix$' "$f" || fail "missing rollback trigger matr
 rg -q '^## Approval Gates$' "$f" || fail "missing approval gates section"
 rg -q '^## Automated Verification Sequence$' "$f" || fail "missing automated verification sequence section"
 rg -q '^## Release Evidence Log$' "$f" || fail "missing release evidence log section"
+rg -q 'scripts/governance/check_phase3_drill_signoff_gate.sh' "$f" \
+  || fail "phase3 release automation must include phase3 drill signoff gate command"
 
 echo "phase3 release automation doc present"
