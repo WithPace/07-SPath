@@ -655,3 +655,22 @@
   - `request_id=c5de9fe0-0ad2-4bb0-9bbc-03038d2fa8e0`
   - `reason=WORKER_LIMIT`
 - Latest verification timestamp (UTC): `2026-03-01T03:25:18Z`
+
+## 2026-03-01 Pending Sign-off Controls Evidence
+
+- Added governance gate: `tests/governance/test_phase2_pending_signoff_controls.sh`.
+- `bash tests/governance/test_phase2_pending_signoff_controls.sh` -> PASS.
+- `bash tests/governance/test_phase2_signoff_and_release_record.sh` -> PASS.
+- `bash tests/governance/test_phase2_release_artifacts.sh` -> PASS.
+- `bash scripts/ci/final_gate.sh` -> PASS (includes new phase2 pending sign-off control gate).
+- Phase2 follow-up smoke sample:
+  - `training_request_id=45b146fd-1007-4316-8bb1-b4c38f8fc38a`
+  - `training_record_request_id=3042e783-b181-4a4e-91aa-34cafed55b1b`
+  - `dashboard_request_id=6b87d644-9344-4e1c-b15e-4e05c5c5dffe`
+- Phase2 weekly journey smoke sample:
+  - `assessment_request_id=5f0433a0-3b1a-4738-bcd0-777f4c9baa98`
+  - `training_advice_request_id=369cd11e-4c85-4597-8808-8757f3b8a4ba`
+  - `training_request_id=bd5c3743-9777-46a8-b555-3e8a32e5cb1a`
+  - `training_record_request_id=111b7d61-a32d-4b4f-b296-59be3ed4af45`
+  - `dashboard_request_id=703690b6-3fd0-43bf-9ff4-d99f7a1e6223`
+- Latest verification timestamp (UTC): `2026-03-01T06:31:28Z`

@@ -26,6 +26,14 @@ Live smoke sample request IDs from this release run:
 - `training_record_request_id=70fe9d52-8971-42b3-8f72-dbac46d1ef5d`
 - `dashboard_request_id=e2706b4e-a186-40e4-9d0b-f875c0efb3b4`
 
+## Sign-off Snapshot
+
+| role | approver | status |
+|---|---|---|
+| engineering | engineering-oncall | approved |
+| product | product-owner | pending |
+| operations | operations-oncall | pending |
+
 ## Rollback References
 
 - Phase 2 rollback drill:

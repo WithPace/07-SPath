@@ -54,3 +54,10 @@
 | engineering | engineering-oncall | 2026-03-01T03:25:18Z | approved |
 | product | TBD | TBD | pending |
 | operations | TBD | TBD | pending |
+
+## Pending Sign-off Controls
+
+| role | blocker | target_approval_utc | escalation_after_utc |
+|---|---|---|---|
+| product | Product release window confirmation pending | 2026-03-02T02:00:00Z | 2026-03-02T08:00:00Z |
+| operations | Operations deployment shift handover pending | 2026-03-02T02:30:00Z | 2026-03-02T08:30:00Z |
