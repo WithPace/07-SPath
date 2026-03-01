@@ -728,3 +728,18 @@
   - `docs/governance/PHASE-2-RELEASE-CHECKLIST.md` status -> `fully_approved`.
   - `docs/governance/PHASE-2-RELEASE-RECORD.md` sign-off snapshot -> engineering/product/operations all `approved`.
 - Latest verification timestamp (UTC): `2026-03-01T08:05:50Z`
+
+## 2026-03-01 Sign-off Governance Hardening Evidence
+
+- Fixed false-positive regex issue in `tests/governance/test_phase2_pending_signoff_controls.sh` by escaping leading `|` and aligning checks with `fully_approved` state.
+- Hardened concurrent sign-off updates in `scripts/governance/approve_phase2_signoff.sh`:
+  - Added file lock `.git/approve_phase2_signoff.lock`.
+  - Added exclusive lock guard via `flock -x`.
+- Updated gate `tests/governance/test_phase2_signoff_approval_script.sh` to require lock usage.
+- Verification outputs:
+  - `bash tests/governance/test_phase2_signoff_approval_script.sh` -> PASS.
+  - `bash tests/governance/test_phase2_pending_signoff_controls.sh` -> PASS.
+  - `REQUIRE_FULL_SIGNOFF=1 bash scripts/governance/check_phase2_signoff_gate.sh` -> PASS.
+  - `bash tests/governance/test_docs_presence.sh` -> PASS.
+  - `bash tests/governance/test_e2e_governance.sh` -> PASS.
+- Latest verification timestamp (UTC): `2026-03-01T08:39:59Z`

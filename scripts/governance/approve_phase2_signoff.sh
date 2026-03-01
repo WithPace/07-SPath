@@ -8,6 +8,7 @@ DRY_RUN="${DRY_RUN:-0}"
 
 CHECKLIST_FILE="docs/governance/PHASE-2-RELEASE-CHECKLIST.md"
 RECORD_FILE="docs/governance/PHASE-2-RELEASE-RECORD.md"
+LOCK_FILE=".git/approve_phase2_signoff.lock"
 
 fail() {
   echo "$1" >&2
@@ -114,6 +115,14 @@ update_record_snapshot() {
 }
 
 validate_inputs
+
+if ! command -v flock >/dev/null 2>&1; then
+  fail "flock command is required"
+fi
+
+mkdir -p "$(dirname "$LOCK_FILE")"
+exec 9>"$LOCK_FILE"
+flock -x 9
 
 tmp_checklist_1="$(mktemp)"
 tmp_checklist_2="$(mktemp)"
