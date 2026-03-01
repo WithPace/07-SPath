@@ -43,8 +43,8 @@
 
 | role | approver | date_utc | status |
 |---|---|---|---|
-| engineering | TBD | TBD | pending |
-| operations | TBD | TBD | pending |
+| engineering | 叶明君 | 2026-03-01T09:08:10Z | approved |
+| operations | 叶明君 | 2026-03-01T09:08:20Z | approved |
 
 ## Execution Record: phase2-rollback-drill-001-2026-02-27T14:13:52Z
 

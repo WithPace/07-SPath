@@ -770,3 +770,28 @@
   - `training_record_request_id=457d8a48-2907-4b41-b9fb-4a9306a74453`
   - `dashboard_request_id=d71f3e04-ce4c-41eb-9dfb-9ab12e610e73`
 - Latest verification timestamp (UTC): `2026-03-01T09:02:51Z`
+
+## 2026-03-01 Phase2 Rollback Drill Sign-off Completion Evidence
+
+- Added phase2 rollback drill sign-off automation script:
+  - `scripts/governance/approve_phase2_rollback_drill_signoff.sh`
+- Added phase2 rollback drill governance gates:
+  - `tests/governance/test_phase2_rollback_drill_signoff_script.sh`
+  - `tests/governance/test_phase2_rollback_drill_signoff_completion.sh`
+- Signed off phase2 rollback drill log with approver `叶明君`:
+  - `engineering` -> approved (`2026-03-01T09:08:10Z`)
+  - `operations` -> approved (`2026-03-01T09:08:20Z`)
+- Verification outputs:
+  - `bash tests/governance/test_phase2_rollback_drill_signoff_script.sh` -> PASS.
+  - `bash tests/governance/test_phase2_rollback_drill_signoff_completion.sh` -> PASS.
+  - `bash tests/governance/test_phase2_release_artifacts.sh` -> PASS.
+  - `bash tests/governance/test_docs_presence.sh` -> PASS.
+  - `bash tests/governance/test_e2e_governance.sh` -> PASS.
+  - `bash scripts/ci/final_gate.sh` -> PASS.
+- Final-gate Phase2 weekly journey smoke sample:
+  - `assessment_request_id=0a8c6ebd-0805-429d-a806-33710ba8be10`
+  - `training_advice_request_id=faa8162b-de34-4def-b6e7-f66d05428785`
+  - `training_request_id=a0ebb076-6852-4025-aa6c-b7761ca2fd7b`
+  - `training_record_request_id=e2c56c20-360c-4fab-88c0-af2db0062712`
+  - `dashboard_request_id=556be1d8-25df-4da0-8565-9c620674e021`
+- Latest verification timestamp (UTC): `2026-03-01T09:18:45Z`
