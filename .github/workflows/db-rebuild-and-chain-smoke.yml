@@ -39,6 +39,9 @@ jobs:
         with:
           version: 2.75.0
 
+      - name: Verify Supabase CLI version governance
+        run: ENFORCE_SUPABASE_CLI_VERSION=1 bash scripts/ci/check_supabase_cli_version.sh
+
       - name: Validate required secrets
         run: |
           set -euo pipefail

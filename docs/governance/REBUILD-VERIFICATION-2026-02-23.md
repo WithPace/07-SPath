@@ -919,3 +919,16 @@
   - `bash tests/governance/test_e2e_governance.sh` -> PASS.
   - `DRY_RUN=1 bash scripts/ci/release_go_live.sh` -> PASS.
 - Latest verification timestamp (UTC): `2026-03-01T14:31:29Z`
+
+## 2026-03-01 CI CLI Version Enforcement Evidence
+
+- Updated CI workflow to enforce CLI version governance before execution:
+  - `.github/workflows/db-rebuild-and-chain-smoke.yml`
+  - new step: `ENFORCE_SUPABASE_CLI_VERSION=1 bash scripts/ci/check_supabase_cli_version.sh`
+- Extended workflow contract gate:
+  - `tests/ci/test_workflow_presence.sh` now requires both `check_supabase_cli_version.sh` and `ENFORCE_SUPABASE_CLI_VERSION=1` patterns.
+- Verification outputs:
+  - `bash tests/ci/test_workflow_presence.sh` -> PASS.
+  - `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
+  - `bash tests/governance/test_e2e_governance.sh` -> PASS.
+- Latest verification timestamp (UTC): `2026-03-01T14:32:51Z`

@@ -17,6 +17,8 @@ grep -q "supabase functions deploy training " .github/workflows/db-rebuild-and-c
 grep -q "supabase functions deploy training-advice" .github/workflows/db-rebuild-and-chain-smoke.yml
 grep -q "supabase functions deploy training-record" .github/workflows/db-rebuild-and-chain-smoke.yml
 grep -q "supabase functions deploy dashboard" .github/workflows/db-rebuild-and-chain-smoke.yml
+grep -q "check_supabase_cli_version.sh" .github/workflows/db-rebuild-and-chain-smoke.yml
+grep -q "ENFORCE_SUPABASE_CLI_VERSION=1" .github/workflows/db-rebuild-and-chain-smoke.yml
 grep -q "ORCH_MAX_ATTEMPTS" .github/workflows/db-rebuild-and-chain-smoke.yml
 grep -q "ORCH_RETRY_BASE_DELAY_SECONDS" .github/workflows/db-rebuild-and-chain-smoke.yml
 echo "db and chain ci gate present"
