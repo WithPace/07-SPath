@@ -874,3 +874,22 @@
     - `training_record_request_id=67fc8d23-1da7-4b4f-99b6-42e50d725bc7`
     - `dashboard_request_id=8d709c08-1f5e-4154-9461-ce5608db424b`
 - Latest verification timestamp (UTC): `2026-03-01T13:59:43Z`
+
+## 2026-03-01 Strict Go-live Execution Evidence
+
+- Executed real release flow with strict sign-off defaults:
+  - `bash scripts/ci/release_go_live.sh` -> PASS.
+- Release run milestones:
+  - phase2 sign-off gate pass (`require_full_signoff=1`).
+  - phase3 drill sign-off gate pass (`require_phase3_drill_signoff=1`).
+  - deployed modules: `orchestrator`, `chat-casual`, `assessment`, `training`, `training-advice`, `training-record`, `dashboard`.
+  - embedded post-deploy verification gates all PASS (`final_gate`, `test_docs_presence`, `test_e2e_governance`).
+- Release-run weekly journey smoke sample:
+  - `assessment_request_id=fab7af8e-8792-4a3f-8800-d2162dfa4e3c`
+  - `training_advice_request_id=1aa86e6a-aa5d-4209-9d46-f8baa8d3a886`
+  - `training_request_id=1df9485e-2ac0-478e-a029-9abffccd11f9`
+  - `training_record_request_id=405a3855-220f-482a-b7f6-7fdef58948fb`
+  - `dashboard_request_id=c90bf8e8-2a29-47a5-acf0-ac213e8b7b5c`
+- Updated release record:
+  - `docs/governance/PHASE-2-RELEASE-RECORD.md` (`commit_sha=a8adaa804883`, `executed_at_utc=2026-03-01T14:24:16Z`).
+- Latest verification timestamp (UTC): `2026-03-01T14:24:16Z`

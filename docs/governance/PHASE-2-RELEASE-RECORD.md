@@ -6,25 +6,25 @@
 |---|---|
 | phase | Phase 2 (Business Capability Delivery) |
 | project_ref | innaguwdmdfugrbcoxng |
-| commit_sha | f74f20e7f124 |
-| executed_at_utc | 2026-03-01T08:05:50Z |
+| commit_sha | a8adaa804883 |
+| executed_at_utc | 2026-03-01T14:24:16Z |
 | release_operator | 叶明君 |
 
 ## Verification Evidence
 
 | command | result |
 |---|---|
-| `REQUIRE_FULL_SIGNOFF=1 bash scripts/ci/release_go_live.sh` | PASS |
+| `bash scripts/ci/release_go_live.sh` | PASS |
 | `bash scripts/ci/final_gate.sh` | PASS |
 | `bash tests/governance/test_docs_presence.sh` | PASS |
 | `bash tests/governance/test_e2e_governance.sh` | PASS |
 
 Live smoke sample request IDs from this release run:
-- `assessment_request_id=a115e275-2a20-4a92-90b6-f96926a455d7`
-- `training_advice_request_id=7070cf15-c8c5-448c-ab68-07e8cda0e223`
-- `training_request_id=50a33b31-15c3-4312-b986-6c22318639f0`
-- `training_record_request_id=cec316ac-d594-4903-b572-adeb1344d68a`
-- `dashboard_request_id=5e033164-cf4e-4f03-8c73-da8d643d3d0d`
+- `assessment_request_id=fab7af8e-8792-4a3f-8800-d2162dfa4e3c`
+- `training_advice_request_id=1aa86e6a-aa5d-4209-9d46-f8baa8d3a886`
+- `training_request_id=1df9485e-2ac0-478e-a029-9abffccd11f9`
+- `training_record_request_id=405a3855-220f-482a-b7f6-7fdef58948fb`
+- `dashboard_request_id=c90bf8e8-2a29-47a5-acf0-ac213e8b7b5c`
 
 ## Sign-off Snapshot
 
