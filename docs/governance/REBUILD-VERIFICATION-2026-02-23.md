@@ -964,3 +964,15 @@
   - `training_record_request_id=cc6af49c-c084-449b-8775-47ca5444371e`
   - `dashboard_request_id=f66dfa10-bef1-4563-84e0-698020b39f16`
 - Latest verification timestamp (UTC): `2026-03-01T14:44:29Z`
+
+## 2026-03-01 Preflight DB Password Contract Evidence
+
+- Added DB preflight contract gate:
+  - `tests/db/test_00_preflight_contract.sh`
+- Hardened required key loop in `scripts/db/preflight.sh`:
+  - now enforces `SUPABASE_DB_PASSWORD` alongside existing required keys.
+- Verification outputs:
+  - `bash tests/db/test_00_preflight_contract.sh` -> PASS.
+  - `bash tests/db/test_00_preflight.sh` -> PASS.
+  - `bash tests/governance/test_e2e_governance.sh` -> PASS.
+- Latest verification timestamp (UTC): `2026-03-01T14:46:25Z`
