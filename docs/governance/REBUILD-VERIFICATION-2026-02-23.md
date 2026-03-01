@@ -795,3 +795,27 @@
   - `training_record_request_id=e2c56c20-360c-4fab-88c0-af2db0062712`
   - `dashboard_request_id=556be1d8-25df-4da0-8565-9c620674e021`
 - Latest verification timestamp (UTC): `2026-03-01T09:18:45Z`
+
+## 2026-03-01 Phase3 Drill Sign-off Gate Integration Evidence
+
+- Added phase3 drill sign-off gate script:
+  - `scripts/governance/check_phase3_drill_signoff_gate.sh`
+- Added governance gate coverage:
+  - `tests/governance/test_phase3_drill_signoff_gate_script.sh`
+- Updated release go-live sequence:
+  - `scripts/ci/release_go_live.sh` now runs `bash scripts/governance/check_phase3_drill_signoff_gate.sh` before deploy.
+- Updated CI release script contract:
+  - `tests/ci/test_deploy_release_scripts_presence.sh` now requires phase3 drill signoff gate step.
+- Verification outputs:
+  - `bash tests/ci/test_deploy_release_scripts_presence.sh` -> PASS.
+  - `bash tests/governance/test_phase3_drill_signoff_gate_script.sh` -> PASS.
+  - `bash tests/governance/test_docs_presence.sh` -> PASS.
+  - `bash tests/governance/test_e2e_governance.sh` -> PASS.
+  - `bash scripts/ci/final_gate.sh` -> PASS (includes new phase3 drill signoff gate script test).
+- Final-gate Phase2 weekly journey smoke sample:
+  - `assessment_request_id=d1bc4a0c-f3cc-4155-9dbc-548bf95aa1aa`
+  - `training_advice_request_id=4ee2adb4-2a87-4444-95da-bcdb0cad327f`
+  - `training_request_id=25406a48-cd23-4434-abce-511781f2c7f5`
+  - `training_record_request_id=26f2e8a7-c0e7-41f4-8a0e-8f895bbe2c76`
+  - `dashboard_request_id=1aca935c-5e17-451e-a8a7-05e2872dcbbb`
+- Latest verification timestamp (UTC): `2026-03-01T12:18:58Z`
