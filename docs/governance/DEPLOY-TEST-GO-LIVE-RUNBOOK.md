@@ -29,6 +29,7 @@ Expected:
 ## Dry Run (No External Changes)
 
 ```bash
+DRY_RUN=1 bash scripts/governance/check_phase2_signoff_gate.sh
 DRY_RUN=1 bash scripts/ci/deploy_functions.sh
 DRY_RUN=1 bash scripts/ci/release_go_live.sh
 ```
@@ -63,6 +64,13 @@ This executes:
 2. `bash scripts/ci/final_gate.sh`
 3. `bash tests/governance/test_docs_presence.sh`
 4. `bash tests/governance/test_e2e_governance.sh`
+
+To hard-block release unless all sign-offs are approved:
+
+```bash
+REQUIRE_FULL_SIGNOFF=1 bash scripts/governance/check_phase2_signoff_gate.sh
+REQUIRE_FULL_SIGNOFF=1 bash scripts/ci/release_go_live.sh
+```
 
 ## Rollback and Incident Drills
 

@@ -689,3 +689,23 @@
   - `training_record_request_id=a2321f35-ab6d-448c-a934-ccecf37fed24`
   - `dashboard_request_id=d9c1210b-c38f-4e43-89b5-f52cb3b10558`
 - Latest verification timestamp (UTC): `2026-03-01T06:49:09Z`
+
+## 2026-03-01 Sign-off Gate Execution Chain Evidence
+
+- Added governance gate script: `scripts/governance/check_phase2_signoff_gate.sh`.
+- Added gate test: `tests/governance/test_phase2_signoff_gate_script.sh`.
+- Updated release entry script to run sign-off gate first:
+  - `scripts/ci/release_go_live.sh` now includes `bash scripts/governance/check_phase2_signoff_gate.sh`.
+- Verification outputs:
+  - `bash tests/governance/test_phase2_signoff_gate_script.sh` -> PASS.
+  - `bash scripts/governance/check_phase2_signoff_gate.sh` -> PASS (`require_full_signoff=0`).
+  - `REQUIRE_FULL_SIGNOFF=1 bash scripts/governance/check_phase2_signoff_gate.sh` -> FAIL (expected: `role=product is pending while REQUIRE_FULL_SIGNOFF=1`).
+  - `DRY_RUN=1 bash scripts/ci/release_go_live.sh` -> PASS (includes sign-off gate step preview).
+  - `bash scripts/ci/final_gate.sh` -> PASS (includes new gate test).
+- Final-gate Phase 2 weekly journey smoke sample:
+  - `assessment_request_id=46ec6b44-395e-4c8f-be86-4065c171065b`
+  - `training_advice_request_id=05f50959-ccee-4737-8560-f02d64432098`
+  - `training_request_id=81ab2fa3-cc94-4ec6-a96a-42c06fe2b62b`
+  - `training_record_request_id=8bca064f-bc77-4201-852b-f76982b66bc4`
+  - `dashboard_request_id=ef44df63-28d6-4f97-9ffe-bb51e976a63a`
+- Latest verification timestamp (UTC): `2026-03-01T07:12:29Z`

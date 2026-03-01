@@ -15,6 +15,7 @@ run_cmd() {
 }
 
 echo "== go-live sequence start =="
+run_cmd "bash scripts/governance/check_phase2_signoff_gate.sh"
 run_cmd "bash scripts/ci/deploy_functions.sh"
 run_cmd "bash scripts/ci/final_gate.sh"
 run_cmd "bash tests/governance/test_docs_presence.sh"
