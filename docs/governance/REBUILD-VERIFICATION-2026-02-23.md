@@ -674,3 +674,18 @@
   - `training_record_request_id=111b7d61-a32d-4b4f-b296-59be3ed4af45`
   - `dashboard_request_id=703690b6-3fd0-43bf-9ff4-d99f7a1e6223`
 - Latest verification timestamp (UTC): `2026-03-01T06:31:28Z`
+
+## 2026-03-01 Sign-off Approval Script Evidence
+
+- Added governance utility script: `scripts/governance/approve_phase2_signoff.sh`.
+- Added gate: `tests/governance/test_phase2_signoff_approval_script.sh`.
+- `bash tests/governance/test_phase2_signoff_approval_script.sh` -> PASS.
+- `DRY_RUN=1 ROLE=product APPROVER=product-owner-v1 DATE_UTC=2026-03-01T06:40:00Z bash scripts/governance/approve_phase2_signoff.sh` -> PASS (diff preview mode).
+- `bash scripts/ci/final_gate.sh` -> PASS (includes new script gate).
+- Final-gate Phase 2 weekly journey smoke sample:
+  - `assessment_request_id=e377b6a4-897f-40e1-88c7-06ecdd2b8165`
+  - `training_advice_request_id=9e812fb7-a598-46af-967b-60398c546541`
+  - `training_request_id=7292282e-6097-45d4-a683-47b125c98c02`
+  - `training_record_request_id=a2321f35-ab6d-448c-a934-ccecf37fed24`
+  - `dashboard_request_id=d9c1210b-c38f-4e43-89b5-f52cb3b10558`
+- Latest verification timestamp (UTC): `2026-03-01T06:49:09Z`
