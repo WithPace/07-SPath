@@ -79,13 +79,7 @@ jobs:
       - name: Deploy current branch edge functions
         run: |
           set -euo pipefail
-          supabase functions deploy orchestrator --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
-          supabase functions deploy chat-casual --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
-          supabase functions deploy assessment --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
-          supabase functions deploy training --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
-          supabase functions deploy training-advice --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
-          supabase functions deploy training-record --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
-          supabase functions deploy dashboard --project-ref "${SUPABASE_PROJECT_REF}" --use-api --no-verify-jwt
+          bash scripts/ci/deploy_functions.sh
 
       - name: Live orchestrator chain smoke
         run: bash tests/e2e/test_orchestrator_chat_casual_live.sh

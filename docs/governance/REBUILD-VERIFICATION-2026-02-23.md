@@ -932,3 +932,17 @@
   - `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
   - `bash tests/governance/test_e2e_governance.sh` -> PASS.
 - Latest verification timestamp (UTC): `2026-03-01T14:32:51Z`
+
+## 2026-03-01 Workflow Deploy Script Reuse Evidence
+
+- Removed duplicated module deploy commands from workflow and reused shared deploy script:
+  - `.github/workflows/db-rebuild-and-chain-smoke.yml`
+  - deploy step now runs: `bash scripts/ci/deploy_functions.sh`
+- Updated workflow contract gate:
+  - `tests/ci/test_workflow_presence.sh` now requires `bash scripts/ci/deploy_functions.sh`.
+- Verification outputs:
+  - `bash tests/ci/test_workflow_presence.sh` -> PASS.
+  - `bash tests/ci/test_deploy_release_scripts_presence.sh` -> PASS.
+  - `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
+  - `bash tests/governance/test_e2e_governance.sh` -> PASS.
+- Latest verification timestamp (UTC): `2026-03-01T14:34:32Z`
