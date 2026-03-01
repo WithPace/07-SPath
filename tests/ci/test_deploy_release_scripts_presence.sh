@@ -25,6 +25,7 @@ rg -q 'supabase functions deploy dashboard' "$deploy_script" || fail "deploy scr
 rg -q 'DRY_RUN' "$deploy_script" || fail "deploy script missing DRY_RUN support"
 
 rg -q 'scripts/ci/deploy_functions.sh' "$release_script" || fail "release script missing deploy step"
+rg -q 'REQUIRE_FULL_SIGNOFF' "$release_script" || fail "release script missing REQUIRE_FULL_SIGNOFF handling"
 rg -q 'scripts/governance/check_phase3_drill_signoff_gate.sh' "$release_script" || fail "release script missing phase3 drill signoff gate step"
 rg -q 'bash scripts/ci/final_gate.sh' "$release_script" || fail "release script missing final gate step"
 rg -q 'bash tests/governance/test_docs_presence.sh' "$release_script" || fail "release script missing docs gate step"

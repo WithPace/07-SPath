@@ -18,6 +18,8 @@ rg -q 'PHASE-2-RELEASE-CHECKLIST.md' "$gate_script" \
 rg -q 'approved' "$gate_script" || fail "signoff gate script must validate approved statuses"
 
 test -f "$release_script" || fail "missing release go-live script"
+rg -F -q 'REQUIRE_FULL_SIGNOFF="${REQUIRE_FULL_SIGNOFF:-1}"' "$release_script" \
+  || fail "release script must default REQUIRE_FULL_SIGNOFF to 1"
 rg -q 'scripts/governance/check_phase2_signoff_gate.sh' "$release_script" \
   || fail "release script must run signoff gate script"
 

@@ -68,11 +68,14 @@ This executes:
 5. `bash tests/governance/test_docs_presence.sh`
 6. `bash tests/governance/test_e2e_governance.sh`
 
-To hard-block release unless all sign-offs are approved:
+`release_go_live.sh` defaults to strict sign-off gates:
+- `REQUIRE_FULL_SIGNOFF=1`
+- `REQUIRE_PHASE3_DRILL_SIGNOFF=1`
+
+For pre-release preview with pending sign-off, override explicitly:
 
 ```bash
-REQUIRE_FULL_SIGNOFF=1 bash scripts/governance/check_phase2_signoff_gate.sh
-REQUIRE_FULL_SIGNOFF=1 bash scripts/ci/release_go_live.sh
+REQUIRE_FULL_SIGNOFF=0 REQUIRE_PHASE3_DRILL_SIGNOFF=0 DRY_RUN=1 bash scripts/ci/release_go_live.sh
 ```
 
 ## Rollback and Incident Drills

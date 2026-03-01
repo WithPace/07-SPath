@@ -833,3 +833,24 @@
   - `bash tests/governance/test_phase3_release_automation_presence.sh` -> PASS.
   - `bash tests/governance/test_e2e_governance.sh` -> PASS.
 - Latest verification timestamp (UTC): `2026-03-01T12:20:38Z`
+
+## 2026-03-01 Strict Release Sign-off Default Evidence
+
+- Hardened release policy in `scripts/ci/release_go_live.sh`:
+  - default `REQUIRE_FULL_SIGNOFF=1`
+  - default `REQUIRE_PHASE3_DRILL_SIGNOFF=1`
+  - explicit env passthrough to both governance gate commands
+- Added/updated gate coverage:
+  - `tests/ci/test_deploy_release_scripts_presence.sh` now requires `REQUIRE_FULL_SIGNOFF` handling in release script.
+  - `tests/governance/test_phase2_signoff_gate_script.sh` now requires strict default declaration.
+- Synced governance docs with strict-default behavior:
+  - `docs/governance/DEPLOY-TEST-GO-LIVE-RUNBOOK.md`
+  - `docs/governance/PHASE-3-RELEASE-AUTOMATION.md`
+- Verification outputs:
+  - `DRY_RUN=1 bash scripts/ci/release_go_live.sh` -> PASS.
+  - `bash tests/ci/test_deploy_release_scripts_presence.sh` -> PASS.
+  - `bash tests/governance/test_phase2_signoff_gate_script.sh` -> PASS.
+  - `bash tests/governance/test_phase3_release_automation_presence.sh` -> PASS.
+  - `bash tests/governance/test_docs_presence.sh` -> PASS.
+  - `bash tests/governance/test_e2e_governance.sh` -> PASS.
+- Latest verification timestamp (UTC): `2026-03-01T12:22:38Z`

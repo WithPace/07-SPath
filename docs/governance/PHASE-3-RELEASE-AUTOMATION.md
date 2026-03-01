@@ -47,6 +47,11 @@
 
 Any failure in this sequence blocks release promotion.
 
+Release script policy:
+- `scripts/ci/release_go_live.sh` defaults `REQUIRE_FULL_SIGNOFF=1`.
+- `scripts/ci/release_go_live.sh` defaults `REQUIRE_PHASE3_DRILL_SIGNOFF=1`.
+- Non-strict preview runs must explicitly set both toggles to `0` and use `DRY_RUN=1`.
+
 ## Release Evidence Log
 
 For each release, record:
