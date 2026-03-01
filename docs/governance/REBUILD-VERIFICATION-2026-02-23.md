@@ -743,3 +743,30 @@
   - `bash tests/governance/test_docs_presence.sh` -> PASS.
   - `bash tests/governance/test_e2e_governance.sh` -> PASS.
 - Latest verification timestamp (UTC): `2026-03-01T08:39:59Z`
+
+## 2026-03-01 Phase3 Drill Sign-off Completion Evidence
+
+- Added phase3 drill sign-off automation script:
+  - `scripts/governance/approve_phase3_drill_signoff.sh`
+- Added phase3 drill governance gates:
+  - `tests/governance/test_phase3_drill_signoff_script.sh`
+  - `tests/governance/test_phase3_drill_signoff_completion.sh`
+- Signed off drill forms with approver `叶明君`:
+  - incident: `engineering`, `operations`, `product operations`
+  - rollback: `engineering`, `operations`, `release manager`
+- Updated lock strategy for sign-off scripts to support environments without `flock`:
+  - `scripts/governance/approve_phase2_signoff.sh`
+  - `scripts/governance/approve_phase3_drill_signoff.sh`
+  - fallback lock directory: `<lock-file>.d`
+- Verification outputs:
+  - `bash tests/governance/test_phase3_drill_signoff_script.sh` -> PASS.
+  - `bash tests/governance/test_phase3_drill_signoff_completion.sh` -> PASS.
+  - `bash tests/governance/test_phase3_drill_assets_presence.sh` -> PASS.
+  - `bash scripts/ci/final_gate.sh` -> PASS (includes both new phase3 drill sign-off gates).
+- Final-gate Phase2 weekly journey smoke sample:
+  - `assessment_request_id=299e21ee-0ee9-4fae-b555-3e3bad9b6967`
+  - `training_advice_request_id=46bd94e5-7661-4310-963f-8bba20e17e05`
+  - `training_request_id=ff10a579-7fda-40a5-b7dc-cf02d865ca3d`
+  - `training_record_request_id=457d8a48-2907-4b41-b9fb-4a9306a74453`
+  - `dashboard_request_id=d71f3e04-ce4c-41eb-9dfb-9ab12e610e73`
+- Latest verification timestamp (UTC): `2026-03-01T09:02:51Z`

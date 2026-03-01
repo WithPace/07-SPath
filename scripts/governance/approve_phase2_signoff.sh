@@ -9,6 +9,7 @@ DRY_RUN="${DRY_RUN:-0}"
 CHECKLIST_FILE="docs/governance/PHASE-2-RELEASE-CHECKLIST.md"
 RECORD_FILE="docs/governance/PHASE-2-RELEASE-RECORD.md"
 LOCK_FILE=".git/approve_phase2_signoff.lock"
+LOCK_DIR=""
 
 fail() {
   echo "$1" >&2
@@ -114,21 +115,42 @@ update_record_snapshot() {
   ' "$in_file" >"$out_file"
 }
 
+acquire_lock() {
+  mkdir -p "$(dirname "$LOCK_FILE")"
+  if command -v flock >/dev/null 2>&1; then
+    exec 9>"$LOCK_FILE"
+    flock -x 9
+    return
+  fi
+
+  LOCK_DIR="${LOCK_FILE}.d"
+  local attempts=0
+  local max_attempts=300
+  until mkdir "$LOCK_DIR" 2>/dev/null; do
+    attempts=$((attempts + 1))
+    if [ "$attempts" -ge "$max_attempts" ]; then
+      fail "unable to acquire lock after ${max_attempts}s: ${LOCK_DIR}"
+    fi
+    sleep 1
+  done
+}
+
+cleanup() {
+  rm -f "${tmp_checklist_1:-}" "${tmp_checklist_2:-}" "${tmp_record_1:-}"
+  if [ -n "${LOCK_DIR:-}" ]; then
+    rmdir "$LOCK_DIR" 2>/dev/null || true
+  fi
+}
+
 validate_inputs
 
-if ! command -v flock >/dev/null 2>&1; then
-  fail "flock command is required"
-fi
-
-mkdir -p "$(dirname "$LOCK_FILE")"
-exec 9>"$LOCK_FILE"
-flock -x 9
+acquire_lock
 
 tmp_checklist_1="$(mktemp)"
 tmp_checklist_2="$(mktemp)"
 tmp_record_1="$(mktemp)"
 
-trap 'rm -f "$tmp_checklist_1" "$tmp_checklist_2" "$tmp_record_1"' EXIT
+trap cleanup EXIT
 
 update_checklist_rows "$CHECKLIST_FILE" "$tmp_checklist_1"
 new_release_status="$(derive_release_status "$tmp_checklist_1")"

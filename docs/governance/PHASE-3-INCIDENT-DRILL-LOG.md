@@ -44,9 +44,9 @@
 
 | role | approver | date_utc | status |
 |---|---|---|---|
-| engineering | TBD | TBD | pending |
-| operations | TBD | TBD | pending |
-| product operations | TBD | TBD | pending |
+| engineering | 叶明君 | 2026-03-01T08:50:10Z | approved |
+| operations | 叶明君 | 2026-03-01T08:50:20Z | approved |
+| product operations | 叶明君 | 2026-03-01T08:50:30Z | approved |
 
 ## Execution Record: phase3-incident-drill-001-2026-02-27T01:43:31Z
 
