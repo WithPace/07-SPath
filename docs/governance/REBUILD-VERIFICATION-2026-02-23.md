@@ -976,3 +976,25 @@
   - `bash tests/db/test_00_preflight.sh` -> PASS.
   - `bash tests/governance/test_e2e_governance.sh` -> PASS.
 - Latest verification timestamp (UTC): `2026-03-01T14:46:25Z`
+
+## 2026-03-01 Release Record Auto-Update Integration Evidence
+
+- Added release record updater script:
+  - `scripts/governance/update_phase2_release_record.sh`
+  - supports: `COMMIT_SHA`, `DATE_UTC`, `RELEASE_OPERATOR`, `SUPABASE_PROJECT_REF`, `DRY_RUN`
+  - includes concurrent-write guard (`flock` with lock-directory fallback)
+- Integrated updater into release flow:
+  - `scripts/ci/release_go_live.sh` now runs `bash scripts/governance/update_phase2_release_record.sh` after gate passes.
+- Added gate coverage:
+  - `tests/governance/test_phase2_release_record_update_script.sh`
+  - `tests/ci/test_deploy_release_scripts_presence.sh` (requires updater integration in release script)
+- Synced runbook:
+  - `docs/governance/DEPLOY-TEST-GO-LIVE-RUNBOOK.md` now documents the auto-update step and updated fields.
+- Verification outputs:
+  - `bash tests/ci/test_deploy_release_scripts_presence.sh` -> PASS.
+  - `bash tests/governance/test_phase2_release_record_update_script.sh` -> PASS.
+  - `DRY_RUN=1 bash scripts/ci/release_go_live.sh` -> PASS.
+  - `bash tests/governance/test_phase2_signoff_and_release_record.sh` -> PASS.
+  - `bash tests/governance/test_docs_presence.sh` -> PASS.
+  - `bash tests/governance/test_e2e_governance.sh` -> PASS.
+- Latest verification timestamp (UTC): `2026-03-01T14:57:29Z`

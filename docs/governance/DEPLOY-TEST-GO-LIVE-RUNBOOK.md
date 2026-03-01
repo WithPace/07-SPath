@@ -75,6 +75,13 @@ This executes:
 4. `bash scripts/ci/final_gate.sh`
 5. `bash tests/governance/test_docs_presence.sh`
 6. `bash tests/governance/test_e2e_governance.sh`
+7. `bash scripts/governance/update_phase2_release_record.sh`
+
+On success, step 7 updates `docs/governance/PHASE-2-RELEASE-RECORD.md` with:
+- `commit_sha` (current `HEAD`)
+- `executed_at_utc` (current UTC timestamp)
+- `release_operator` (from local git user name unless overridden by env)
+- `project_ref` (only when `SUPABASE_PROJECT_REF` is provided in environment)
 
 `release_go_live.sh` defaults to strict sign-off gates:
 - `REQUIRE_FULL_SIGNOFF=1`
