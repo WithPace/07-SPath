@@ -709,3 +709,22 @@
   - `training_record_request_id=8bca064f-bc77-4201-852b-f76982b66bc4`
   - `dashboard_request_id=ef44df63-28d6-4f97-9ffe-bb51e976a63a`
 - Latest verification timestamp (UTC): `2026-03-01T07:12:29Z`
+
+## 2026-03-01 Full Sign-off Go-Live Evidence
+
+- Applied manual sign-off approvals with approver `叶明君`:
+  - `ROLE=operations APPROVER='叶明君' DATE_UTC=2026-03-01T07:49:45Z bash scripts/governance/approve_phase2_signoff.sh`
+  - `ROLE=product APPROVER='叶明君' DATE_UTC=2026-03-01T07:56:30Z bash scripts/governance/approve_phase2_signoff.sh`
+- `REQUIRE_FULL_SIGNOFF=1 bash scripts/governance/check_phase2_signoff_gate.sh` -> PASS.
+- First full-signoff `release_go_live` attempt observed transient idempotency duplicate-completed-log failure; direct repro `bash tests/e2e/test_orchestrator_idempotency_live.sh` then passed.
+- Re-run `REQUIRE_FULL_SIGNOFF=1 bash scripts/ci/release_go_live.sh` -> PASS.
+- Re-run final-gate weekly journey smoke sample:
+  - `assessment_request_id=a115e275-2a20-4a92-90b6-f96926a455d7`
+  - `training_advice_request_id=7070cf15-c8c5-448c-ab68-07e8cda0e223`
+  - `training_request_id=50a33b31-15c3-4312-b986-6c22318639f0`
+  - `training_record_request_id=cec316ac-d594-4903-b572-adeb1344d68a`
+  - `dashboard_request_id=5e033164-cf4e-4f03-8c73-da8d643d3d0d`
+- Updated release metadata:
+  - `docs/governance/PHASE-2-RELEASE-CHECKLIST.md` status -> `fully_approved`.
+  - `docs/governance/PHASE-2-RELEASE-RECORD.md` sign-off snapshot -> engineering/product/operations all `approved`.
+- Latest verification timestamp (UTC): `2026-03-01T08:05:50Z`

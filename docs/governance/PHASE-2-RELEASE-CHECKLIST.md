@@ -8,7 +8,7 @@
 | environment | Supabase linked project (`innaguwdmdfugrbcoxng`) |
 | release_owner | engineering |
 | planned_window_utc | 2026-02-28T15:45:25Z (verification window) |
-| status | engineering_approved_pending_product_ops |
+| status | fully_approved |
 
 ## Entry Criteria
 
@@ -52,12 +52,12 @@
 | role | approver | date_utc | status |
 |---|---|---|---|
 | engineering | engineering-oncall | 2026-03-01T03:25:18Z | approved |
-| product | TBD | TBD | pending |
-| operations | TBD | TBD | pending |
+| product | 叶明君 | 2026-03-01T07:56:30Z | approved |
+| operations | 叶明君 | 2026-03-01T07:49:45Z | approved |
 
 ## Pending Sign-off Controls
 
 | role | blocker | target_approval_utc | escalation_after_utc |
 |---|---|---|---|
-| product | Product release window confirmation pending | 2026-03-02T02:00:00Z | 2026-03-02T08:00:00Z |
-| operations | Operations deployment shift handover pending | 2026-03-02T02:30:00Z | 2026-03-02T08:30:00Z |
+| product | approved by 叶明君 | 2026-03-01T07:56:30Z | 2026-03-01T07:56:30Z |
+| operations | approved by 叶明君 | 2026-03-01T07:49:45Z | 2026-03-01T07:49:45Z |
