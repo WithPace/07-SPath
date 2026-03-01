@@ -998,3 +998,22 @@
   - `bash tests/governance/test_docs_presence.sh` -> PASS.
   - `bash tests/governance/test_e2e_governance.sh` -> PASS.
 - Latest verification timestamp (UTC): `2026-03-01T14:57:29Z`
+
+## 2026-03-01 Release Record Automation Final-Gate Evidence
+
+- Ran full gate after release-record automation integration:
+  - `bash scripts/ci/final_gate.sh` -> PASS (exit code 0).
+- New governance gate included in final-gate sweep:
+  - `tests/governance/test_phase2_release_record_update_script.sh` -> PASS.
+- CI segment confirmation:
+  - `tests/ci/test_deploy_release_scripts_presence.sh` -> PASS
+  - `tests/ci/test_supabase_cli_check_script.sh` -> PASS
+  - `tests/ci/test_supabase_cli_version_pinned.sh` -> PASS
+  - `tests/ci/test_workflow_presence.sh` -> PASS
+- Final-gate weekly journey smoke sample:
+  - `assessment_request_id=155f40fd-b684-4373-883a-fe74e7bbddf9`
+  - `training_advice_request_id=f09bd723-c442-4e41-9c42-20cebd4fda03`
+  - `training_request_id=3066b2cd-3fd5-417c-ace6-6f878ef1c1dc`
+  - `training_record_request_id=de4f84e9-df11-4d9f-949a-ad7a20c44879`
+  - `dashboard_request_id=949a4322-1823-41a1-a665-1bf84bcd91c9`
+- Latest verification timestamp (UTC): `2026-03-01T15:08:22Z`
