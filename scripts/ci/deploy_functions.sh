@@ -45,6 +45,7 @@ run_cmd() {
 
 EXTRA_FLAGS="$(build_flags)"
 
+run_cmd "bash scripts/ci/check_supabase_cli_version.sh"
 run_cmd "supabase functions deploy orchestrator --project-ref ${SUPABASE_PROJECT_REF}${EXTRA_FLAGS}"
 run_cmd "supabase functions deploy chat-casual --project-ref ${SUPABASE_PROJECT_REF}${EXTRA_FLAGS}"
 run_cmd "supabase functions deploy assessment --project-ref ${SUPABASE_PROJECT_REF}${EXTRA_FLAGS}"

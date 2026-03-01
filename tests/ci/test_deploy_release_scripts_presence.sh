@@ -8,13 +8,17 @@ fail() {
 
 deploy_script="scripts/ci/deploy_functions.sh"
 release_script="scripts/ci/release_go_live.sh"
+cli_check_script="scripts/ci/check_supabase_cli_version.sh"
 
 test -f "$deploy_script" || fail "missing deploy script"
 test -x "$deploy_script" || fail "deploy script must be executable"
 test -f "$release_script" || fail "missing release go-live script"
 test -x "$release_script" || fail "release go-live script must be executable"
+test -f "$cli_check_script" || fail "missing supabase cli version check script"
+test -x "$cli_check_script" || fail "supabase cli version check script must be executable"
 
 rg -q 'SUPABASE_PROJECT_REF' "$deploy_script" || fail "deploy script missing SUPABASE_PROJECT_REF handling"
+rg -q 'bash scripts/ci/check_supabase_cli_version.sh' "$deploy_script" || fail "deploy script missing cli version check step"
 rg -q 'supabase functions deploy orchestrator' "$deploy_script" || fail "deploy script missing orchestrator deploy"
 rg -q 'supabase functions deploy chat-casual' "$deploy_script" || fail "deploy script missing chat-casual deploy"
 rg -q 'supabase functions deploy assessment' "$deploy_script" || fail "deploy script missing assessment deploy"
@@ -25,6 +29,7 @@ rg -q 'supabase functions deploy dashboard' "$deploy_script" || fail "deploy scr
 rg -q 'DRY_RUN' "$deploy_script" || fail "deploy script missing DRY_RUN support"
 
 rg -q 'scripts/ci/deploy_functions.sh' "$release_script" || fail "release script missing deploy step"
+rg -q 'bash scripts/ci/check_supabase_cli_version.sh' "$release_script" || fail "release script missing cli version check step"
 rg -q 'REQUIRE_FULL_SIGNOFF' "$release_script" || fail "release script missing REQUIRE_FULL_SIGNOFF handling"
 rg -q 'scripts/governance/check_phase3_drill_signoff_gate.sh' "$release_script" || fail "release script missing phase3 drill signoff gate step"
 rg -q 'bash scripts/ci/final_gate.sh' "$release_script" || fail "release script missing final gate step"

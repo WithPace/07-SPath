@@ -6,6 +6,8 @@ if [ ! -f .env ]; then
   exit 1
 fi
 
+bash scripts/ci/check_supabase_cli_version.sh
+
 for key in SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY DOUBAO_API_KEY KIMI_API_KEY; do
   if ! grep -q "^${key}=" .env; then
     echo "missing key in .env: ${key}" >&2

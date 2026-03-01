@@ -17,6 +17,7 @@ run_cmd() {
 }
 
 echo "== go-live sequence start =="
+run_cmd "bash scripts/ci/check_supabase_cli_version.sh"
 run_cmd "REQUIRE_FULL_SIGNOFF=${REQUIRE_FULL_SIGNOFF} bash scripts/governance/check_phase2_signoff_gate.sh"
 run_cmd "REQUIRE_PHASE3_DRILL_SIGNOFF=${REQUIRE_PHASE3_DRILL_SIGNOFF} bash scripts/governance/check_phase3_drill_signoff_gate.sh"
 run_cmd "bash scripts/ci/deploy_functions.sh"

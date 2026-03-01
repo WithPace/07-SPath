@@ -893,3 +893,29 @@
 - Updated release record:
   - `docs/governance/PHASE-2-RELEASE-RECORD.md` (`commit_sha=a8adaa804883`, `executed_at_utc=2026-03-01T14:24:16Z`).
 - Latest verification timestamp (UTC): `2026-03-01T14:24:16Z`
+
+## 2026-03-01 Supabase CLI Version Governance Evidence
+
+- Added shared CLI version governance script:
+  - `scripts/ci/check_supabase_cli_version.sh`
+- Integrated CLI version check into execution entry points:
+  - `scripts/db/preflight.sh`
+  - `scripts/ci/deploy_functions.sh`
+  - `scripts/ci/release_go_live.sh`
+- Added CI gate coverage:
+  - `tests/ci/test_supabase_cli_check_script.sh` (script contract + preflight integration)
+  - `tests/ci/test_deploy_release_scripts_presence.sh` (deploy/release integration)
+  - `tests/ci/test_supabase_cli_version_pinned.sh` (workflow pin and script default-version consistency)
+- Synced governance docs:
+  - `docs/governance/DEPLOY-TEST-GO-LIVE-RUNBOOK.md`
+  - `docs/governance/PHASE-3-RELEASE-AUTOMATION.md`
+- Verification outputs:
+  - `bash scripts/ci/check_supabase_cli_version.sh` -> PASS (warn-only mismatch observed on local `2.47.2` vs expected `2.75.0`).
+  - `bash tests/ci/test_deploy_release_scripts_presence.sh` -> PASS.
+  - `bash tests/ci/test_supabase_cli_check_script.sh` -> PASS.
+  - `bash tests/ci/test_supabase_cli_version_pinned.sh` -> PASS.
+  - `bash tests/governance/test_docs_presence.sh` -> PASS.
+  - `bash tests/governance/test_phase3_release_automation_presence.sh` -> PASS.
+  - `bash tests/governance/test_e2e_governance.sh` -> PASS.
+  - `DRY_RUN=1 bash scripts/ci/release_go_live.sh` -> PASS.
+- Latest verification timestamp (UTC): `2026-03-01T14:31:29Z`

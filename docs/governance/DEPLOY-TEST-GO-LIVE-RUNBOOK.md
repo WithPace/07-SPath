@@ -14,6 +14,7 @@ This runbook defines the production deployment execution chain for Supabase Edge
    - `KIMI_API_KEY`
 2. `SUPABASE_PROJECT_REF` is exported in shell or defined in `.env`.
 3. Supabase CLI is installed and authenticated (`supabase login`), and your workspace is linked if required by your org policy.
+   - default expected CLI version: `2.75.0` (managed by `scripts/ci/check_supabase_cli_version.sh`)
 4. You are on the release commit intended for go-live.
 
 ## Preflight
@@ -25,6 +26,13 @@ bash scripts/db/preflight.sh
 Expected:
 - prints `project_ref=<ref>`
 - no missing key failures
+- if local CLI version is not `2.75.0`, prints warning (`WARN: must update supabase cli ...`) unless strict mode is enabled
+
+Enable strict local blocking for version mismatch:
+
+```bash
+ENFORCE_SUPABASE_CLI_VERSION=1 bash scripts/db/preflight.sh
+```
 
 ## Dry Run (No External Changes)
 
