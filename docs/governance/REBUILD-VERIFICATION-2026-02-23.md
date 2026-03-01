@@ -630,3 +630,28 @@
 
 - No blocking gaps for rebuild + execution chain baseline.
 - Operational governance gaps through Phase 3 are tracked as `done` in `docs/governance/GAP-REGISTER.md`.
+
+## 2026-03-01 Deploy and Go-Live Evidence
+
+- Executed `bash scripts/ci/release_go_live.sh` against project ref `innaguwdmdfugrbcoxng` and completed end-to-end with exit code `0`.
+- Deployed modules:
+  - `orchestrator`
+  - `chat-casual`
+  - `assessment`
+  - `training`
+  - `training-advice`
+  - `training-record`
+  - `dashboard`
+- Release gate sequence outcomes:
+  - `bash scripts/ci/final_gate.sh` -> PASS
+  - `bash tests/governance/test_docs_presence.sh` -> PASS
+  - `bash tests/governance/test_e2e_governance.sh` -> PASS
+- Live smoke evidence samples from this run:
+  - assessment/training chain sample: `assessment_request_id=4a7d850e-7739-4d60-9f43-29d977f9483e`, `training_request_id=6a102172-b167-4755-b48e-07637615ee3e`
+  - phase2 dashboard followup sample: `training_request_id=7fd8b31a-49a5-45bd-8945-40c9900c06f9`, `dashboard_request_id=4101a4e2-3c50-4bb6-8910-d829d4ec775d`
+  - phase2 weekly journey sample: `assessment_request_id=fdbfda12-f93a-4194-991f-f2b4bd88bf45`, `training_advice_request_id=9246255b-b739-4dde-bed3-1640058d08f5`, `training_request_id=ed803bb4-6097-4a75-b22e-066958284a42`, `training_record_request_id=70fe9d52-8971-42b3-8f72-dbac46d1ef5d`, `dashboard_request_id=e2706b4e-a186-40e4-9d0b-f875c0efb3b4`
+- Transient load behavior observed and recovered by retry contract:
+  - `module=training`
+  - `request_id=c5de9fe0-0ad2-4bb0-9bbc-03038d2fa8e0`
+  - `reason=WORKER_LIMIT`
+- Latest verification timestamp (UTC): `2026-03-01T03:25:18Z`
