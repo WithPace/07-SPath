@@ -854,3 +854,23 @@
   - `bash tests/governance/test_docs_presence.sh` -> PASS.
   - `bash tests/governance/test_e2e_governance.sh` -> PASS.
 - Latest verification timestamp (UTC): `2026-03-01T12:22:38Z`
+
+## 2026-03-01 Final Gate Re-run Stability Evidence
+
+- First `bash scripts/ci/final_gate.sh` run failed at `tests/e2e/test_orchestrator_idempotency_live.sh` under transient network instability:
+  - observed transport errors: `curl: (6) Could not resolve host: innaguwdmdfugrbcoxng.supabase.co`
+  - observed timeout: `curl: (28) Operation timed out ...`
+  - observed duplicate completion under the same request id:
+    - `request_id=804ba53d-56af-47f9-9f1f-5541bf68c377`
+- Reproduction check:
+  - direct rerun `bash tests/e2e/test_orchestrator_idempotency_live.sh` -> PASS.
+  - sample pass request id: `request_id=9c98ea19-82c1-46d2-a6ff-aa5a6540efe8`.
+- Confirmation full rerun:
+  - re-run `bash scripts/ci/final_gate.sh` -> PASS (exit code 0).
+  - final-gate weekly journey smoke sample:
+    - `assessment_request_id=02d9632a-ff5e-4857-9bce-0a57c1e6e6c6`
+    - `training_advice_request_id=d0a05da3-ea17-484b-b77f-0ac62ac47b96`
+    - `training_request_id=796625b2-64de-455a-951e-bfd5e3419647`
+    - `training_record_request_id=67fc8d23-1da7-4b4f-99b6-42e50d725bc7`
+    - `dashboard_request_id=8d709c08-1f5e-4154-9461-ce5608db424b`
+- Latest verification timestamp (UTC): `2026-03-01T13:59:43Z`
