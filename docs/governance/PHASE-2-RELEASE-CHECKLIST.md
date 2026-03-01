@@ -8,7 +8,7 @@
 | environment | Supabase linked project (`innaguwdmdfugrbcoxng`) |
 | release_owner | engineering |
 | planned_window_utc | 2026-02-28T15:45:25Z (verification window) |
-| status | ready_for_signoff |
+| status | engineering_approved_pending_product_ops |
 
 ## Entry Criteria
 
@@ -51,6 +51,6 @@
 
 | role | approver | date_utc | status |
 |---|---|---|---|
-| engineering | TBD | TBD | pending |
+| engineering | engineering-oncall | 2026-03-01T03:25:18Z | approved |
 | product | TBD | TBD | pending |
 | operations | TBD | TBD | pending |
