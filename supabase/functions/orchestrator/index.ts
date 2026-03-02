@@ -1,4 +1,4 @@
-import { authenticate, checkChildAccess, getServiceClient } from "../_shared/auth.ts";
+import { authenticate, checkChildRoleAccess, getServiceClient, normalizeChildRole } from "../_shared/auth.ts";
 import { SSE_HEADERS, sseError } from "../_shared/sse.ts";
 
 type OrchestratorPayload = {
@@ -6,6 +6,7 @@ type OrchestratorPayload = {
   message: string;
   conversation_id?: string;
   request_id?: string;
+  role?: string;
   module?:
     | "chat_casual"
     | "assessment"
@@ -108,10 +109,18 @@ Deno.serve(async (req) => {
       );
     }
 
-    const hasAccess = await checkChildAccess(user.id, payload.child_id);
+    const role = normalizeChildRole(payload.role ?? "parent");
+    if (!role) {
+      return new Response(
+        sseError("BAD_REQUEST", "role must be one of parent/doctor/teacher/org_admin", requestId),
+        { status: 400, headers: SSE_HEADERS },
+      );
+    }
+
+    const hasAccess = await checkChildRoleAccess(user.id, payload.child_id, role);
     if (!hasAccess) {
       return new Response(
-        sseError("AUTH_FORBIDDEN", "no child access", requestId),
+        sseError("AUTH_FORBIDDEN", "no child access for requested role", requestId),
         { status: 403, headers: SSE_HEADERS },
       );
     }
@@ -180,6 +189,7 @@ Deno.serve(async (req) => {
         message: payload.message,
         conversation_id: conversationId,
         request_id: requestId,
+        role,
         module: route.module,
         orchestrator_latency_ms: Date.now() - startedAt,
       }),

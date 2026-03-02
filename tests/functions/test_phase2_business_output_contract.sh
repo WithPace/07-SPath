@@ -39,7 +39,7 @@ rg -q 'training_plan_id: planInsert\.data\.id' "$training_advice" \
 rg -q 'training_session_id: sessionInsert\.data\.id' "$training_record" \
   || fail "missing training session done field contract"
 
-rg -q 'role: "parent"' "$dashboard" || fail "missing dashboard role field contract"
+rg -q 'role,' "$dashboard" || fail "missing dashboard role field contract"
 rg -q 'card_count: cards\.length' "$dashboard" || fail "missing dashboard card_count field contract"
 rg -q 'sseEvent\("delta", \{ text: model\.text, cards \}\)' "$dashboard" \
   || fail "missing dashboard delta cards payload contract"

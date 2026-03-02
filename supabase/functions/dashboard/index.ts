@@ -1,4 +1,4 @@
-import { authenticate, checkChildAccess, getServiceClient } from "../_shared/auth.ts";
+import { authenticate, checkChildRoleAccess, getServiceClient, normalizeChildRole } from "../_shared/auth.ts";
 import { callModelLive } from "../_shared/model-router.ts";
 import { finalizeWriteback } from "../_shared/finalize.ts";
 import { SSE_HEADERS, sseEvent, sseError } from "../_shared/sse.ts";
@@ -17,6 +17,20 @@ type SessionRow = {
   duration_minutes: number | null;
   success_rate: number | null;
 };
+
+const ROLE_SUMMARY_TITLE = {
+  parent: "本周训练概览",
+  doctor: "本周随访概览",
+  teacher: "本周教学概览",
+  org_admin: "本周机构概览",
+} as const;
+
+const ROLE_PROMPT = {
+  parent: "你是星途AI家长看板分析助手。请基于给定统计数据输出简洁中文洞察，包含亮点、风险提醒、下一步建议，各1-2句。",
+  doctor: "你是星途AI医生随访助手。请基于统计数据输出随访重点、风险信号和下次复查建议，各1-2句。",
+  teacher: "你是星途AI教师训练助手。请基于统计数据输出课堂执行亮点、训练风险和下一步教学建议，各1-2句。",
+  org_admin: "你是星途AI机构运营看板助手。请基于统计数据输出整体表现、风险预警和管理动作建议，各1-2句。",
+} as const;
 
 function dateKeyUTC(daysAgo: number): string {
   const d = new Date();
@@ -53,18 +67,18 @@ Deno.serve(async (req) => {
       );
     }
 
-    const role = (payload.role ?? "parent").toLowerCase();
-    if (role !== "parent") {
+    const role = normalizeChildRole(payload.role ?? "parent");
+    if (!role) {
       return new Response(
-        sseError("BAD_REQUEST", "dashboard currently supports role=parent only", requestId),
+        sseError("BAD_REQUEST", "role must be one of parent/doctor/teacher/org_admin", requestId),
         { status: 400, headers: SSE_HEADERS },
       );
     }
 
-    const hasAccess = await checkChildAccess(user.id, payload.child_id);
+    const hasAccess = await checkChildRoleAccess(user.id, payload.child_id, role);
     if (!hasAccess) {
       return new Response(
-        sseError("AUTH_FORBIDDEN", "no child access", requestId),
+        sseError("AUTH_FORBIDDEN", "no child access for requested role", requestId),
         { status: 403, headers: SSE_HEADERS },
       );
     }
@@ -72,37 +86,46 @@ Deno.serve(async (req) => {
     const client = getServiceClient();
 
     const sinceDate = dateKeyUTC(6);
-    const sessionsQuery = await client
+    let sessionsBuilder = client
       .from("training_sessions")
       .select("session_date,duration_minutes,success_rate")
       .eq("child_id", payload.child_id)
-      .eq("recorded_by", user.id)
       .gte("session_date", sinceDate)
       .order("session_date", { ascending: true });
+    if (role === "parent") {
+      sessionsBuilder = sessionsBuilder.eq("recorded_by", user.id);
+    }
+    const sessionsQuery = await sessionsBuilder;
 
     if (sessionsQuery.error) {
       throw new Error(`INTERNAL_ERROR: read training_sessions failed: ${sessionsQuery.error.message}`);
     }
     const sessions = (sessionsQuery.data ?? []) as SessionRow[];
 
-    const assessmentsQuery = await client
+    let assessmentsBuilder = client
       .from("assessments")
       .select("risk_level,created_at")
       .eq("child_id", payload.child_id)
-      .eq("assessed_by", user.id)
       .order("created_at", { ascending: false })
       .limit(3);
+    if (role === "parent") {
+      assessmentsBuilder = assessmentsBuilder.eq("assessed_by", user.id);
+    }
+    const assessmentsQuery = await assessmentsBuilder;
 
     if (assessmentsQuery.error) {
       throw new Error(`INTERNAL_ERROR: read assessments failed: ${assessmentsQuery.error.message}`);
     }
 
-    const activePlansQuery = await client
+    let activePlansBuilder = client
       .from("training_plans")
       .select("id", { count: "exact", head: true })
       .eq("child_id", payload.child_id)
-      .eq("created_by", user.id)
       .eq("status", "active");
+    if (role === "parent") {
+      activePlansBuilder = activePlansBuilder.eq("created_by", user.id);
+    }
+    const activePlansQuery = await activePlansBuilder;
 
     if (activePlansQuery.error) {
       throw new Error(`INTERNAL_ERROR: read training_plans failed: ${activePlansQuery.error.message}`);
@@ -152,7 +175,7 @@ Deno.serve(async (req) => {
     const cards = [
       {
         card_type: "summary_card",
-        title: "本周训练概览",
+        title: ROLE_SUMMARY_TITLE[role],
         metrics: [
           { key: "training_days", label: "训练天数", value: trainingDays, unit: "天" },
           { key: "total_sessions", label: "训练次数", value: totalSessions, unit: "次" },
@@ -186,7 +209,7 @@ Deno.serve(async (req) => {
     };
 
     const model = await callModelLive([
-      { role: "system", content: "你是星途AI家长看板分析助手。请基于给定统计数据输出简洁中文洞察，包含亮点、风险提醒、下一步建议，各1-2句。" },
+      { role: "system", content: ROLE_PROMPT[role] },
       { role: "user", content: JSON.stringify(insightInput) },
     ]);
 
@@ -217,7 +240,7 @@ Deno.serve(async (req) => {
       priorityLevel: "S3",
       targetSnapshotType: "short_term",
       payload: {
-        role: "parent",
+        role,
         card_count: cards.length,
         conversation_id: payload.conversation_id,
       },
@@ -233,7 +256,7 @@ Deno.serve(async (req) => {
       sseEvent("done", {
         request_id: requestId,
         model_used: model.modelUsed,
-        role: "parent",
+        role,
         card_count: cards.length,
       });
 
