@@ -1032,3 +1032,113 @@
   - `bash tests/governance/test_docs_presence.sh` -> PASS.
   - `bash tests/governance/test_e2e_governance.sh` -> PASS.
 - Latest verification timestamp (UTC): `2026-03-01T23:20:05Z`
+
+## 2026-03-01 Phase5 Governance Baseline and Role Contract Evidence
+
+- Added Phase 5 governance baseline artifacts:
+  - `docs/governance/PHASE-5-DELIVERY-CHECKLIST.md`
+  - `docs/governance/PHASE-5-RELEASE-RECORD.md`
+  - `tests/governance/test_phase5_governance_presence.sh`
+- Added Phase 5 role contract artifacts:
+  - `docs/governance/PHASE-5-ROLE-CONTRACT-CATALOG.md`
+  - `docs/governance/PHASE-5-ROLE-CONTRACT-FIXTURES.md`
+  - `tests/functions/test_phase5_role_contract_catalog_presence.sh`
+- Integrated docs presence gate:
+  - `tests/governance/test_docs_presence.sh` now requires Phase 5 governance and role contract docs.
+- Verification outputs:
+  - `bash tests/governance/test_phase5_governance_presence.sh` -> PASS.
+  - `bash tests/functions/test_phase5_role_contract_catalog_presence.sh` -> PASS.
+  - `bash tests/governance/test_docs_presence.sh` -> PASS.
+  - `bash tests/governance/test_e2e_governance.sh` -> PASS.
+- Latest verification timestamp (UTC): `2026-03-01T23:32:14Z`
+
+## 2026-03-02 Phase3 Drill Preconditions Closure Evidence
+
+- Closed Phase 3 drill-log precondition checklist gap:
+  - `docs/governance/PHASE-3-INCIDENT-DRILL-LOG.md` preconditions updated to `[x]`.
+  - `docs/governance/PHASE-3-ROLLBACK-DRILL-LOG.md` preconditions updated to `[x]`.
+- Added governance gate:
+  - `tests/governance/test_phase3_drill_preconditions_completion.sh`
+  - enforces both Phase 3 drill logs keep preconditions marked complete.
+- Verification outputs:
+  - `bash tests/governance/test_phase3_drill_preconditions_completion.sh` -> PASS.
+  - `bash tests/governance/test_phase3_drill_assets_presence.sh` -> PASS.
+  - `bash tests/governance/test_phase3_drill_signoff_completion.sh` -> PASS.
+  - `bash tests/governance/test_phase3_slo_runbook_presence.sh` -> PASS.
+  - `bash tests/governance/test_phase3_security_ops_presence.sh` -> PASS.
+  - `bash tests/governance/test_phase3_cost_guardrails_presence.sh` -> PASS.
+  - `bash tests/governance/test_phase3_release_automation_presence.sh` -> PASS.
+  - `bash scripts/ci/final_gate.sh` -> PASS (includes new preconditions completion gate).
+- Latest verification timestamp (UTC): `2026-03-02T04:35:47Z`
+
+## 2026-03-02 Phase3 Release Automation Rehearsal Evidence
+
+- Strict sign-off gate verification:
+  - `REQUIRE_PHASE3_DRILL_SIGNOFF=1 bash scripts/governance/check_phase3_drill_signoff_gate.sh` -> PASS.
+- Strict go-live rehearsal:
+  - `DRY_RUN=1 REQUIRE_FULL_SIGNOFF=1 REQUIRE_PHASE3_DRILL_SIGNOFF=1 bash scripts/ci/release_go_live.sh` -> PASS.
+  - sequence confirms strict path includes:
+    - cli version check
+    - phase2 sign-off gate
+    - phase3 drill sign-off gate
+    - deploy step
+    - final gate
+    - governance docs/e2e checks
+    - release-record updater
+- Latest verification timestamp (UTC): `2026-03-02T04:36:23Z`
+
+## 2026-03-02 Phase4 Frontend Delivery Execution Evidence
+
+- Frontend repository execution:
+  - repo: `starpath-frontend`
+  - branch: `feat/phase4-parent-mvp`
+  - latest frontend commit: `e1f8f0f`
+- Frontend strict gate:
+  - `cd ../starpath-frontend && bash scripts/ci/frontend_final_gate.sh` -> PASS
+  - includes:
+    - `pnpm lint` PASS
+    - `pnpm typecheck` PASS
+    - `pnpm test` PASS
+    - `pnpm build` PASS
+    - `pnpm playwright test` PASS
+- Backend strict go-live:
+  - `bash scripts/ci/release_go_live.sh` -> PASS
+  - release sequence completed with strict sign-off/drill gates enabled.
+- Phase 4 governance artifacts updated:
+  - `docs/governance/PHASE-4-FRONTEND-DELIVERY-CHECKLIST.md`
+  - `docs/governance/PHASE-4-FRONTEND-RELEASE-RECORD.md`
+- Latest verification timestamp (UTC): `2026-03-02T05:13:42Z`
+
+## 2026-03-02 Phase5 Cross-Repo Delivery and Retry Hardening Evidence
+
+- Backend Phase5 role matrix delivery:
+  - commit: `b6defa5`
+  - includes:
+    - `supabase/functions/orchestrator/index.ts` role-aware access + forwarding
+    - `supabase/functions/dashboard/index.ts` full role matrix handling
+    - `supabase/functions/_shared/auth.ts` role normalization + role access helper
+    - `tests/functions/test_phase5_dashboard_role_matrix_contract.sh`
+    - `tests/db/test_phase5_rls_role_matrix.sh`
+    - `tests/e2e/test_phase5_doctor_teacher_org_journeys_live.sh`
+- Frontend Phase5 multi-role ports delivery:
+  - repo: `starpath-frontend`
+  - commit: `5f12a40`
+  - strict gate:
+    - `bash scripts/ci/frontend_final_gate.sh` -> PASS.
+- Admin web delivery:
+  - repo: `starpath-admin-web`
+  - commit: `9619f48`
+  - strict gate:
+    - `bash scripts/ci/admin_web_final_gate.sh` -> PASS.
+- Reliability hardening for phase5 live smoke:
+  - fixed transient `WORKER_LIMIT` failure by adding retry/backoff in:
+    - `tests/e2e/test_phase5_doctor_teacher_org_journeys_live.sh`
+  - added guard contract:
+    - `tests/e2e/test_phase5_live_retry_contract.sh`
+  - verification:
+    - `bash tests/e2e/test_phase5_live_retry_contract.sh` -> PASS.
+    - `bash tests/e2e/test_phase5_doctor_teacher_org_journeys_live.sh` -> PASS.
+- Integrated release handshake verification:
+  - `bash scripts/ci/release_go_live.sh` -> PASS.
+  - includes final-gate full sweep, governance docs/e2e checks, and phase2 release-record updater.
+- Latest verification timestamp (UTC): `2026-03-02T08:44:27Z`

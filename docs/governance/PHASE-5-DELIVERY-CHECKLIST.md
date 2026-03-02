@@ -19,27 +19,27 @@
 
 ## Entry Criteria
 
-- [ ] Phase 4 parent-scope baseline remains green.
-- [ ] Phase 5 role contract catalog and fixture spec are documented.
-- [ ] backend role/RLS contract tests exist for all role paths.
-- [ ] `starpath-frontend` bootstrap complete (`lint`, `typecheck`, `build`, `test`).
-- [ ] `starpath-admin-web` bootstrap complete (`lint`, `typecheck`, `build`, `test`).
+- [x] Phase 4 parent-scope baseline remains green.
+- [x] Phase 5 role contract catalog and fixture spec are documented.
+- [x] backend role/RLS contract tests exist for all role paths.
+- [x] `starpath-frontend` bootstrap complete (`lint`, `typecheck`, `build`, `test`).
+- [x] `starpath-admin-web` bootstrap complete (`lint`, `typecheck`, `build`, `test`).
 
 ## Exit Criteria
 
-- [ ] backend strict go-live passes (`bash scripts/ci/release_go_live.sh`).
-- [ ] user frontend strict gate passes (`bash scripts/ci/frontend_final_gate.sh`).
-- [ ] admin web strict gate passes (`bash scripts/ci/admin_web_final_gate.sh`).
-- [ ] Phase 5 release record updated with backend/frontend/admin commit SHAs and UTC evidence.
+- [x] backend strict go-live passes (`bash scripts/ci/release_go_live.sh`).
+- [x] user frontend strict gate passes (`bash scripts/ci/frontend_final_gate.sh`).
+- [x] admin web strict gate passes (`bash scripts/ci/admin_web_final_gate.sh`).
+- [x] Phase 5 release record updated with backend/frontend/admin commit SHAs and UTC evidence.
 - [ ] combined sign-off rows all marked `approved`.
 
 ## Cross-Repo Sign-off
 
 | role | approver | date_utc | status |
 |---|---|---|---|
-| backend engineering | TBD | TBD | pending |
-| frontend engineering | TBD | TBD | pending |
-| admin web engineering | TBD | TBD | pending |
+| backend engineering | 叶明君 | 2026-03-02T08:44:27Z | approved |
+| frontend engineering | 叶明君 | 2026-03-02T08:44:27Z | approved |
+| admin web engineering | 叶明君 | 2026-03-02T08:44:27Z | approved |
 | product | TBD | TBD | pending |
 | operations | TBD | TBD | pending |
 | security | TBD | TBD | pending |
