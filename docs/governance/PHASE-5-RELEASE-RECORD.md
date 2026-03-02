@@ -31,7 +31,7 @@
 | backend strict go-live green | done | release_go_live completed with full gate chain |
 | frontend strict gate green | done | starpath-frontend frontend_final_gate passed |
 | admin web strict gate green | done | starpath-admin-web admin_web_final_gate passed |
-| integrated sign-off complete | pending | waiting approval matrix closure |
+| integrated sign-off complete | done | all required sign-off rows approved |
 
 ## Rollback References
 

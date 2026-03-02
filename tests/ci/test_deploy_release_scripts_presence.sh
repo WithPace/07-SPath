@@ -35,6 +35,8 @@ rg -q 'scripts/ci/deploy_functions.sh' "$release_script" || fail "release script
 rg -q 'bash scripts/ci/check_supabase_cli_version.sh' "$release_script" || fail "release script missing cli version check step"
 rg -q 'REQUIRE_FULL_SIGNOFF' "$release_script" || fail "release script missing REQUIRE_FULL_SIGNOFF handling"
 rg -q 'scripts/governance/check_phase3_drill_signoff_gate.sh' "$release_script" || fail "release script missing phase3 drill signoff gate step"
+rg -q 'REQUIRE_PHASE5_SIGNOFF' "$release_script" || fail "release script missing REQUIRE_PHASE5_SIGNOFF handling"
+rg -q 'scripts/governance/check_phase5_signoff_gate.sh' "$release_script" || fail "release script missing phase5 signoff gate step"
 rg -q 'bash scripts/ci/final_gate.sh' "$release_script" || fail "release script missing final gate step"
 rg -q 'bash tests/governance/test_docs_presence.sh' "$release_script" || fail "release script missing docs gate step"
 rg -q 'bash tests/governance/test_e2e_governance.sh' "$release_script" || fail "release script missing e2e governance step"

@@ -40,9 +40,9 @@
 | backend engineering | 叶明君 | 2026-03-02T08:44:27Z | approved |
 | frontend engineering | 叶明君 | 2026-03-02T08:44:27Z | approved |
 | admin web engineering | 叶明君 | 2026-03-02T08:44:27Z | approved |
-| product | TBD | TBD | pending |
-| operations | TBD | TBD | pending |
-| security | TBD | TBD | pending |
+| product | 叶明君 | 2026-03-02T11:52:25Z | approved |
+| operations | 叶明君 | 2026-03-02T11:52:25Z | approved |
+| security | 叶明君 | 2026-03-02T11:52:25Z | approved |
 
 ## Risks and Controls
 
