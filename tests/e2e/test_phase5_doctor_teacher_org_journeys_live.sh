@@ -192,43 +192,57 @@ call_role_dashboard() {
   local role="$1"
   local prompt="$2"
   local request_id response op_resp op_count
+  local max_attempts="${ORCH_MAX_ATTEMPTS:-4}"
+  local base_delay_seconds="${ORCH_RETRY_BASE_DELAY_SECONDS:-1}"
+  local attempt sleep_seconds
 
-  request_id=$(uid)
-  request_ids+=("$request_id")
+  for ((attempt = 1; attempt <= max_attempts; attempt += 1)); do
+    request_id=$(uid)
+    request_ids+=("$request_id")
 
-  response=$(curl "${curl_common[@]}" -N --max-time 180 -X POST "${SUPABASE_URL}/functions/v1/orchestrator" \
-    -H "apikey: ${SUPABASE_ANON_KEY}" \
-    -H "Authorization: Bearer ${access_token}" \
-    -H "Content-Type: application/json" \
-    -d "{\"child_id\":\"${child_id}\",\"message\":\"${prompt}\",\"module\":\"dashboard\",\"role\":\"${role}\",\"request_id\":\"${request_id}\"}")
+    response=$(curl "${curl_common[@]}" -N --max-time 180 -X POST "${SUPABASE_URL}/functions/v1/orchestrator" \
+      -H "apikey: ${SUPABASE_ANON_KEY}" \
+      -H "Authorization: Bearer ${access_token}" \
+      -H "Content-Type: application/json" \
+      -d "{\"child_id\":\"${child_id}\",\"message\":\"${prompt}\",\"module\":\"dashboard\",\"role\":\"${role}\",\"request_id\":\"${request_id}\"}")
 
-  if ! echo "$response" | grep -q 'event: done'; then
-    echo "role ${role} dashboard missing done event" >&2
-    echo "$response" >&2
-    exit 1
-  fi
+    if ! echo "$response" | grep -q 'event: done'; then
+      if [ "$attempt" -lt "$max_attempts" ] && echo "$response" | grep -q 'WORKER_LIMIT'; then
+        sleep_seconds=$((base_delay_seconds * (1 << (attempt - 1))))
+        echo "phase5 retry: role=${role} request_id=${request_id} attempt=${attempt}/${max_attempts} reason=WORKER_LIMIT sleep_seconds=${sleep_seconds}" >&2
+        sleep "$sleep_seconds"
+        continue
+      fi
 
-  if ! echo "$response" | grep -q "\"role\":\"${role}\""; then
-    echo "role ${role} dashboard done payload missing role echo" >&2
-    echo "$response" >&2
-    exit 1
-  fi
+      echo "role ${role} dashboard missing done event" >&2
+      echo "$response" >&2
+      exit 1
+    fi
 
-  if ! echo "$response" | grep -q '"cards"'; then
-    echo "role ${role} dashboard response missing cards" >&2
-    echo "$response" >&2
-    exit 1
-  fi
+    if ! echo "$response" | grep -q "\"role\":\"${role}\""; then
+      echo "role ${role} dashboard done payload missing role echo" >&2
+      echo "$response" >&2
+      exit 1
+    fi
 
-  op_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status&request_id=eq.${request_id}&action_name=eq.dashboard_generate" \
-    -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-    -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
-  op_count=$(echo "$op_resp" | jq 'length')
-  if [ "$op_count" -lt 1 ]; then
-    echo "role ${role} dashboard operation_logs missing" >&2
-    echo "$op_resp" >&2
-    exit 1
-  fi
+    if ! echo "$response" | grep -q '"cards"'; then
+      echo "role ${role} dashboard response missing cards" >&2
+      echo "$response" >&2
+      exit 1
+    fi
+
+    op_resp=$(curl "${curl_common[@]}" "${SUPABASE_URL}/rest/v1/operation_logs?select=id,request_id,action_name,final_status&request_id=eq.${request_id}&action_name=eq.dashboard_generate" \
+      -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+      -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}")
+    op_count=$(echo "$op_resp" | jq 'length')
+    if [ "$op_count" -lt 1 ]; then
+      echo "role ${role} dashboard operation_logs missing" >&2
+      echo "$op_resp" >&2
+      exit 1
+    fi
+
+    return 0
+  done
 }
 
 call_role_dashboard "doctor" "请给我医生视角训练跟进要点"
