@@ -101,6 +101,15 @@ orchestrator_call_with_retry() {
 
     if echo "$response" | grep -q "event: done"; then
       if [ "$require_cards" = "1" ] && ! echo "$response" | grep -q "\"cards\""; then
+        if echo "$response" | grep -q '"idempotent"[[:space:]]*:[[:space:]]*true'; then
+          ORCH_LAST_REQUEST_ID="$request_id"
+          ORCH_LAST_RESPONSE="$response"
+          ORCH_LAST_RESULT="success"
+          ORCH_LAST_FAILURE_REASON=""
+          ORCH_LAST_ATTEMPT="${attempt}/${max_attempts}"
+          return 0
+        fi
+
         failure_reason="${ORCH_TERMINAL_REASON_CARDS_PAYLOAD_MISSING}"
         echo "orchestrator terminal_failure: module=${module_label} request_id=${request_id} attempt=${attempt}/${max_attempts} reason=${failure_reason}" >&2
         ORCH_LAST_REQUEST_ID="$request_id"

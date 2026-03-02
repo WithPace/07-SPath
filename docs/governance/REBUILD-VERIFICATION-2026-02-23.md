@@ -1162,3 +1162,21 @@
   - `bash scripts/ci/release_go_live.sh` -> PASS.
   - release sequence confirms `check_phase5_signoff_gate.sh` is enforced before deploy.
 - Latest verification timestamp (UTC): `2026-03-02T12:06:21Z`
+
+## 2026-03-02 Idempotent Done/Cards Retry Stabilization Evidence
+
+- Root cause identified for intermittent live e2e failure:
+  - `curl --retry` may replay a POST with the same `request_id`, causing orchestrator idempotency short-circuit response (`idempotent: true`) without `cards`.
+  - previous helper logic treated all done-without-cards responses as terminal failure for `require_cards=1`.
+- Fix applied:
+  - `tests/e2e/_shared/orchestrator_retry.sh` now treats done-without-cards as success only when response explicitly contains `idempotent: true`.
+  - non-idempotent done-without-cards remains terminal failure (`cards_payload_missing`).
+- TDD regression coverage:
+  - `tests/e2e/test_live_smoke_retry_idempotent_cards_contract.sh` added (RED -> GREEN).
+  - `bash tests/e2e/test_live_smoke_retry_idempotent_cards_contract.sh` -> PASS.
+  - `bash tests/e2e/test_live_smoke_retry_cards_contract.sh` -> PASS.
+- Live replay evidence:
+  - `bash tests/e2e/test_phase2_parent_dashboard_followup_live.sh` -> PASS.
+  - `bash tests/e2e/test_orchestrator_dashboard_live.sh` -> PASS.
+  - `for t in tests/e2e/test_live_smoke_retry*contract.sh; do bash "$t"; done` -> PASS.
+- Latest verification timestamp (UTC): `2026-03-02T14:54:29Z`
