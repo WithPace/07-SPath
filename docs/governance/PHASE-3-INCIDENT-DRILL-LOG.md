@@ -13,10 +13,10 @@
 
 ## Preconditions
 
-- [ ] `docs/governance/PHASE-3-SLO-SLI-BASELINE.md` reviewed.
-- [ ] `docs/governance/PHASE-3-OPERATIONS-RUNBOOK.md` reviewed.
-- [ ] on-call roles confirmed.
-- [ ] drill communication channel created.
+- [x] `docs/governance/PHASE-3-SLO-SLI-BASELINE.md` reviewed.
+- [x] `docs/governance/PHASE-3-OPERATIONS-RUNBOOK.md` reviewed.
+- [x] on-call roles confirmed.
+- [x] drill communication channel created.
 
 ## Command Evidence
 

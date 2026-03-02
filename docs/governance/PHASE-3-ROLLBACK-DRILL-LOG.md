@@ -13,10 +13,10 @@
 
 ## Preconditions
 
-- [ ] rollback trigger selected from `PHASE-3-RELEASE-AUTOMATION.md`.
-- [ ] last known good deployment revision identified.
-- [ ] release owner and operations owner present.
-- [ ] validation data retention and cleanup scope confirmed.
+- [x] rollback trigger selected from `PHASE-3-RELEASE-AUTOMATION.md`.
+- [x] last known good deployment revision identified.
+- [x] release owner and operations owner present.
+- [x] validation data retention and cleanup scope confirmed.
 
 ## Command Evidence
 
