@@ -1218,3 +1218,19 @@
   - command: `bash scripts/ci/admin_web_final_gate.sh` -> PASS.
   - includes `lint + typecheck + test + build + playwright` full chain.
 - Latest verification timestamp (UTC): `2026-03-03T02:47:31Z`
+
+## 2026-03-03 Main-Branch Integration Go-live Evidence
+
+- Branch integration completed locally:
+  - backend repo `07-SPath`: `chore/retry-cards-contract-gate` fast-forwarded into `main`.
+  - frontend repo `starpath-frontend`: `feat/phase4-parent-mvp` fast-forwarded into `main`.
+  - admin repo `starpath-admin-web`: already on `main`.
+- Post-merge strict gates:
+  - `cd ../starpath-frontend && bash scripts/ci/frontend_final_gate.sh` -> PASS.
+  - `bash scripts/ci/release_go_live.sh` (from backend `main`) -> PASS.
+  - full chain includes strict sign-off gates, official Supabase deploy, final_gate full sweep, governance checks, and release-record updater.
+- Phase2 release record refreshed on backend `main`:
+  - `commit_sha=005b2a8a7de2`
+  - `executed_at_utc=2026-03-03T03:58:01Z`
+  - `release_operator=叶明君`
+- Latest verification timestamp (UTC): `2026-03-03T03:58:01Z`
