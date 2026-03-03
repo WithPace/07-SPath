@@ -1202,3 +1202,19 @@
   - `executed_at_utc=2026-03-03T02:44:17Z`
   - `release_operator=叶明君`
 - Latest verification timestamp (UTC): `2026-03-03T02:44:17Z`
+
+## 2026-03-03 Cross-Repo Frontend/Admin Final Gates Re-run Evidence
+
+- Frontend strict gate rerun:
+  - repo: `starpath-frontend`
+  - branch: `feat/phase4-parent-mvp`
+  - commit: `5f12a40`
+  - command: `bash scripts/ci/frontend_final_gate.sh` -> PASS.
+  - includes `lint + typecheck + test + build + playwright` full chain.
+- Admin web strict gate rerun:
+  - repo: `starpath-admin-web`
+  - branch: `main`
+  - commit: `9619f48`
+  - command: `bash scripts/ci/admin_web_final_gate.sh` -> PASS.
+  - includes `lint + typecheck + test + build + playwright` full chain.
+- Latest verification timestamp (UTC): `2026-03-03T02:47:31Z`
