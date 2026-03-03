@@ -4,6 +4,9 @@
 
 This runbook defines the production deployment execution chain for Supabase Edge Functions in this repository.
 
+For full-stack test/deploy flow (backend + user app + admin web), see:
+- `docs/governance/FULL-STACK-DEPLOYMENT-TEST-GUIDE.md`
+
 ## Prerequisites
 
 1. Local `.env` exists and includes at least:

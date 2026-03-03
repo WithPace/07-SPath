@@ -18,10 +18,13 @@ test -f docs/governance/PHASE-5-RELEASE-RECORD.md
 test -f docs/governance/PHASE-5-ROLE-CONTRACT-CATALOG.md
 test -f docs/governance/PHASE-5-ROLE-CONTRACT-FIXTURES.md
 test -f docs/governance/DEPLOY-TEST-GO-LIVE-RUNBOOK.md
+test -f docs/governance/FULL-STACK-DEPLOYMENT-TEST-GUIDE.md
 test -f docs/governance/REMOTE-PUBLISH-RUNBOOK.md
 test -f docs/governance/PHASE-3-INCIDENT-DRILL-LOG.md
 test -f docs/governance/PHASE-3-ROLLBACK-DRILL-LOG.md
 grep -q "| id | category | description |" docs/governance/GAP-REGISTER.md
 rg -q 'scripts/governance/check_phase3_drill_signoff_gate.sh' docs/governance/DEPLOY-TEST-GO-LIVE-RUNBOOK.md
+rg -q 'scripts/ci/frontend_final_gate.sh' docs/governance/FULL-STACK-DEPLOYMENT-TEST-GUIDE.md
+rg -q 'scripts/ci/admin_web_final_gate.sh' docs/governance/FULL-STACK-DEPLOYMENT-TEST-GUIDE.md
 rg -q 'scripts/ci/prepare_remote_publish.sh' docs/governance/REMOTE-PUBLISH-RUNBOOK.md
 echo "governance docs ready"
