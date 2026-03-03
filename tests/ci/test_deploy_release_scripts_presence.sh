@@ -9,6 +9,7 @@ fail() {
 deploy_script="scripts/ci/deploy_functions.sh"
 release_script="scripts/ci/release_go_live.sh"
 cli_check_script="scripts/ci/check_supabase_cli_version.sh"
+remote_publish_prep_script="scripts/ci/prepare_remote_publish.sh"
 release_record_script="scripts/governance/update_phase2_release_record.sh"
 
 test -f "$deploy_script" || fail "missing deploy script"
@@ -17,6 +18,8 @@ test -f "$release_script" || fail "missing release go-live script"
 test -x "$release_script" || fail "release go-live script must be executable"
 test -f "$cli_check_script" || fail "missing supabase cli version check script"
 test -x "$cli_check_script" || fail "supabase cli version check script must be executable"
+test -f "$remote_publish_prep_script" || fail "missing remote publish precheck script"
+test -x "$remote_publish_prep_script" || fail "remote publish precheck script must be executable"
 test -f "$release_record_script" || fail "missing phase2 release record update script"
 test -x "$release_record_script" || fail "phase2 release record update script must be executable"
 
@@ -42,5 +45,8 @@ rg -q 'bash tests/governance/test_docs_presence.sh' "$release_script" || fail "r
 rg -q 'bash tests/governance/test_e2e_governance.sh' "$release_script" || fail "release script missing e2e governance step"
 rg -q 'bash scripts/governance/update_phase2_release_record.sh' "$release_script" || fail "release script missing phase2 release record update step"
 rg -q 'DRY_RUN' "$release_script" || fail "release script missing DRY_RUN support"
+
+rg -q 'REQUIRE_ORIGIN' "$remote_publish_prep_script" || fail "remote publish precheck missing REQUIRE_ORIGIN handling"
+rg -q 'push origin' "$remote_publish_prep_script" || fail "remote publish precheck missing push command plan output"
 
 echo "deploy/release scripts present"

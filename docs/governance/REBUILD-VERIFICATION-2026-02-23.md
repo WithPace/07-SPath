@@ -1246,3 +1246,18 @@
   - `docs/governance/MAIN-BRANCH-RELEASE-BASELINE-2026-03-03.md`
   - includes release id, cross-repo commit matrix, and strict gate evidence.
 - Latest verification timestamp (UTC): `2026-03-03T04:31:38Z`
+
+## 2026-03-03 Remote Publish Preparation Automation Evidence
+
+- Added no-push remote publish precheck script:
+  - `scripts/ci/prepare_remote_publish.sh`
+  - validates branch/clean-worktree/tag consistency across backend/frontend/admin repos
+  - supports `REQUIRE_ORIGIN=1` strict remote readiness mode
+  - prints push command plan without executing push actions
+- Added remote publish governance runbook:
+  - `docs/governance/REMOTE-PUBLISH-RUNBOOK.md`
+  - linked from `docs/governance/DEPLOY-TEST-GO-LIVE-RUNBOOK.md`
+- Added gate coverage:
+  - `tests/ci/test_remote_publish_prep_script.sh`
+  - updated `tests/ci/test_deploy_release_scripts_presence.sh`
+  - updated `tests/governance/test_docs_presence.sh`

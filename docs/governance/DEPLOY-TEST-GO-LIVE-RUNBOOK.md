@@ -108,3 +108,22 @@ For real execution, set `DRY_RUN=0` and provide required environment values.
 ## Frontend Simulator Scope
 
 This repository currently contains backend/governance delivery for Supabase functions and release gates. Frontend simulator execution requires a separate frontend project/repository.
+
+## Remote Publish Preparation (No Push)
+
+After local main-branch integration and strict gate success, run:
+
+```bash
+RELEASE_TAG=release-main-2026-03-03 REQUIRE_ORIGIN=0 bash scripts/ci/prepare_remote_publish.sh
+```
+
+This command only validates cross-repo readiness and prints push commands; it does not execute push.
+
+For strict mode that blocks when any repo lacks `origin` remote:
+
+```bash
+RELEASE_TAG=release-main-2026-03-03 REQUIRE_ORIGIN=1 bash scripts/ci/prepare_remote_publish.sh
+```
+
+Detailed remote publishing flow is documented in:
+- `docs/governance/REMOTE-PUBLISH-RUNBOOK.md`
