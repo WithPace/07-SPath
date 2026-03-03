@@ -1180,3 +1180,25 @@
   - `bash tests/e2e/test_orchestrator_dashboard_live.sh` -> PASS.
   - `for t in tests/e2e/test_live_smoke_retry*contract.sh; do bash "$t"; done` -> PASS.
 - Latest verification timestamp (UTC): `2026-03-02T14:54:29Z`
+
+## 2026-03-03 Strict Go-live Re-run on Latest Commit Evidence
+
+- Full strict go-live rerun completed on latest backend commit:
+  - `bash scripts/ci/release_go_live.sh` -> PASS.
+  - strict gates passed in sequence:
+    - phase2 sign-off gate
+    - phase3 drill sign-off gate
+    - phase5 sign-off gate
+    - official Supabase function deploy chain
+    - final_gate full sweep (`governance + db + functions + e2e + ci`)
+    - governance docs/e2e checks
+    - release-record updater
+- Live chain highlights in final sweep:
+  - `tests/e2e/test_phase2_parent_dashboard_followup_live.sh` -> PASS.
+  - `tests/e2e/test_phase2_parent_weekly_journey_live.sh` -> PASS.
+  - `tests/e2e/test_phase5_doctor_teacher_org_journeys_live.sh` -> PASS.
+- Phase2 release record refreshed by pipeline:
+  - `commit_sha=99c1e9130cd8`
+  - `executed_at_utc=2026-03-03T02:44:17Z`
+  - `release_operator=叶明君`
+- Latest verification timestamp (UTC): `2026-03-03T02:44:17Z`
