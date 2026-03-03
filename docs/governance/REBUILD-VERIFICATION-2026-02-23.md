@@ -1254,6 +1254,9 @@
   - validates branch/clean-worktree/tag consistency across backend/frontend/admin repos
   - supports `REQUIRE_ORIGIN=1` strict remote readiness mode
   - prints push command plan without executing push actions
+- Precheck execution evidence:
+  - `RELEASE_TAG=release-main-2026-03-03 REQUIRE_ORIGIN=0 bash scripts/ci/prepare_remote_publish.sh` -> PASS (command plan generated; origin currently missing in all repos).
+  - `RELEASE_TAG=release-main-2026-03-03 REQUIRE_ORIGIN=1 bash scripts/ci/prepare_remote_publish.sh` -> FAIL (`repo=backend missing origin remote`), which is expected until remote URLs are configured.
 - Added remote publish governance runbook:
   - `docs/governance/REMOTE-PUBLISH-RUNBOOK.md`
   - linked from `docs/governance/DEPLOY-TEST-GO-LIVE-RUNBOOK.md`
