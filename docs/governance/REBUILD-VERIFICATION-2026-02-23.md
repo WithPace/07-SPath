@@ -1234,3 +1234,15 @@
   - `executed_at_utc=2026-03-03T03:58:01Z`
   - `release_operator=叶明君`
 - Latest verification timestamp (UTC): `2026-03-03T03:58:01Z`
+
+## 2026-03-03 Cross-Repo Release Tag and Baseline Snapshot
+
+- Local release tag created across all three repositories:
+  - tag: `release-main-2026-03-03`
+  - backend: `07-SPath@648514084291`
+  - frontend: `starpath-frontend@5f12a4011738`
+  - admin web: `starpath-admin-web@9619f48b70a2`
+- Baseline snapshot document added:
+  - `docs/governance/MAIN-BRANCH-RELEASE-BASELINE-2026-03-03.md`
+  - includes release id, cross-repo commit matrix, and strict gate evidence.
+- Latest verification timestamp (UTC): `2026-03-03T04:31:38Z`
