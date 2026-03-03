@@ -1282,10 +1282,9 @@
     - `git push -u origin main` -> PASS (already up-to-date)
     - `git push origin release-main-2026-03-03` -> PASS (already up-to-date)
 - Strict remote publish precheck status:
-  - `RELEASE_TAG=release-main-2026-03-03 REQUIRE_ORIGIN=1 bash scripts/ci/prepare_remote_publish.sh`
-  - expected result after remote wiring: PASS
+  - `RELEASE_TAG=release-main-2026-03-03 REQUIRE_ORIGIN=1 bash scripts/ci/prepare_remote_publish.sh` -> PASS.
 - Remote references confirmed:
-  - backend `origin/main=94c8e8935402`, `tag(release-main-2026-03-03)=648514084291`
+  - backend `origin/main=fc7d287b9db3`, `tag(release-main-2026-03-03)=648514084291`
   - frontend `origin/main=5f12a4011738`, `tag(release-main-2026-03-03)=5f12a4011738`
   - admin web `origin/main=9619f48b70a2`, `tag(release-main-2026-03-03)=9619f48b70a2`
 - Baseline snapshot updated:
