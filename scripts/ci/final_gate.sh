@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+export PATH="$REPO_ROOT/scripts/bin:$PATH"
+
 bash governance/agent-contract/scripts/build-contract.sh
 bash governance/agent-contract/scripts/verify-contract.sh
 

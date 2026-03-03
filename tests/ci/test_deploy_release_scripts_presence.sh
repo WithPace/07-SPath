@@ -8,9 +8,11 @@ fail() {
 
 deploy_script="scripts/ci/deploy_functions.sh"
 release_script="scripts/ci/release_go_live.sh"
+final_gate_script="scripts/ci/final_gate.sh"
 cli_check_script="scripts/ci/check_supabase_cli_version.sh"
 remote_publish_prep_script="scripts/ci/prepare_remote_publish.sh"
 release_record_script="scripts/governance/update_phase2_release_record.sh"
+rg_shim_script="scripts/bin/rg"
 
 test -f "$deploy_script" || fail "missing deploy script"
 test -x "$deploy_script" || fail "deploy script must be executable"
@@ -22,6 +24,10 @@ test -f "$remote_publish_prep_script" || fail "missing remote publish precheck s
 test -x "$remote_publish_prep_script" || fail "remote publish precheck script must be executable"
 test -f "$release_record_script" || fail "missing phase2 release record update script"
 test -x "$release_record_script" || fail "phase2 release record update script must be executable"
+test -f "$final_gate_script" || fail "missing final gate script"
+test -x "$final_gate_script" || fail "final gate script must be executable"
+test -f "$rg_shim_script" || fail "missing rg shim script"
+test -x "$rg_shim_script" || fail "rg shim script must be executable"
 
 rg -q 'SUPABASE_PROJECT_REF' "$deploy_script" || fail "deploy script missing SUPABASE_PROJECT_REF handling"
 rg -q 'bash scripts/ci/check_supabase_cli_version.sh' "$deploy_script" || fail "deploy script missing cli version check step"
@@ -45,6 +51,8 @@ rg -q 'bash tests/governance/test_docs_presence.sh' "$release_script" || fail "r
 rg -q 'bash tests/governance/test_e2e_governance.sh' "$release_script" || fail "release script missing e2e governance step"
 rg -q 'bash scripts/governance/update_phase2_release_record.sh' "$release_script" || fail "release script missing phase2 release record update step"
 rg -q 'DRY_RUN' "$release_script" || fail "release script missing DRY_RUN support"
+rg -q 'export PATH=\"\$REPO_ROOT/scripts/bin:\$PATH\"' "$release_script" || fail "release script missing scripts/bin PATH injection"
+rg -q 'export PATH=\"\$REPO_ROOT/scripts/bin:\$PATH\"' "$final_gate_script" || fail "final gate script missing scripts/bin PATH injection"
 
 rg -q 'REQUIRE_ORIGIN' "$remote_publish_prep_script" || fail "remote publish precheck missing REQUIRE_ORIGIN handling"
 rg -q 'push origin' "$remote_publish_prep_script" || fail "remote publish precheck missing push command plan output"

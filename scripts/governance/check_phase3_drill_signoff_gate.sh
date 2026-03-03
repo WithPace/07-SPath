@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+export PATH="$REPO_ROOT/scripts/bin:$PATH"
+
 REQUIRE_PHASE3_DRILL_SIGNOFF="${REQUIRE_PHASE3_DRILL_SIGNOFF:-1}"
 
 incident_form="docs/governance/PHASE-3-INCIDENT-DRILL-LOG.md"

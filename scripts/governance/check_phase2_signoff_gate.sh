@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+export PATH="$REPO_ROOT/scripts/bin:$PATH"
+
 CHECKLIST_FILE="docs/governance/PHASE-2-RELEASE-CHECKLIST.md"
 REQUIRE_FULL_SIGNOFF="${REQUIRE_FULL_SIGNOFF:-0}"
 
