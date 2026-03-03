@@ -20,11 +20,11 @@
 
 ## Remote Publish Status
 
-| repo | origin_url | remote_main_head | release_tag_target |
+| repo | origin_url | remote_main_sync | release_tag_target |
 |---|---|---|---|
-| backend/governance | `git@github.com:WithPace/07-SPath.git` | `fc7d287b9db3` | `648514084291` |
-| frontend/user ports | `git@github.com:WithPace/starpath-frontend.git` | `5f12a4011738` | `5f12a4011738` |
-| admin web | `git@github.com:WithPace/starpath-admin-web.git` | `9619f48b70a2` | `9619f48b70a2` |
+| backend/governance | `git@github.com:WithPace/07-SPath.git` | synced | `648514084291` |
+| frontend/user ports | `git@github.com:WithPace/starpath-frontend.git` | synced | `5f12a4011738` |
+| admin web | `git@github.com:WithPace/starpath-admin-web.git` | synced | `9619f48b70a2` |
 
 ## Verification Evidence
 

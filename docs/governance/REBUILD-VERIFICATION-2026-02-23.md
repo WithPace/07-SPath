@@ -1284,9 +1284,10 @@
 - Strict remote publish precheck status:
   - `RELEASE_TAG=release-main-2026-03-03 REQUIRE_ORIGIN=1 bash scripts/ci/prepare_remote_publish.sh` -> PASS.
 - Remote references confirmed:
-  - backend `origin/main=fc7d287b9db3`, `tag(release-main-2026-03-03)=648514084291`
-  - frontend `origin/main=5f12a4011738`, `tag(release-main-2026-03-03)=5f12a4011738`
-  - admin web `origin/main=9619f48b70a2`, `tag(release-main-2026-03-03)=9619f48b70a2`
+  - all repos `origin/main` synced with local `main` at verification time.
+  - backend `tag(release-main-2026-03-03)=648514084291`
+  - frontend `tag(release-main-2026-03-03)=5f12a4011738`
+  - admin web `tag(release-main-2026-03-03)=9619f48b70a2`
 - Baseline snapshot updated:
   - `docs/governance/MAIN-BRANCH-RELEASE-BASELINE-2026-03-03.md`
   - `integration_mode=remote-published`
