@@ -1264,3 +1264,30 @@
   - `tests/ci/test_remote_publish_prep_script.sh`
   - updated `tests/ci/test_deploy_release_scripts_presence.sh`
   - updated `tests/governance/test_docs_presence.sh`
+
+## 2026-03-03 Remote Publish Completion Evidence
+
+- Repository visibility switched to public for all three repos:
+  - `WithPace/07-SPath`
+  - `WithPace/starpath-frontend`
+  - `WithPace/starpath-admin-web`
+- SSH remotes configured and push completed:
+  - backend:
+    - `git push -u origin main` -> PASS
+    - `git push origin release-main-2026-03-03` -> PASS
+  - frontend:
+    - `git push -u origin main` -> PASS
+    - `git push origin release-main-2026-03-03` -> PASS
+  - admin web:
+    - `git push -u origin main` -> PASS (already up-to-date)
+    - `git push origin release-main-2026-03-03` -> PASS (already up-to-date)
+- Strict remote publish precheck status:
+  - `RELEASE_TAG=release-main-2026-03-03 REQUIRE_ORIGIN=1 bash scripts/ci/prepare_remote_publish.sh`
+  - expected result after remote wiring: PASS
+- Remote references confirmed:
+  - backend `origin/main=94c8e8935402`, `tag(release-main-2026-03-03)=648514084291`
+  - frontend `origin/main=5f12a4011738`, `tag(release-main-2026-03-03)=5f12a4011738`
+  - admin web `origin/main=9619f48b70a2`, `tag(release-main-2026-03-03)=9619f48b70a2`
+- Baseline snapshot updated:
+  - `docs/governance/MAIN-BRANCH-RELEASE-BASELINE-2026-03-03.md`
+  - `integration_mode=remote-published`
