@@ -5,6 +5,41 @@ export type ModelCallOptions = {
   maxTokens?: number;
 };
 
+function resolveModelTimeoutMs(): number {
+  const raw = Number(Deno.env.get("MODEL_TIMEOUT_MS") ?? "15000");
+  if (!Number.isFinite(raw)) return 15000;
+  const timeoutMs = Math.floor(raw);
+  return timeoutMs >= 1000 ? timeoutMs : 15000;
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === "AbortError";
+}
+
+async function fetchWithTimeout(
+  input: string,
+  init: RequestInit,
+  timeoutMs: number,
+  provider: "kimi" | "doubao",
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (isAbortError(error)) {
+      throw new Error(`MODEL_TIMEOUT: ${provider} timed out after ${timeoutMs}ms`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function mustEnv(name: string): string {
   const v = Deno.env.get(name);
   if (!v) throw new Error(`missing env: ${name}`);
@@ -22,21 +57,27 @@ async function callKimi(messages: ChatMessage[], options: ModelCallOptions): Pro
   const baseUrl = Deno.env.get("KIMI_BASE_URL") ?? "https://api.moonshot.cn/v1";
   const model = Deno.env.get("KIMI_MODEL") ?? "moonshot-v1-8k";
   const temperature = options.temperature ?? 1;
+  const timeoutMs = resolveModelTimeoutMs();
 
-  const res = await fetch(`${baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+  const res = await fetchWithTimeout(
+    `${baseUrl}/chat/completions`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature,
+        max_tokens: options.maxTokens ?? 1024,
+        stream: false,
+      }),
     },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature,
-      max_tokens: options.maxTokens ?? 1024,
-      stream: false,
-    }),
-  });
+    timeoutMs,
+    "kimi",
+  );
 
   if (!res.ok) {
     throw new Error(`MODEL_UNAVAILABLE: kimi ${res.status}`);
@@ -55,25 +96,31 @@ async function callDoubao(messages: ChatMessage[], options: ModelCallOptions): P
   const url = endpointOrId.startsWith("http")
     ? endpointOrId
     : `${baseUrl}/chat/completions`;
+  const timeoutMs = resolveModelTimeoutMs();
 
   if (!model) {
     throw new Error("missing env: DOUBAO_ENDPOINT_ID or DOUBAO_MODEL");
   }
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+  const res = await fetchWithTimeout(
+    url,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature: options.temperature ?? 0.4,
+        max_tokens: options.maxTokens ?? 1024,
+        stream: false,
+      }),
     },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature: options.temperature ?? 0.4,
-      max_tokens: options.maxTokens ?? 1024,
-      stream: false,
-    }),
-  });
+    timeoutMs,
+    "doubao",
+  );
 
   if (!res.ok) {
     throw new Error(`MODEL_UNAVAILABLE: doubao ${res.status}`);

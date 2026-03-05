@@ -32,6 +32,27 @@ const ROLE_PROMPT = {
   org_admin: "你是星途AI机构运营看板助手。请基于统计数据输出整体表现、风险预警和管理动作建议，各1-2句。",
 } as const;
 
+function buildFallbackInsight(role: keyof typeof ROLE_PROMPT, input: {
+  latestRisk: string;
+  trainingDays: number;
+  totalSessions: number;
+  totalMinutes: number;
+  avgSuccessRate: number;
+  activePlans: number;
+}): string {
+  const rolePrefix = role === "parent"
+    ? "家长视角"
+    : role === "doctor"
+    ? "医生视角"
+    : role === "teacher"
+    ? "教师视角"
+    : "机构视角";
+
+  return `${rolePrefix}本周已记录${input.totalSessions}次训练（${input.totalMinutes}分钟），覆盖${input.trainingDays}天，平均成功率${input.avgSuccessRate}%。
+当前风险等级：${input.latestRisk}，活跃方案${input.activePlans}个。
+建议先保持高成功率项目，再补齐低完成日的短时训练。`;
+}
+
 function dateKeyUTC(daysAgo: number): string {
   const d = new Date();
   d.setUTCHours(0, 0, 0, 0);
@@ -52,7 +73,7 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: SSE_HEADERS });
   }
 
-  let requestId = crypto.randomUUID();
+  let requestId: string = crypto.randomUUID();
   const startedAt = Date.now();
 
   try {
@@ -208,19 +229,35 @@ Deno.serve(async (req) => {
       user_query: payload.message,
     };
 
-    const model = await callModelLive([
-      { role: "system", content: ROLE_PROMPT[role] },
-      { role: "user", content: JSON.stringify(insightInput) },
-    ]);
+    let modelText = "";
+    let modelUsed = "dashboard_fallback_rule";
+    try {
+      const model = await callModelLive([
+        { role: "system", content: ROLE_PROMPT[role] },
+        { role: "user", content: JSON.stringify(insightInput) },
+      ]);
+      modelText = model.text;
+      modelUsed = model.modelUsed;
+    } catch {
+      modelText = buildFallbackInsight(role, {
+        latestRisk,
+        trainingDays,
+        totalSessions,
+        totalMinutes,
+        avgSuccessRate,
+        activePlans,
+      });
+      modelUsed = "dashboard_fallback_rule";
+    }
 
     const assistantInsert = await client.from("chat_messages").insert({
       conversation_id: payload.conversation_id,
       child_id: payload.child_id,
       user_id: user.id,
       role: "assistant",
-      content: model.text,
+      content: modelText,
       cards_json: cards,
-      model_used: model.modelUsed,
+      model_used: modelUsed,
       edge_function: "dashboard",
     });
 
@@ -252,10 +289,10 @@ Deno.serve(async (req) => {
 
     const body =
       sseEvent("stream_start", { request_id: requestId }) +
-      sseEvent("delta", { text: model.text, cards }) +
+      sseEvent("delta", { text: modelText, cards }) +
       sseEvent("done", {
         request_id: requestId,
-        model_used: model.modelUsed,
+        model_used: modelUsed,
         role,
         card_count: cards.length,
       });

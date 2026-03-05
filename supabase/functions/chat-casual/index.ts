@@ -23,12 +23,17 @@ function buildFallbackFocus(message: string): string {
   return `日常沟通支持：${base || "亲子互动与情绪安抚"}`;
 }
 
+function buildFallbackReply(message: string): string {
+  const focus = buildFallbackFocus(message).replace(/^日常沟通支持：/, "");
+  return `我已收到你的需求。先围绕“${focus}”做3步：1) 用简短句示范动作；2) 孩子完成后立即正向反馈；3) 记录1次成功与1次困难，稍后我再帮你调整。`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: SSE_HEADERS });
   }
 
-  let requestId = crypto.randomUUID();
+  let requestId: string = crypto.randomUUID();
   const startedAt = Date.now();
 
   try {
@@ -51,13 +56,22 @@ Deno.serve(async (req) => {
       );
     }
 
-    const model = await callModelLive([
-      { role: "system", content: "你是星途AI的日常对话助手，请给出简洁、温和、可执行的中文回答。" },
-      { role: "user", content: payload.message },
-    ]);
+    let modelText = "";
+    let modelUsed = "chat_fallback_rule";
+    try {
+      const model = await callModelLive([
+        { role: "system", content: "你是星途AI的日常对话助手，请给出简洁、温和、可执行的中文回答。" },
+        { role: "user", content: payload.message },
+      ]);
+      modelText = model.text;
+      modelUsed = model.modelUsed;
+    } catch {
+      modelText = buildFallbackReply(payload.message);
+      modelUsed = "chat_fallback_rule";
+    }
 
     const client = getServiceClient();
-    const memorySummary = buildMemorySummary(model.text);
+    const memorySummary = buildMemorySummary(modelText);
     const currentMemory = await client
       .from("children_memory")
       .select("id,current_focus")
@@ -88,8 +102,8 @@ Deno.serve(async (req) => {
       child_id: payload.child_id,
       user_id: user.id,
       role: "assistant",
-      content: model.text,
-      model_used: model.modelUsed,
+      content: modelText,
+      model_used: modelUsed,
       edge_function: "chat-casual",
     });
 
@@ -121,8 +135,8 @@ Deno.serve(async (req) => {
 
     const body =
       sseEvent("stream_start", { request_id: requestId }) +
-      sseEvent("delta", { text: model.text }) +
-      sseEvent("done", { request_id: requestId, model_used: model.modelUsed });
+      sseEvent("delta", { text: modelText }) +
+      sseEvent("done", { request_id: requestId, model_used: modelUsed });
 
     return new Response(body, { status: 200, headers: SSE_HEADERS });
   } catch (err) {
