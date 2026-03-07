@@ -56,22 +56,21 @@ Deno.serve(async (req) => {
       );
     }
 
-    let modelText = "";
-    let modelUsed = "chat_fallback_rule";
+    let model = { text: "", modelUsed: "chat_fallback_rule" };
     try {
-      const model = await callModelLive([
+      model = await callModelLive([
         { role: "system", content: "你是星途AI的日常对话助手，请给出简洁、温和、可执行的中文回答。" },
         { role: "user", content: payload.message },
       ]);
-      modelText = model.text;
-      modelUsed = model.modelUsed;
     } catch {
-      modelText = buildFallbackReply(payload.message);
-      modelUsed = "chat_fallback_rule";
+      model = {
+        text: buildFallbackReply(payload.message),
+        modelUsed: "chat_fallback_rule",
+      };
     }
 
     const client = getServiceClient();
-    const memorySummary = buildMemorySummary(modelText);
+    const memorySummary = buildMemorySummary(model.text);
     const currentMemory = await client
       .from("children_memory")
       .select("id,current_focus")
@@ -102,8 +101,8 @@ Deno.serve(async (req) => {
       child_id: payload.child_id,
       user_id: user.id,
       role: "assistant",
-      content: modelText,
-      model_used: modelUsed,
+      content: model.text,
+      model_used: model.modelUsed,
       edge_function: "chat-casual",
     });
 
@@ -135,8 +134,8 @@ Deno.serve(async (req) => {
 
     const body =
       sseEvent("stream_start", { request_id: requestId }) +
-      sseEvent("delta", { text: modelText }) +
-      sseEvent("done", { request_id: requestId, model_used: modelUsed });
+      sseEvent("delta", { text: model.text }) +
+      sseEvent("done", { request_id: requestId, model_used: model.modelUsed });
 
     return new Response(body, { status: 200, headers: SSE_HEADERS });
   } catch (err) {

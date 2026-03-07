@@ -229,25 +229,24 @@ Deno.serve(async (req) => {
       user_query: payload.message,
     };
 
-    let modelText = "";
-    let modelUsed = "dashboard_fallback_rule";
+    let model = { text: "", modelUsed: "dashboard_fallback_rule" };
     try {
-      const model = await callModelLive([
+      model = await callModelLive([
         { role: "system", content: ROLE_PROMPT[role] },
         { role: "user", content: JSON.stringify(insightInput) },
       ]);
-      modelText = model.text;
-      modelUsed = model.modelUsed;
     } catch {
-      modelText = buildFallbackInsight(role, {
-        latestRisk,
-        trainingDays,
-        totalSessions,
-        totalMinutes,
-        avgSuccessRate,
-        activePlans,
-      });
-      modelUsed = "dashboard_fallback_rule";
+      model = {
+        text: buildFallbackInsight(role, {
+          latestRisk,
+          trainingDays,
+          totalSessions,
+          totalMinutes,
+          avgSuccessRate,
+          activePlans,
+        }),
+        modelUsed: "dashboard_fallback_rule",
+      };
     }
 
     const assistantInsert = await client.from("chat_messages").insert({
@@ -255,9 +254,9 @@ Deno.serve(async (req) => {
       child_id: payload.child_id,
       user_id: user.id,
       role: "assistant",
-      content: modelText,
+      content: model.text,
       cards_json: cards,
-      model_used: modelUsed,
+      model_used: model.modelUsed,
       edge_function: "dashboard",
     });
 
@@ -289,10 +288,10 @@ Deno.serve(async (req) => {
 
     const body =
       sseEvent("stream_start", { request_id: requestId }) +
-      sseEvent("delta", { text: modelText, cards }) +
+      sseEvent("delta", { text: model.text, cards }) +
       sseEvent("done", {
         request_id: requestId,
-        model_used: modelUsed,
+        model_used: model.modelUsed,
         role,
         card_count: cards.length,
       });
