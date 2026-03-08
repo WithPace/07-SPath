@@ -8,6 +8,7 @@ test -f supabase/functions/training/index.ts
 test -f supabase/functions/training-advice/index.ts
 test -f supabase/functions/training-record/index.ts
 test -f supabase/functions/dashboard/index.ts
+test -f supabase/functions/sms-hook/index.ts
 grep -q "request_id" supabase/functions/orchestrator/index.ts
 grep -q "training_advice" supabase/functions/orchestrator/index.ts
 grep -q "assessment" supabase/functions/orchestrator/index.ts
@@ -30,4 +31,6 @@ grep -q "children_profiles" supabase/functions/training-record/index.ts
 grep -q "affectedTables: .*chat_messages" supabase/functions/training-record/index.ts
 grep -q "finalizeWriteback" supabase/functions/dashboard/index.ts
 grep -q "affectedTables: .*chat_messages" supabase/functions/dashboard/index.ts
+grep -q "handleSmsHook" supabase/functions/sms-hook/index.ts
+grep -q "ALIYUN_SMS_ACCESS_KEY_ID" supabase/functions/sms-hook/index.ts
 echo "chain files and key hooks present"

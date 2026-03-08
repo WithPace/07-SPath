@@ -24,6 +24,13 @@ function buildCurrentFocus(title: string, modelText: string): string {
   return `${title}｜${concise || "家庭训练执行重点"}`;
 }
 
+function buildTrainingFallback(message: string): string {
+  const normalized = message.replace(/\s+/g, " ").trim();
+  const focus = normalized.length > 28 ? normalized.slice(0, 28) : normalized;
+  const topic = focus || "今日家庭训练";
+  return `训练计划降级输出：围绕“${topic}”执行 3 步：1) 目标拆成 10-15 分钟单元；2) 每次完成后即时正反馈；3) 记录成功率并在晚间复盘。`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: SSE_HEADERS });
@@ -52,10 +59,18 @@ Deno.serve(async (req) => {
       );
     }
 
-    const model = await callModelLive([
-      { role: "system", content: "你是星途AI训练助手，请输出结构化、可执行、温和的中文训练计划建议。" },
-      { role: "user", content: payload.message },
-    ]);
+    let model = { text: "", modelUsed: "training_fallback_rule" };
+    try {
+      model = await callModelLive([
+        { role: "system", content: "你是星途AI训练助手，请输出结构化、可执行、温和的中文训练计划建议。" },
+        { role: "user", content: payload.message },
+      ]);
+    } catch {
+      model = {
+        text: buildTrainingFallback(payload.message),
+        modelUsed: "training_fallback_rule",
+      };
+    }
 
     const client = getServiceClient();
     const title = buildPlanTitle(payload.message);

@@ -38,6 +38,7 @@ rg -q 'supabase functions deploy training ' "$deploy_script" || fail "deploy scr
 rg -q 'supabase functions deploy training-advice' "$deploy_script" || fail "deploy script missing training-advice deploy"
 rg -q 'supabase functions deploy training-record' "$deploy_script" || fail "deploy script missing training-record deploy"
 rg -q 'supabase functions deploy dashboard' "$deploy_script" || fail "deploy script missing dashboard deploy"
+rg -q 'supabase functions deploy sms-hook' "$deploy_script" || fail "deploy script missing sms-hook deploy"
 rg -q 'DRY_RUN' "$deploy_script" || fail "deploy script missing DRY_RUN support"
 
 rg -q 'scripts/ci/deploy_functions.sh' "$release_script" || fail "release script missing deploy step"

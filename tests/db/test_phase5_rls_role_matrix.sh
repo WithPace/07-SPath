@@ -26,6 +26,10 @@ done
 
 rg -q 'public\.has_child_access\(child_id\)' "$migration" \
   || fail "rebuild migration missing has_child_access policy bindings"
+rg -q 'create policy care_teams_owner_insert on public\.care_teams' "$migration" \
+  || fail "missing care_teams_owner_insert policy in rebuild migration"
+rg -q 'for insert with check' "$migration" \
+  || fail "missing care_teams insert policy check clause in rebuild migration"
 
 rg -q 'export type ChildRole' "$shared_auth" || fail "missing ChildRole type in shared auth"
 rg -q 'checkChildRoleAccess' "$shared_auth" || fail "missing role-scoped access helper"

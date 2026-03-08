@@ -626,6 +626,14 @@ for select using (
   )
 );
 
+create policy care_teams_owner_insert on public.care_teams
+for insert with check (
+  user_id = auth.uid()
+  and exists (
+    select 1 from public.children c where c.id = care_teams.child_id and c.created_by = auth.uid()
+  )
+);
+
 create policy care_teams_owner_update on public.care_teams
 for update using (
   exists (

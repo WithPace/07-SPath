@@ -53,5 +53,6 @@ run_cmd "supabase functions deploy training --project-ref ${SUPABASE_PROJECT_REF
 run_cmd "supabase functions deploy training-advice --project-ref ${SUPABASE_PROJECT_REF}${EXTRA_FLAGS}"
 run_cmd "supabase functions deploy training-record --project-ref ${SUPABASE_PROJECT_REF}${EXTRA_FLAGS}"
 run_cmd "supabase functions deploy dashboard --project-ref ${SUPABASE_PROJECT_REF}${EXTRA_FLAGS}"
+run_cmd "supabase functions deploy sms-hook --project-ref ${SUPABASE_PROJECT_REF}${EXTRA_FLAGS}"
 
 echo "deploy complete: project_ref=${SUPABASE_PROJECT_REF}"

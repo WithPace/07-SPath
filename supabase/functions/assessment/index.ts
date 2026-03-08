@@ -148,6 +148,13 @@ function buildAssessmentSummary(riskLevel: "low" | "medium" | "high", focusDomai
   return `评估结果更新：本次评估判定为${riskText}，重点关注 ${focusDomain} 领域，已生成新画像版本。`;
 }
 
+function buildAssessmentFallback(message: string): string {
+  const normalized = message.replace(/\s+/g, " ").trim();
+  const focus = normalized.length > 24 ? normalized.slice(0, 24) : normalized;
+  const topic = focus || "家庭训练执行";
+  return `评估降级输出：当前按中风险处理。请先围绕“${topic}”执行 3 步：1) 分解为单步指令；2) 每次成功立即强化；3) 记录触发因素并在 24 小时内复盘。`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: SSE_HEADERS });
@@ -176,10 +183,18 @@ Deno.serve(async (req) => {
       );
     }
 
-    const model = await callModelLive([
-      { role: "system", content: "你是星途AI评估助手，请输出简洁中文评估结论，包含风险判断和建议。" },
-      { role: "user", content: payload.message },
-    ]);
+    let model = { text: "", modelUsed: "assessment_fallback_rule" };
+    try {
+      model = await callModelLive([
+        { role: "system", content: "你是星途AI评估助手，请输出简洁中文评估结论，包含风险判断和建议。" },
+        { role: "user", content: payload.message },
+      ]);
+    } catch {
+      model = {
+        text: buildAssessmentFallback(payload.message),
+        modelUsed: "assessment_fallback_rule",
+      };
+    }
 
     const riskLevel = deriveRiskLevel(model.text);
     const assessmentType = payload.assessment_type?.trim() || "screening";

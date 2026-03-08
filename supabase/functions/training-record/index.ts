@@ -186,6 +186,13 @@ function buildOverallSummary(domainTag: string, score: number, trend: DomainTren
   return `训练记录累计更新：${domainTag} 领域当前评分 ${score}，趋势${trendText}。`;
 }
 
+function buildTrainingRecordFallback(message: string): string {
+  const normalized = message.replace(/\s+/g, " ").trim();
+  const focus = normalized.length > 24 ? normalized.slice(0, 24) : normalized;
+  const topic = focus || "训练记录";
+  return `训练记录降级输出：已记录“${topic}”，本次建议按 15 分钟执行并以 60% 完成率作为基线，明日根据执行结果调整难度。`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: SSE_HEADERS });
@@ -214,10 +221,18 @@ Deno.serve(async (req) => {
       );
     }
 
-    const model = await callModelLive([
-      { role: "system", content: "你是星途AI训练记录助手，请把用户描述整理为简洁、结构化、可执行的训练记录中文摘要。" },
-      { role: "user", content: payload.message },
-    ]);
+    let model = { text: "", modelUsed: "training_record_fallback_rule" };
+    try {
+      model = await callModelLive([
+        { role: "system", content: "你是星途AI训练记录助手，请把用户描述整理为简洁、结构化、可执行的训练记录中文摘要。" },
+        { role: "user", content: payload.message },
+      ]);
+    } catch {
+      model = {
+        text: buildTrainingRecordFallback(payload.message),
+        modelUsed: "training_record_fallback_rule",
+      };
+    }
 
     const durationMinutes = parseDurationMinutes(payload.message);
     const successRate = parseSuccessRate(`${payload.message} ${model.text}`);
