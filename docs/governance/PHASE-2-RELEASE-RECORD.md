@@ -6,8 +6,8 @@
 |---|---|
 | phase | Phase 2 (Business Capability Delivery) |
 | project_ref | innaguwdmdfugrbcoxng |
-| commit_sha | 9bdcba8a9212 |
-| executed_at_utc | 2026-03-08T02:50:03Z |
+| commit_sha | ef45246ffb2b |
+| executed_at_utc | 2026-03-08T08:45:37Z |
 | release_operator | 叶明君 |
 
 ## Verification Evidence
